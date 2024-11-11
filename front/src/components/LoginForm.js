@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { axiosInstance } from "./auth/MemberAPI";
 
 const StyledLoginForm = styled.form`
   display: flex;
@@ -74,12 +75,24 @@ function LoginForm() {
 
   const handleOnSubmit = async (e) => {
     e.preventDefault();
+    localStorage.removeItem('access_token');
 
     try {
-      const response = await axios.post("http://localhost:8080/login", values);
+      // const response = await axios.post("/login", values, {
+      // const response = await axiosInstance.post("/login", values, {
+      //   withCredentials: true,
+      // });
+      const response = await axiosInstance.post("/login", values);
+      console.log("response = ", response);
+      const authorizationHeader = response.headers["authorization"];
+
+      if (authorizationHeader) {
+        const accessToken = authorizationHeader.replace("Bearer ", "");
+        localStorage.setItem("access_token", accessToken);
+      }
 
       if (response.status === 200) {
-        navigate("/camp");
+        navigate("/");
       }
     } catch (error) {
       console.error("로그인 오류:", error);

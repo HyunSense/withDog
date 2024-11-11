@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import DetailHeader from "./DetailHeader";
 import DetailMain from "./DetailMain";
+import { axiosInstance } from "./auth/MemberAPI";
 
 function DetailPage() {
   const { id } = useParams();
@@ -11,7 +12,7 @@ function DetailPage() {
   useEffect(() => {
     const fetchPlaceDetail = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/places/${id}`);
+        const response = await axiosInstance.get(`/places/${id}`);
 
         console.log("response.data = ", response.data.data);
         setPlace(response.data.data);

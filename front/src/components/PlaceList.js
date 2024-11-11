@@ -4,6 +4,7 @@ import StyledText from "./StyledText";
 import PlaceItems from "./PlaceItems";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import { axiosInstance } from "./auth/MemberAPI";
 
 const StyledPlaceList = styled.section`
   /* padding: 0 10px 0 30px; */
@@ -60,7 +61,7 @@ function PlaceList() {
       params.category = category;
     }
     const fetchPlaces = async () => {
-      const response = await axios.get("http://localhost:8080/places", {
+      const response = await axiosInstance.get("/places", {
         params,
       });
       console.log("response.data.data = ", response.data);
