@@ -3,6 +3,8 @@ import styled from "styled-components";
 
 const StyledContainer = styled.div`
   width: 100%;
+  min-height: calc(var(--vh, 1vh) * 100);
+
   display: flex;
   flex-direction: column;
   background-color: rgb(255, 255, 255);
@@ -13,8 +15,8 @@ const StyledContainer = styled.div`
   }
 `;
 
-function Container({ children }) {
+const Container = ({ children }) => {
   return <StyledContainer>{children}</StyledContainer>;
-}
+};
 
 export default Container;

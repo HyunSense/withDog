@@ -29,7 +29,10 @@ public class PlaceRegisterRequestDto {
     private String phone;
 
     @NotBlank(message = "Not Blank Address")
-    private String address;
+    private String addressPart1;
+
+    @NotBlank(message = "Not Blank Address")
+    private String addressPart2;
 
     @NotNull(message = "Not Blank Price")
     private int price;
@@ -47,12 +50,13 @@ public class PlaceRegisterRequestDto {
     private List<String> imageUrls;
 
     @Builder
-    public PlaceRegisterRequestDto(String categoryName, String name, String phone, String address, int price, String reservationLink, List<String> blogUrls, List<String> imageUrls) {
+    public PlaceRegisterRequestDto(String categoryName, String name, String phone, String addressPart1, String addressPart2, int price, String reservationLink, List<String> blogUrls, List<String> imageUrls) {
 //        this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.name = name;
         this.phone = phone;
-        this.address = address;
+        this.addressPart1 = addressPart1;
+        this.addressPart2 = addressPart2;
         this.price = price;
         this.reservationLink = reservationLink;
         this.blogUrls = blogUrls;
@@ -65,7 +69,8 @@ public class PlaceRegisterRequestDto {
                 .category(category)
                 .name(this.name)
                 .phone(this.phone)
-                .address(this.address)
+                .addressPart1(this.addressPart1)
+                .addressPart2(this.addressPart2)
                 .price(this.price)
                 .reservationLink(this.reservationLink)
                 .build();

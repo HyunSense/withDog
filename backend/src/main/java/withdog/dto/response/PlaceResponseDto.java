@@ -2,6 +2,7 @@ package withdog.dto.response;
 
 import lombok.*;
 import withdog.entity.Place;
+import withdog.util.StringFilter;
 
 @Getter
 @Setter
@@ -25,7 +26,8 @@ public class PlaceResponseDto {
         this.category = place.getCategory().getName();
         this.id = place.getId();
         this.name = place.getName();
-        this.address = place.getAddress();
+//        this.address = place.getAddressPart1();
+        this.address = StringFilter.addressSpecialWord(place.getAddressPart1());
         this.price = place.getPrice();
         this.thumbnailUrl = place.getThumbnailUrl();
     }

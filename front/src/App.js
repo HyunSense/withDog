@@ -1,50 +1,21 @@
-import styled, { createGlobalStyle } from "styled-components";
 import { Route, Routes } from "react-router-dom";
 import Container from "./components/Container";
-import LoginPage from "./components/LoginPage";
-import SignupPage from "./components/SignupPage";
-import HomePage from "./components/HomePage";
-import RegisterPage from "./components/RegisterPage";
-import DetailPage from "./components/DetailPage";
-import PlaceList from "./components/PlaceList";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import HomePage from "./pages/HomePage";
+import RegisterPage from "./pages/RegisterPage";
+import DetailPage from "./pages/DetailPage";
+import { AuthProvider } from "./components/auth/AuthContextProvider";
+import PrivateRoute from "./components/auth/PrivateRoute";
+import LoginRedirect from "./components/auth/LoginRedirect";
+import { GlobalStyle, StyledBackground } from "./styles/GlobalStyle";
+import React from "react";
 
-const GlobalStyle = createGlobalStyle`
-
-  html {
-
-    font-size: 62.5%;// (1rem = 10px)
-  }
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Spoqa Han Sans Neo', 'sans-serif'
-  }
-
-  a {
-    outline: none;
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: none;
-    }
-  }
-
-  
-  /* body {
-    font-family: 'Spoqa Han Sans Neo', 'sans-serif';
-  } */
-`;
-
-const StyledBackground = styled.div`
-    position: fixed;
-    z-index: -1;
-    width: 100vw;
-    height: 100%;
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-color: rgb(243, 246, 246);
-`;
+// const LoginPage = React.lazy(() => import("./pages/LoginPage"));
+// const SignupPage = React.lazy(() => import("./pages/SignupPage"));
+// const HomePage = React.lazy(() => import("./pages/HomePage"));
+// const RegisterPage = React.lazy(() => import("./pages/RegisterPage"));
+// const DetailPage = React.lazy(() => import("./pages/DetailPage"));
 
 function App() {
   return (
@@ -52,16 +23,38 @@ function App() {
       <GlobalStyle />
       <StyledBackground />
       <Container>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/places" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/sign-up" element={<SignupPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/detail" element={<DetailPage />} />
-          {/* <Route path="/places/:category/:id" element={<DetailPage />} /> */}
-          <Route path="/places/:category/:name/:id" element={<DetailPage />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/places" element={<HomePage />} />
+            <Route
+              path="/login"
+              element={
+                <LoginRedirect>
+                  <LoginPage />
+                </LoginRedirect>
+              }
+            />
+
+            <Route
+              path="/sign-up"
+              element={
+                <LoginRedirect>
+                  <SignupPage />
+                </LoginRedirect>
+              }
+            />
+
+            {/* PrivateRoute: 부모라우트가 자식라우트르 보호하는 역할 */}
+            <Route element={<PrivateRoute roles={["ROLE_ADMIN"]} />}>
+              <Route path="/register" element={<RegisterPage />} />
+            </Route>
+            <Route
+              path="/places/:category/:name/:id"
+              element={<DetailPage />}
+            />
+          </Routes>
+        </AuthProvider>
       </Container>
     </>
   );

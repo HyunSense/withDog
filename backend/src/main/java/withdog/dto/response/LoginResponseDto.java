@@ -1,17 +1,20 @@
 package withdog.dto.response;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-@Getter
+@Getter @Setter @ToString
+@Builder
 public class LoginResponseDto {
 
-    private final String refreshToken;
-    private final String accessToken;
-    private final String expired;
+    private Long id;
+    private String username;
+    private String role;
+    private String refreshToken;
+    private String accessToken;
+    private String expired;
 
-    public LoginResponseDto(String refreshToken, String accessToken, String expired) {
-        this.refreshToken = refreshToken;
-        this.accessToken = accessToken;
-        this.expired = expired;
-    }
+
 }

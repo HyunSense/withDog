@@ -29,7 +29,8 @@ public class Place {
     private String name;
     private String thumbnailUrl;
     private int price;
-    private String address;
+    private String addressPart1;
+    private String addressPart2;
     private String phone;
     private String reservationLink;
     private String description;
@@ -45,14 +46,6 @@ public class Place {
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
     private List<PlaceImage> placeImages = new ArrayList<>();
 
-    public void addImage(PlaceImage placeImage) {
-        placeImage.setPlace(this);
-        placeImages.add(placeImage);
-        if (placeImages != null && !placeImages.isEmpty()) {
-            this.thumbnailUrl = placeImages.get(0).getImageUrl();
-        }
-    }
-
     @BatchSize(size = 100)
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
     private List<PlaceBlog> placeBlogs = new ArrayList<>();
@@ -62,14 +55,26 @@ public class Place {
         placeBlog.setPlace(this);
     }
 
+    public void addImage(PlaceImage placeImage) {
+        placeImage.setPlace(this);
+        placeImages.add(placeImage);
+        this.thumbnailUrl = placeImages.get(0).getImageUrl();
+    }
+
+    public String getFullAddress() {
+        return addressPart1 + " " + addressPart2;
+    }
+
+
     @Builder
-    public Place(Long id, Category category, String name, String thumbnailUrl, int price, String address, String phone, String reservationLink, String description) {
+    public Place(Long id, Category category, String name, String thumbnailUrl, int price, String addressPart1, String addressPart2, String phone, String reservationLink, String description) {
         this.id = id;
         this.category = category;
         this.name = name;
         this.thumbnailUrl = thumbnailUrl;
         this.price = price;
-        this.address = address;
+        this.addressPart1 = addressPart1;
+        this.addressPart2 = addressPart2;
         this.phone = phone;
         this.reservationLink = reservationLink;
         this.description = description;

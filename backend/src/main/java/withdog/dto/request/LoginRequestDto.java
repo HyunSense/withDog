@@ -10,9 +10,9 @@ import lombok.ToString;
 @ToString
 public class LoginRequestDto {
 
-    @NotBlank
+//    @NotBlank
     private String username;
 
-    @NotBlank
+//    @NotBlank
     private String password;
 }

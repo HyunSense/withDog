@@ -7,6 +7,7 @@ import lombok.ToString;
 import withdog.dto.PlaceBlogDto;
 import withdog.dto.PlaceImageDto;
 import withdog.entity.Place;
+import withdog.util.StringFilter;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,11 +18,13 @@ import java.util.stream.Collectors;
 public class PlaceDetailResponseDto {
 
     private String category;
+    private Long id;
     private String name;
     private int price;
     private String address;
     private String phone;
     private String reservationLink;
+//    private long bookmarkCount;
     private List<PlaceImageDto> placeImages;
     private List<PlaceBlogDto> placeBlogs;
 
@@ -30,11 +33,14 @@ public class PlaceDetailResponseDto {
     public PlaceDetailResponseDto(Place place) {
 
         this.category = place.getCategory().getName();
+        this.id = place.getId();
         this.name = place.getName();
         this.price = place.getPrice();
-        this.address = place.getAddress();
+//        this.address = place.getFullAddress();
+        this.address = StringFilter.addressSpecialWord(place.getAddressPart1()) + " " + place.getAddressPart2();
         this.phone = place.getPhone();
         this.reservationLink = place.getReservationLink();
+//        this.bookmarkCount = place.getBookmarkCount();
 //        this.placeImages = placeImages;
 //        this.placeBlogs = placeBlogs;
         //TODO: !isEmpty if문 넣을지 고민

@@ -13,9 +13,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
+import withdog.dto.response.ResponseDto;
 import withdog.jwt.JwtAuthenticationFilter;
 import withdog.jwt.JwtAuthorizationFilter;
 import withdog.jwt.JwtTokenProvider;
+import withdog.repository.TokenRepository;
+
+import java.io.IOException;
 
 @Configuration
 @RequiredArgsConstructor
@@ -25,6 +29,7 @@ public class SecurityConfig {
     private final CorsFilter corsFilter;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtTokenProvider jwtTokenProvider;
+//    private final TokenRepository tokenRepository;
     private final ObjectMapper objectMapper;
 
     @Bean
@@ -37,15 +42,24 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+//                .logout(logout -> logout.disable()) //TODO: disable 수정필요 로그인과 일관성있게
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(200);
+                            response.setContentType("application/json");
+                            objectMapper.writeValue(response.getWriter(), ResponseDto.success());
+                        })
+                        .deleteCookies("REFRESH"))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(form -> form.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .authorizeHttpRequests(req -> req
-                        .requestMatchers(HttpMethod.GET, "/places,").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/places").hasRole("ADMIN")
                         .anyRequest().permitAll())
                 .addFilter(corsFilter)
                 .addFilterAt(new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider), JwtAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider, objectMapper), JwtAuthenticationFilter.class);
 
         return http.build();
     }

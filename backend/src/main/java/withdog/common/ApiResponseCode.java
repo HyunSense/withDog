@@ -17,7 +17,8 @@ public enum ApiResponseCode {
     NOT_EXIST_PLACE("NP", "Not Exist Place", 400),
     NOT_EXIST_CATEGORY("NC", "Not Exist Category", 400),
     CONTENTS_ERROR("CE", "Contents Error", 400),
-    NOT_FOUND_USER("NFU", "Not Found User", 400),
+    NOT_FOUND_MEMBER("NFM", "Not Found Member", 400),
+    NOT_FOUND_TOKEN("NT", "Not Found Token", 400),
 
     // 401
     LOGIN_FAILED("LF", "Login Failed", 401),

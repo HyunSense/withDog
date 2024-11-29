@@ -1,3 +1,5 @@
+
+
 spring:
   output:
     ansi:
@@ -34,3 +36,6 @@ logging:
         type:
           descriptor:
             sql: trace
+server:
+  address: 0.0.0.0 #외부접속허용
+  port: 8080

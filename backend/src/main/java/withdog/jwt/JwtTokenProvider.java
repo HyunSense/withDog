@@ -2,12 +2,14 @@ package withdog.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
+import withdog.common.TokenType;
 import withdog.entity.Member;
-import withdog.repository.MemberRepository;
 
 import java.util.Date;
 
@@ -63,6 +65,30 @@ public class JwtTokenProvider {
                 .getExpiresAt().toString();
     }
 
+    public String getTokenType(String token) {
+
+        return JWT.require(Algorithm.HMAC256(secretKey))
+//                .withClaim("tokenType",tokenType.name())
+                .build()
+                .verify(token)
+                .getClaim("tokenType")
+                .asString();
+    }
+
+    @Builder
+    public String createToken(Long memberId, String username, String role, TokenType tokenType) {
+
+        return JWT.create()
+                .withSubject("withDog")
+                .withClaim("tokenType", tokenType.name())
+                .withClaim("id", memberId)
+                .withClaim("username", username)
+                .withClaim("role", role)
+                .withIssuedAt(new Date(System.currentTimeMillis()))
+                .withExpiresAt(new Date(System.currentTimeMillis() + tokenType.getExpiration()))
+                .sign(Algorithm.HMAC256(secretKey));
+    }
+
     public String createAccessToken(Long id, String username, String role) {
 
         return JWT.create()
@@ -85,11 +111,19 @@ public class JwtTokenProvider {
                 .sign(Algorithm.HMAC256(secretKey));
     }
 
-    public void tokenValidation(String token) {
-        JWT.require(Algorithm.HMAC256(secretKey))
+    public void tokenValidation(String token, TokenType tokenType) {
+        DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC256(secretKey))
                 .withSubject("withDog")
                 .build()
                 .verify(token);
+
+        if (decodedJWT.getClaim("id").isMissing() ||
+            decodedJWT.getClaim("username").isMissing()||
+            decodedJWT.getClaim("role").isMissing() ||
+            decodedJWT.getClaim("tokenType").isMissing()) {
+
+            throw new JWTVerificationException("Token is missing required claims");
+        }
     }
 
     public Member createMemberFromToken(String token) {
