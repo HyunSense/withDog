@@ -7,7 +7,6 @@ import lombok.ToString;
 import withdog.dto.PlaceBlogDto;
 import withdog.dto.PlaceImageDto;
 import withdog.entity.Place;
-import withdog.util.StringFilter;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,9 +20,11 @@ public class PlaceDetailResponseDto {
     private Long id;
     private String name;
     private int price;
-    private String address;
+//    private String address;
+    private String addressPart1;
+    private String addressPart2;
     private String phone;
-    private String reservationLink;
+    private String reservationUrl;
 //    private long bookmarkCount;
     private List<PlaceImageDto> placeImages;
     private List<PlaceBlogDto> placeBlogs;
@@ -37,9 +38,11 @@ public class PlaceDetailResponseDto {
         this.name = place.getName();
         this.price = place.getPrice();
 //        this.address = place.getFullAddress();
-        this.address = StringFilter.addressSpecialWord(place.getAddressPart1()) + " " + place.getAddressPart2();
+//        this.address = StringFilter.addressSpecialWord(place.getAddressPart1()) + " " + place.getAddressPart2();
+        this.addressPart1 = place.getAddressPart1();
+        this.addressPart2 = place.getAddressPart2();
         this.phone = place.getPhone();
-        this.reservationLink = place.getReservationLink();
+        this.reservationUrl = place.getReservationUrl();
 //        this.bookmarkCount = place.getBookmarkCount();
 //        this.placeImages = placeImages;
 //        this.placeBlogs = placeBlogs;
@@ -49,7 +52,7 @@ public class PlaceDetailResponseDto {
                     .map(i -> PlaceImageDto.builder().placeImage(i).build()).collect(Collectors.toList());
 //        }
 //        if (!place.getPlaceBlogs().isEmpty()){
-            this.placeBlogs = place.getPlaceBlogs().stream()
+            this.placeBlogs = place.getPlaceBlogs().stream() // Lazy 로딩 발생
                     .map(b -> PlaceBlogDto.builder().placeBlog(b).build()).collect(Collectors.toList());
 //        }
     }

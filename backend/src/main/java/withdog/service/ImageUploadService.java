@@ -6,7 +6,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import withdog.dto.PlaceImageUploadDto;
 import withdog.dto.response.DataResponseDto;
 import withdog.dto.response.ResponseDto;
 
@@ -16,16 +18,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+//TODO: Transaction 처리?
 @Slf4j
 @Service
 public class ImageUploadService {
 
     private static final String UPLOAD_DIR = System.getProperty("user.dir")+"/uploads";
 
-    public List<String> saveLocal(List<MultipartFile> images) {
+    public List<PlaceImageUploadDto> saveLocal(List<MultipartFile> images) {
 
-        List<String> imageUrls = new ArrayList<>();
-
+//        List<String> imageUrls = new ArrayList<>();
+        List<PlaceImageUploadDto> uploadDtos = new ArrayList<>();
+        int position = 1;
         if (images != null && !images.isEmpty()) {
             for (MultipartFile image : images) {
                 // file:///D:/...
@@ -48,8 +52,14 @@ public class ImageUploadService {
                     log.info("File saved at: {}", destinationFile.getAbsolutePath());
 
 //                    imageUrls.add(destinationFile.toURI().toString());
-                    String imageUrl = "http://192.168.0.5:8080/uploads/" + uniqueFilename;
-                    imageUrls.add(imageUrl);
+                    String imageUrl = "/uploads/" + uniqueFilename;
+//                    imageUrls.add(imageUrl);
+                    log.info("image.getName = {}", image.getName());
+                    PlaceImageUploadDto dto = PlaceImageUploadDto.builder()
+                            .name(image.getOriginalFilename())
+                            .imagePosition(position++)
+                            .imageUrl(imageUrl).build();
+                    uploadDtos.add(dto);
                 } catch (IOException e) {
                     log.error("Error saving File: {}", image.getOriginalFilename(), e);
 //                    return 필요?,  throw CustomException 생성?
@@ -57,7 +67,7 @@ public class ImageUploadService {
             }
         }
 
-        return imageUrls;
+        return uploadDtos;
     }
 
 }

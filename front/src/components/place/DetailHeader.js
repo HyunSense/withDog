@@ -1,7 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
-import homeIcon from "../../assets/images/home.png";
-import bookmarkOff from "../../assets/images/bookmark-off.png";
-import bookmarkOn from "../../assets/images/bookmark-on.png";
+// import homeIcon from "../../assets/images/home.png";
+// import bookmarkOff from "../../assets/images/bookmark-off.png";
+// import bookmarkOn from "../../assets/images/bookmark-on.png";
+import homeIcon from "../../assets/images/home-98px.png";
+import bookmarkOff from "../../assets/images/bookmark-off-98px.png";
+import bookmarkOn from "../../assets/images/bookmark-on-98px.png";
 import PrevButton from "../common/PrevButton";
 import { AuthContext } from "../auth/AuthContextProvider";
 import * as S from "../../styles/DetailHeader.Styled";

@@ -24,6 +24,7 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
+  
   (response) => response, // 정상응답이라면 그대로 리턴
 
   async (error) => {

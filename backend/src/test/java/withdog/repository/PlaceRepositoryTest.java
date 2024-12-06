@@ -60,4 +60,20 @@ class PlaceRepositoryTest {
         }
 
     }
+
+    @Test
+    @DisplayName("Place join")
+    void join() {
+
+        Category findCategory = categoryRepository.findById(1).get();
+        String category = "camp";
+        Place place = placeRepository.findById(1L).get();
+
+//        Place joinPlace = placeRepository.findByIdWithPlaceImagesAndPlaceBlogs(1L);
+
+        System.out.println("place.getName() = " + place.getName());
+//        System.out.println("joinPlace.getName() = " + joinPlace.getName());
+//        System.out.println("joinPlace.getPlaceImages().get(0) = " + joinPlace.getPlaceImages().get(0).getName());
+
+    }
 }

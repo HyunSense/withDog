@@ -11,16 +11,20 @@ export const StyledHeader = styled.header`
 `;
 
 export const StyeldLogo = styled.img`
-  width: 135px;
-  height: auto;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 export const StyledLink = styled(Link)`
   /* all: inherit; */
+  width: 135px;
+  height: auto;
 `;
 
 export const StyledButton = styled.button`
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -43,6 +47,10 @@ export const StyledButtonText = styled.p`
 `;
 
 export const StyledUserInfoText = styled.p`
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 1.5px;
+  align-items: center;
   font-size: 1.4rem;
   font-weight: 500;
   color: #000000;
@@ -54,6 +62,14 @@ export const StyledMainPageLink = styled(Link)`
 `;
 
 export const StyledAuthBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  /* justify-content: flex-end; */
+  /* align-items: center; */
+  gap: 5px 0;
+`;
+
+export const StyledAuthButtonBox = styled.div`
   display: flex;
   align-items: center;
   gap: 0 3px;

@@ -6,12 +6,14 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLogin, setIsLogin] = useState(null);
+  // const [isLogin, setIsLogin] = useState(false);
   const [memberInfo, setMemberInfo] = useState({});
-  // const [loading, setLoading] = useState(true); // 이전코드
+  const [loading, setLoading] = useState(true); // 이전코드
   // const { setLoadingState } = useLoading(); // 수정해야할 코드
   const navigate = useNavigate();
 
   const loginSetting = () => {
+    console.log("loginSetting start");
     const token = localStorage.getItem("access_token");
     const storedMemberInfo = localStorage.getItem("member_info");
 
@@ -22,9 +24,11 @@ export const AuthProvider = ({ children }) => {
     } else {
       setIsLogin(false);
       setMemberInfo({});
+      localStorage.removeItem("member_info"); // 추가코드
     }
 
-    // setLoading(false); // 이전코드
+    setLoading(false); // 이전코드
+    console.log("loginSetting end");
   };
 
   const login = async (username, password) => {
@@ -81,7 +85,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isLogin, memberInfo, login, logout }} // loading 제거
+      value={{ isLogin, memberInfo, login, logout, loading }} // loading 제거
     >
       {children}
     </AuthContext.Provider>

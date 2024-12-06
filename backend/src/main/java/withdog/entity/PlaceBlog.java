@@ -16,7 +16,7 @@ public class PlaceBlog {
 
     // 하나의 장소는 여러개의 블로그 주소들을 가질수 있음 -> ManyToOne(다대일)
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id")
     private Place place;
 

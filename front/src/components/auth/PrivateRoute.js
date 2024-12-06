@@ -5,7 +5,10 @@ import Loading from "../common/Loading";
 
 const PrivateRoute = ({ roles }) => {
   const { isLogin, memberInfo, loading } = useContext(AuthContext);
-
+  // const { isLogin, memberInfo} = useContext(AuthContext);
+  console.log("PrivateRoute isLogin = ", isLogin);
+  console.log("PrivateRoute memberInfo = ", memberInfo);
+  // if (!memberInfo.role) {
   if (loading) {
     return <Loading />;
   }
@@ -21,7 +24,7 @@ const PrivateRoute = ({ roles }) => {
     return <Navigate to="/" />;
   }
 
-  return <Outlet />; //?
+  return <Outlet />; // <Route> 요소 내에서 자식 요소 랜더링할때 사용
 };
 
 export default PrivateRoute;

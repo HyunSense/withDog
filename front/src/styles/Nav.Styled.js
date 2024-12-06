@@ -33,3 +33,16 @@ export const StyeldNavIcon = styled.img`
   width: 100%;
   height: 100%;
 `;
+
+export const StyledNavAllIcon = styled.p`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.3rem;
+  letter-spacing: -0.1rem;
+  height: 100%;
+  font-weight: 600;
+  color: #022733;
+  /* color: #108fbd; */
+
+`

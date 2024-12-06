@@ -12,4 +12,3 @@ create table bookmarks
 create index place_id
     on bookmarks (place_id);
 
-INSERT INTO withdog.bookmarks (member_id, place_id) VALUES (2, 1);

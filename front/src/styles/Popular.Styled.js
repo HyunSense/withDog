@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const StyeldPopular = styled.section`
   padding: 0 15px;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 `;
 
 export const StyledPopularTitleBox = styled.div`

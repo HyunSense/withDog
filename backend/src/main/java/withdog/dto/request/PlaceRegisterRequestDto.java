@@ -37,7 +37,9 @@ public class PlaceRegisterRequestDto {
     @NotNull(message = "Not Blank Price")
     private int price;
 
-    private String reservationLink;
+    private String reservationUrl;
+
+    private String description;
 
     // Custom Validation Annotation
     @NotBlankElements(message = "Not Blank BlogUrls")
@@ -50,7 +52,7 @@ public class PlaceRegisterRequestDto {
     private List<String> imageUrls;
 
     @Builder
-    public PlaceRegisterRequestDto(String categoryName, String name, String phone, String addressPart1, String addressPart2, int price, String reservationLink, List<String> blogUrls, List<String> imageUrls) {
+    public PlaceRegisterRequestDto(String categoryName, String name, String phone, String addressPart1, String addressPart2, int price, String reservationUrl, List<String> blogUrls, List<String> imageUrls) {
 //        this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.name = name;
@@ -58,7 +60,7 @@ public class PlaceRegisterRequestDto {
         this.addressPart1 = addressPart1;
         this.addressPart2 = addressPart2;
         this.price = price;
-        this.reservationLink = reservationLink;
+        this.reservationUrl = reservationUrl;
         this.blogUrls = blogUrls;
         this.imageUrls = imageUrls;
     }
@@ -72,7 +74,7 @@ public class PlaceRegisterRequestDto {
                 .addressPart1(this.addressPart1)
                 .addressPart2(this.addressPart2)
                 .price(this.price)
-                .reservationLink(this.reservationLink)
+                .reservationUrl(this.reservationUrl)
                 .build();
     }
 }

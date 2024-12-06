@@ -19,9 +19,11 @@ public class PlaceImage {
 
     // 하나의 장소가 여러개의 이미지를 가질 수 있음
     @Setter
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id")
     private Place place;
+
+    private String name;
 
     private String imageUrl;
 
@@ -34,11 +36,19 @@ public class PlaceImage {
     private LocalDateTime updatedAt;
 
     @Builder
-    public PlaceImage(Place place, String imageUrl, int imagePosition) {
+    public PlaceImage(Place place, String name, String imageUrl, int imagePosition) {
 
         this.place = place;
+        this.name = name;
         this.imageUrl = imageUrl;
         this.imagePosition = imagePosition;
+    }
+
+    public void update(PlaceImage updatePlaceImage) {
+        this.place = updatePlaceImage.getPlace();
+        this.name = updatePlaceImage.getName();
+        this.imageUrl = updatePlaceImage.getImageUrl();
+        this.imagePosition = updatePlaceImage.getImagePosition();
     }
 
 //    public static PlaceImageDto toPlaceImageDto(PlaceImage placeImage) {

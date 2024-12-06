@@ -2,15 +2,18 @@ import React from "react";
 import DetailSlider from "./DetailSlider";
 import * as S from "../../styles/DetailMain.Styled";
 
+const handleCopyClipBoard = (text) => {
+  try {
+    navigator.clipboard.writeText(text);
+    alert("클립보드에 복사되었습니다.");
+  } catch (error) {
+    alert("클립보드 복사에 실패하였습니다.");
+  }
+};
+
 const DetailMain = ({ place }) => {
-  const handleCopyClipBoard = (text) => {
-    try {
-      navigator.clipboard.writeText(text);
-      alert("클립보드에 복사되었습니다.");
-    } catch (error) {
-      alert("클립보드 복사에 실패하였습니다.");
-    }
-  };
+  
+  const fullAddress = (`${place.addressPart1} ${place.addressPart2}`).trim();
 
   return (
     <S.StyledDetailMain>
@@ -20,17 +23,20 @@ const DetailMain = ({ place }) => {
           <S.StyledNameText>{place.name}</S.StyledNameText>
         </S.StyledDetailInfo>
         <S.StyledDetailInfo>
-          <S.StyledText>{place.address}</S.StyledText>
+          {/* <S.StyledText>{`${place.addressPart1} ${place.addressPart2}`.trim()}</S.StyledText> */}
+          <S.StyledText>{fullAddress}</S.StyledText>
           <S.StyledDetailInfo>
             <S.StyledDetailTextLink>
               <S.StyledActionText
-                onClick={() => handleCopyClipBoard(place.address)}
+                // onClick={() => handleCopyClipBoard(place.address)}
+                onClick={() => handleCopyClipBoard(fullAddress)}
               >
                 복사하기
               </S.StyledActionText>
             </S.StyledDetailTextLink>
             <S.StyledDetailTextLink
-              href={`https://map.naver.com/p/search/${place.address}`}
+              // href={`https://map.naver.com/p/search/${place.address}`}
+              href={`https://map.naver.com/p/search/${fullAddress}`}
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -52,7 +58,7 @@ const DetailMain = ({ place }) => {
         </S.StyledDetailInfo>
       </S.StyledDetailInfoBox>
       <S.StyledDetailReservationLink
-        href={place.reservationLink}
+        href={place.reservationUrl}
         target="_blank"
         rel="noopener noreferrer"
       >

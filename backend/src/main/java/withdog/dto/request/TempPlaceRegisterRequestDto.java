@@ -36,6 +36,8 @@ public class TempPlaceRegisterRequestDto {
 
     private String reservationUrl;
 
+    private String description;
+
     // Custom Validation Annotation
     @NotBlankElements(message = "Not Blank BlogUrls")
     @Size(max = 4, message = "BlogUrls can have at most {max} items")
@@ -51,7 +53,7 @@ public class TempPlaceRegisterRequestDto {
 
 
     @Builder
-    public TempPlaceRegisterRequestDto(String category, String name, String phone, String addressPart1, String addressPart2, int price, String reservationUrl, List<String> blogUrls) {
+    public TempPlaceRegisterRequestDto(String category, String name, String phone, String addressPart1, String addressPart2, int price, String reservationUrl, String description ,List<String> blogUrls) {
 //        this.categoryId = categoryId;
         this.category = category;
         this.name = name;
@@ -60,6 +62,7 @@ public class TempPlaceRegisterRequestDto {
         this.addressPart2 = addressPart2;
         this.price = price;
         this.reservationUrl = reservationUrl;
+        this.description = description;
         this.blogUrls = blogUrls;
 //        this.images = images;
     }
@@ -73,7 +76,8 @@ public class TempPlaceRegisterRequestDto {
                 .addressPart1(this.addressPart1)
                 .addressPart2(this.addressPart2)
                 .price(this.price)
-                .reservationLink(this.reservationUrl)
+                .description(this.description)
+                .reservationUrl(this.reservationUrl)
                 .build();
     }
 }

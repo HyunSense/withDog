@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import withdog.entity.Category;
+import withdog.entity.Member;
 import withdog.entity.Place;
 
 import java.util.List;
@@ -29,6 +30,12 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     @Query("select distinct p from Place p left join fetch p.category left join fetch p.placeImages where p.id = :id")
     Optional<Place> findByIdWithCategoryAndPlaceImages(@Param("id") Long id);
+
+    @Query("select p from Place p left join fetch p.category left join fetch p.bookmarks b where b.member = :member")
+    List<Place> findAllByMemberBookmarkedPlaces(Member member);
+
+//    @Query("select p from Place p left join fetch p.placeImages pi left join fetch p.placeBlogs")
+//    Place findByIdWithPlaceImagesAndPlaceBlogs(Long id);
 
 //    @Query("select p from Place p where p.category = :category order by p.hit, p.bookmarkCount desc")
 //    List<Place> findTop3ByCategory(Category category, Pageable pageable);

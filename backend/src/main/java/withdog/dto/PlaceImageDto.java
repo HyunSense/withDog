@@ -1,16 +1,16 @@
 package withdog.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import withdog.entity.PlaceImage;
 
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class PlaceImageDto {
 
+    private Long id;
+    private String name;
     private String imageUrl;
     private int imagePosition;
 
@@ -18,6 +18,8 @@ public class PlaceImageDto {
     @Builder
     public PlaceImageDto(PlaceImage placeImage) {
 
+        this.id = placeImage.getId();
+        this.name = placeImage.getName();
         this.imageUrl = placeImage.getImageUrl();
         this.imagePosition = placeImage.getImagePosition();
     }

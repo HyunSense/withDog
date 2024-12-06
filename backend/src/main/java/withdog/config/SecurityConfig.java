@@ -56,6 +56,8 @@ public class SecurityConfig {
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(HttpMethod.POST, "/places").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/places").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/places").hasRole("ADMIN")
                         .anyRequest().permitAll())
                 .addFilter(corsFilter)
                 .addFilterAt(new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)

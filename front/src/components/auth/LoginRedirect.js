@@ -1,15 +1,17 @@
 import { useContext } from "react";
 import { AuthContext } from "./AuthContextProvider";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-const LoginRedirect = ({ children }) => {
+const LoginRedirect = () => {
   const { isLogin } = useContext(AuthContext);
-
-  if (isLogin) {
+  console.log("LoginRedirect");
+  console.log("isLogin = ", isLogin);
+  if (isLogin === true) {
     return <Navigate to="/" />;
   }
 
-  return children;
+  // return children;
+  return <Outlet />;
 };
 
 export default LoginRedirect;

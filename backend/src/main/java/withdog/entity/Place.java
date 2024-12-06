@@ -22,7 +22,7 @@ public class Place {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
@@ -32,7 +32,7 @@ public class Place {
     private String addressPart1;
     private String addressPart2;
     private String phone;
-    private String reservationLink;
+    private String reservationUrl;
     private String description;
 
     @CreationTimestamp
@@ -41,15 +41,24 @@ public class Place {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    //TODO: orphanRemoval = true 고려
+    //TODO: orphanRemoval = true 고려, ALL, REMOVE 차이를 둔 이유?
     @BatchSize(size = 100)
-    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaceImage> placeImages = new ArrayList<>();
 
     @BatchSize(size = 100)
-    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaceBlog> placeBlogs = new ArrayList<>();
 
+    @BatchSize(size = 100)
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PlaceWeeklyStats> placeWeeklyStats = new ArrayList<>();
+
+    @BatchSize(size = 100)
+    @OneToMany(mappedBy = "place", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Bookmark> bookmarks = new ArrayList<>();
+
+    //TODO: 연관된 엔티티(PlaceBlog, PlaceImage) 에서는 Place Entity를 Setter로 사용해도되는지?
     public void addBlog(PlaceBlog placeBlog) {
         placeBlogs.add(placeBlog);
         placeBlog.setPlace(this);
@@ -65,9 +74,20 @@ public class Place {
         return addressPart1 + " " + addressPart2;
     }
 
+    public void update(Place updatePlace) {
+        this.category = updatePlace.getCategory();
+        this.name = updatePlace.getName();
+//        this.thumbnailUrl = place.getThumbnailUrl();
+        this.price = updatePlace.getPrice();
+        this.addressPart1 = updatePlace.getAddressPart1();
+        this.addressPart2 = updatePlace.getAddressPart2();
+        this.phone = updatePlace.getPhone();
+        this.reservationUrl = updatePlace.getReservationUrl();
+        this.description = updatePlace.getDescription();
+    }
 
     @Builder
-    public Place(Long id, Category category, String name, String thumbnailUrl, int price, String addressPart1, String addressPart2, String phone, String reservationLink, String description) {
+    public Place(Long id, Category category, String name, String thumbnailUrl, int price, String addressPart1, String addressPart2, String phone, String reservationUrl, String description) {
         this.id = id;
         this.category = category;
         this.name = name;
@@ -76,7 +96,7 @@ public class Place {
         this.addressPart1 = addressPart1;
         this.addressPart2 = addressPart2;
         this.phone = phone;
-        this.reservationLink = reservationLink;
+        this.reservationUrl = reservationUrl;
         this.description = description;
     }
 }

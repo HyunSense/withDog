@@ -2,6 +2,7 @@ package withdog.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -12,12 +13,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import withdog.config.auth.CustomUserDetails;
-import withdog.dto.request.PlaceRegisterRequestDto;
-import withdog.dto.request.TempPlaceRegisterRequestDto;
-import withdog.dto.response.DataResponseDto;
-import withdog.dto.response.PlaceDetailResponseDto;
-import withdog.dto.response.PlaceResponseDto;
-import withdog.dto.response.ResponseDto;
+import withdog.dto.PlaceFormUpdateRequestDto;
+import withdog.dto.request.*;
+import withdog.dto.response.*;
 import withdog.service.ImageUploadService;
 import withdog.service.PlaceService;
 
@@ -34,15 +32,15 @@ public class PlaceController {
     //TODO: 변경필요, Image Resizing 필요
     @PostMapping("/places")
 //    public ResponseEntity<ResponseDto> savePlace(@Valid @RequestBody PlaceRegisterRequestDto dto) {
-    public ResponseEntity<ResponseDto> savePlace(@Valid @RequestPart("placeData") TempPlaceRegisterRequestDto dto, @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+//    public ResponseEntity<ResponseDto> savePlace(@Valid @RequestPart("placeData") TempPlaceRegisterRequestDto dto, @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+    public ResponseEntity<ResponseDto> savePlace(@Valid @ModelAttribute PlaceFormRequestDto dto) {
 
         log.info("PlaceRegisterRequestDto: {}", dto);
-        log.info("images.size(): {}", images.size());
+//        log.info("images.size(): {}", images.size());
+//        ResponseDto responseBody = placeService.tempLocalSave(dto, images);
 
-        ResponseDto responseBody = placeService.tempLocalSave(dto, images);
-
+        ResponseDto responseBody = placeService.tempLocalSave2(dto);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
-//        return ResponseEntity.status(HttpStatus.OK).body(ResponseDto.success());
     }
 
     @GetMapping("/places")
@@ -61,10 +59,36 @@ public class PlaceController {
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
+    @PutMapping("/places/{id}")
+//    public ResponseEntity<ResponseDto> updatePlace(@PathVariable Long id, @Valid @RequestPart("placeData") TempPlaceUpdateRequestDto dto, @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+    public String updatePlace(@PathVariable Long id, @Valid @ModelAttribute PlaceFormUpdateRequestDto dto) {
+
+//        ResponseDto responseBody = placeService.update(id, dto, images);
+//        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+        log.info("PlaceUpdateRequestDto: {}", dto);
+        return "success";
+    }
+
+    @DeleteMapping("/places")
+    public ResponseEntity<ResponseDto> deletePlace(@RequestBody PlaceDeleteRequestDto dto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        log.info("PlaceDeleteRequestDto: {}", dto);
+        ResponseDto responseBody = placeService.delete(customUserDetails.getId(), dto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    }
+
     @GetMapping("/places/{id}/bookmarks/status")
     public ResponseEntity<ResponseDto> getBookmarkStatus(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long id) {
 
         ResponseDto responseBody = placeService.isBookmarked(customUserDetails.getId(), id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    }
+
+    @GetMapping("/places/bookmarks")
+    public ResponseEntity<ResponseDto> getAllBookmarks(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+
+        DataResponseDto<List<BookmarkedPlaceResponseDto>> responseBody = placeService.findAllBookmarkedPlace(customUserDetails.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
@@ -84,6 +108,14 @@ public class PlaceController {
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
+    @DeleteMapping("/places/bookmarks")
+    public ResponseEntity<ResponseDto> deleteSelectedBookmarks(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody SelectedBookmarkRequestDto dto) {
+
+        ResponseDto responseBody = placeService.deleteAllByIdBookmarks(customUserDetails.getId(), dto);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    }
+
     @GetMapping("/places/top3")
     public ResponseEntity<ResponseDto> getTop3Places(@RequestParam(required = false, name = "category") String category) {
 
@@ -91,4 +123,30 @@ public class PlaceController {
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
+
+    @PostMapping("/test")
+    public String testMapping(@RequestBody TestDto dto) {
+
+        log.info("dto = {}", dto);
+
+        return "success";
+    }
+
+    @ToString
+    public static class TestDto {
+        String name;
+        int age;
+
+        public TestDto() {
+        }
+
+        public String getName() {
+            return name;
+        }
+
+       public int getAge() {
+            return age;
+       }
+    }
 }
+
