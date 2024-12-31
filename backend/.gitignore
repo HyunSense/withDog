@@ -35,3 +35,14 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Custom ###
+# main
+/src/main/resources/application-db.yml
+/src/main/resources/application-aws.yml
+/src/main/resources/application-jwt.yml
+
+# test
+/src/test/resources/application-db.yml
+/src/test/resources/application-aws.yml
+/src/test/resources/application-jwt.yml

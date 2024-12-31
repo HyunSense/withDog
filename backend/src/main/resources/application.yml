@@ -1,20 +1,18 @@
-
-
 spring:
+  servlet:
+    multipart:
+      max-file-size: 2MB # 개별(단일)파일 크기 제한
+      max-request-size: 5MB # HTTP(Multipart/form-data) 요청 크기 제한
+
+  web:
+    resources:
+      # 정적 리소스 매핑 끄기
+      add-mappings: false
+  profiles:
+    include: aws, jwt, db
   output:
     ansi:
       enabled: always
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/withDog
-    username: root
-    password: "0000"
-  security:
-    user:
-      name: user
-      password: 1234
-  jwt:
-    secret: secretKey
   jpa:
     show-sql: false
     hibernate:
@@ -39,3 +37,5 @@ logging:
 server:
   address: 0.0.0.0 #외부접속허용
   port: 8080
+  tomcat:
+    connection-timeout: 15000

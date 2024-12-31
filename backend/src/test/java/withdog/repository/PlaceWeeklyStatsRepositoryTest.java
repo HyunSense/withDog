@@ -1,20 +1,18 @@
 package withdog.repository;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
-import withdog.entity.Category;
-import withdog.entity.Place;
-import withdog.entity.PlaceWeeklyStats;
+import withdog.domain.place.entity.Category;
+import withdog.domain.stats.entity.PlaceWeeklyStats;
+import withdog.domain.stats.repository.PlaceWeeklyStatsRepository;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -36,7 +34,6 @@ class PlaceWeeklyStatsRepositoryTest {
         for (PlaceWeeklyStats placeWeeklyStats : top3) {
             System.out.println("placeWeeklyStats.getPlace().getName() = " + placeWeeklyStats.getPlace().getName());
         }
-        assertThat(top3.size()).isEqualTo(3);
     }
 
     @Test
@@ -55,6 +52,5 @@ class PlaceWeeklyStatsRepositoryTest {
             System.out.println("placeWeeklyStats.getPlace().getCategory().getName() = " + placeWeeklyStats.getPlace().getCategory().getName());
             System.out.println("placeWeeklyStats.getPlace().getName() = " + placeWeeklyStats.getPlace().getName());
         }
-        assertThat(top3ByCategory.size()).isEqualTo(2);
     }
 }

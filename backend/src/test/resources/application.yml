@@ -1,18 +1,13 @@
 spring:
+  profiles:
+    include: aws, jwt
   output:
     ansi:
       enabled: always
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/withDog
-    username: root
-    password: "0000"
   security:
     user:
       name: user
       password: 1234
-  jwt:
-    secret: secretKey
   jpa:
     show-sql: false
     hibernate:
