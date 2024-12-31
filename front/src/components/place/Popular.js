@@ -3,8 +3,7 @@ import * as S from "../../styles/Popular.Styled";
 import trendingIcon from "../../assets/images/trending-icon.png";
 import PopularItems from "./PopularItems";
 import { useLocation } from "react-router-dom";
-import { getTop3Places } from "../apis/place";
-import Loading from "../common/Loading";
+import { getTop3Places } from "../../apis/place";
 
 const Popular = () => {
   const location = useLocation();

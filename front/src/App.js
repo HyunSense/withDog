@@ -1,21 +1,20 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import Container from "./components/Container";
-import LoginPage from "./pages/LoginPage";
-import SignupPage from "./pages/SignupPage";
-import HomePage from "./pages/HomePage";
-import DetailPage from "./pages/DetailPage";
+import LoginPage from "./components/pages/LoginPage";
+import SignupPage from "./components/pages/SignupPage";
+import HomePage from "./components/pages/HomePage";
+import DetailPage from "./components/pages/DetailPage";
+import BookmarkPage from "./components/pages/user/BookmarkPage";
+import AdminPage from "./components/pages/admin/AdminPage";
 import { AuthProvider } from "./components/auth/AuthContextProvider";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import LoginRedirect from "./components/auth/LoginRedirect";
 import { GlobalStyle, StyledBackground } from "./styles/GlobalStyle";
 import React from "react";
-import AdminPage from "./pages/admin/AdminPage";
 import AdminEdit from "./components/admin/AdminEdit";
-import AdminSave from "./components/admin/AdminSave";
-import BookmarkPage from "./pages/user/BookmarkPage";
 import NoLoginRedirect from "./components/auth/NoLoginRedirect";
 import AdminPlaceEdit from "./components/admin/AdminPlaceEdit";
-import AdminSave2 from "./components/admin/AdminSave2";
+import AdminSave from "./components/admin/AdminSave";
 
 function App() {
   return (
@@ -39,13 +38,10 @@ function App() {
             <Route element={<PrivateRoute roles={["ROLE_ADMIN"]} />}>
               <Route path="/admin" element={<AdminPage />}>
                 <Route index element={<Navigate to="edit" replace />} />
-                {/* <Route path="register" element={<AdminSave />} /> */}
                 <Route path="edit" element={<AdminEdit />} />
-                {/* <Route path="edit/:id" element={<AdminPlaceEdit />} /> */}
-                <Route path="register" element={<AdminSave2 />} />
+                <Route path="register" element={<AdminSave />} />
                 <Route path="edit/:id" element={<AdminPlaceEdit />} />
               </Route>
-              {/* <Route path="/admin/edit/:id" element={<AdminPlaceEditPage />} /> */}
             </Route>
             <Route
               path="/places/:category/:name/:id"

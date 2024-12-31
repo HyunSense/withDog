@@ -3,7 +3,6 @@ import styled from "styled-components";
 import Nav from "./Nav";
 import Popular from "../place/Popular";
 import PlaceList from "../place/PlaceList";
-import BookmarkPage from "../../pages/user/BookmarkPage";
 
 const StyledMain = styled.main``;
 

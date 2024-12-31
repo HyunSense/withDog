@@ -1,82 +1,117 @@
 import { useState } from "react";
 import * as S from "../../styles/AdminSave.Styled";
 import SaveImageUpload from "./SaveImageUpload";
-import SaveImageUpload2 from "./SaveImageUpload2";
 import Postcode from "./Postcode";
-import { blogsValidation } from "../validation/PlaceFormValidation.";
+import { blogsValidation } from "../../validation/PlaceFormValidation.";
+import usePlaceForm from "../../hooks/usePlaceForm";
 
 const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
   const [selected, setSelected] = useState(initValues.category || "camp");
-  const [values, setValues] = useState({
-    name: initValues.name || "",
-    phone: initValues.phone || "",
-    addressPart1: initValues.addressPart1 || "",
-    addressPart2: initValues.addressPart2 || "",
-    price: initValues.price || "",
-    reservationUrl: initValues.reservationUrl || "",
-    blogUrls: initValues.placeBlogs.map((blog) => blog.blogUrl) || ["", "", "", ""],
-  });
-
-  const [images, setImages] = useState(initValues.placeImages || []);
-  const [removedImages, setRemovedImages] = useState([]); // 추가코드
-
-  const handleTextInputChange = (e) => {
-    const { name, value } = e.target;
-
-    setValues((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleAddressChange = (address) => {
-    setValues((prev) => ({
-      ...prev,
-      addressPart1: address.addressPart1,
-      addressPart2: address.addressPart2,
-    }));
-  };
-
-  const handleBlogUrlChange = (e, index) => {
-    const { value } = e.target;
-    const newBlogUrls = [...values.blogUrls];
-    newBlogUrls[index] = value;
-
-    setValues((prev) => ({ ...prev, blogUrls: newBlogUrls }));
-  };
-
-  const handleImageChange = (newImages, removed) => {
-    setImages(newImages);
-    // setRemovedImages((prev) => [...prev, removedImages]);
-    if (removed.length > 0) {
-        setRemovedImages((prev) => [...prev, removed]);
-    }
-  };
+  const {
+    values,
+    images,
+    handleTextInputChange,
+    handleAddressChange,
+    handleBlogUrlChange,
+    handleImageChange,
+    removedImages,
+  } = usePlaceForm(initValues);
 
   //backend 서버단 image transaction 처리 생각
   // 별도의 ResponseDto 필요? blog, image
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    console.log("Images = ", images);
+    console.log("images = ", images);
     console.log("removedImages = ", removedImages);
+    
+    const formData = new FormData();
+    formData.append("category", selected);
+    formData.append("name", values.name);
+    formData.append("phone", values.phone);
+    formData.append("addressPart1", values.addressPart1);
+    formData.append("addressPart2", values.addressPart2);
+    formData.append("price", values.price);
+    formData.append("reservationUrl", values.reservationUrl);
+    const filteredblogUrls = values.blogUrls.filter((url) => url !== "");
+    formData.append("blogUrls", filteredblogUrls);
 
-    // const textFormData = {
-    //   ...values,
-    //   category: selected,
-    //   blogUrls: values.blogUrls.filter((url) => url !== ""),
-    // };
+    if (isEdit === true) {
+      // filter는 조건에 충족하는것만 거른다.
+      const imagePositions = images.map((image, index) => ({
+        id: image.id,
+        position: index,
+      }));
+      const filteredImagePositions = imagePositions.filter((image) => image.id);
 
-    // const formData = new FormData();
-    // images.forEach((image) => formData.append("images", image));
+      // imagePositions.forEach((image, index) => {
+      // filteredImagePositions.forEach((image, index) => {
+      //   formData.append(`updateImages.images[${index}].id`, image.id);
+      //   formData.append(
+      //     `updateImages.images[${index}].position`,
+      //     image.position
+      //   );
+      // });
 
-    // const jsonValues = JSON.stringify(textFormData);
-    // const blob = new Blob([jsonValues], { type: "application/json" });
-    // formData.append("placeData", blob);
+      filteredImagePositions.forEach((image, index) => {
+        formData.append(`updateImages[${index}].imageId`, image.id);
+        formData.append(`updateImages[${index}].imagePosition`, image.position);
+      })
 
-    // if(blogsValidation(textFormData.blogUrls)){
-    //     onSubmit(formData);
+      console.log("filteredImagePositions = ", filteredImagePositions);
 
+
+      const filteredRemovedImages = removedImages.filter((image) => image.id);
+      filteredRemovedImages.forEach((image, index) =>
+        formData.append(`updateImages.removedId[${index}]`, image.id)
+      );
+
+      filteredRemovedImages.forEach((image, index) => {
+        formData.append(`removedImageIds[${index}]`, image.id);
+      })
+
+      console.log("filteredRemovedImages = ", filteredRemovedImages);
+
+      // const newImages = images.filter((image) =>!("id" in image));
+      
+      // reduce 공부
+      const newImages = images.reduce((acc, image, index) => {
+        if (!("id" in image)) {
+          acc.push({name: image.name ,image: image, position: index });
+        }
+        return acc;
+      }, []);
+      newImages.forEach((image, index) => {
+        formData.append(`newImages[${index}].image`, image.image);
+        formData.append(`newImages[${index}].position`, image.position);
+        formData.append(`newImages[${index}].name`, image.name);
+      });
+      console.log("newImages = ", newImages);
+
+      console.log("===========================");
+
+      // setImages((prev) => [...prev]); //필요? 그냥 새로고침?
+      // submit할때 검증에서 실패하면 작성한 내용들이 그대로 다시 담겨있어야됨
+    } else {
+      images.forEach((image, index) => {
+        formData.append(`images[${index}].image`, image);
+        formData.append(`images[${index}].position`, index);
+        formData.append(`images[${index}].name`, image.name);
+      });
+    }
+
+    const entries = formData.entries();
+    for (const pair of entries) {
+      console.log(pair[0] + ": " + pair[1]);
+    }
+
+    //리펙토링 필요
+    // if (blogsValidation(filteredblogUrls)) {
+    //   onSubmit(formData);
     // } else {
     //   console.log("blogsValidation Failed");
-    // };
-
+    //   alert("블로그 주소 http://, https:// 는 필수입니다.")
+    // }
+    onSubmit(formData);
   };
 
   return (
@@ -106,8 +141,7 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
         </S.StyledCategoryBox>
         <S.StyledImageUploadBox>
           <S.StyledText>이미지등록(최대 5개)</S.StyledText>
-          {/* <SaveImageUpload images={images} onChange={handleImageChange} /> */}
-          <SaveImageUpload2 images={images} onChange={handleImageChange} />
+          <SaveImageUpload images={images} onChange={handleImageChange} />
         </S.StyledImageUploadBox>
         <S.StyledInputBox>
           <S.StyledText>이름</S.StyledText>

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { getPlace, updatePlaces } from "../apis/place";
+import { getPlace, updatePlaces } from "../../apis/place";
 import AdminPlaceForm from "./AdminPlaceForm";
-import AdminPlaceFormCopy from "./AdminPlaceForm copy"
 import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../common/Loading";
 
@@ -29,12 +28,17 @@ const AdminPlaceEdit = () => {
   }, [id]);
 
   const handleEdit = async (formData) => {
+    setLoading(true);
     try {
       const response = await updatePlaces(place.id, formData);
       console.log("Update Success: ", response);
-      // navigate("/admin/edit");
+      alert("수정 되었습니다.");
+      navigate("/admin/edit");
     } catch (error) {
       console.log("Update Failed: ", error);
+      alert("수정에 실패하였습니다.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,8 +47,7 @@ const AdminPlaceEdit = () => {
   }
 
   return (
-    <AdminPlaceFormCopy initValues={place} isEdit={true} onSubmit={handleEdit} />
-    // <AdminPlaceForm initValues={place} isEdit={true} onSubmit={handleEdit} />
+    <AdminPlaceForm initValues={place} isEdit={true} onSubmit={handleEdit} />
   );
 };
 

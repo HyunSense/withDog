@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getLogout, postLogin } from "../apis/auth";
+import { getLogout, postLogin } from "../../apis/auth";
 
 export const AuthContext = createContext();
 
@@ -46,7 +46,6 @@ export const AuthProvider = ({ children }) => {
       if (authorizationHeader) {
         const accessToken = authorizationHeader.replace("Bearer ", "");
         const memberInfo = {
-          id: loginResponse.id,
           username: loginResponse.username,
           role: loginResponse.role,
         };

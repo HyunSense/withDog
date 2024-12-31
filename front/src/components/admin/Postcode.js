@@ -7,9 +7,6 @@ const Postcode = ({ children, addressChange }) => {
   const open = useDaumPostcodePopup(scriptUrl);
 
   const handleComplete = (data) => {
-    // console.log("zoneCode = ", data.zonecode);
-    // console.log("sido = ", data.sido);
-    // console.log("sigungu = ", data.sigungu);
     let sido = data.sido;
     let sigungu = data.sigungu;
     let fullAddress = data.address;

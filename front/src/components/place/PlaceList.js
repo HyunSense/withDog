@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as S from "../../styles/PlaceList.Styled";
 import PlaceItems from "./PlaceItems";
 import { useLocation } from "react-router-dom";
-import { getAllPlaces } from "../apis/place";
+import { getAllPlaces } from "../../apis/place";
 
 const PlaceList = () => {
   const location = useLocation();

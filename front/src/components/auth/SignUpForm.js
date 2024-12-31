@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as S from "../../styles/SignUpForm.Styled";
-import { postSignUp } from "../apis/auth";
+import { postSignUp } from "../../apis/auth";
 
 // onChange의 useState 불필요 useRef 또는 초기화하여 사용할경우 e.target 사용
 const SignUpForm = () => {

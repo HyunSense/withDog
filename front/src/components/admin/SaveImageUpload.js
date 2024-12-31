@@ -5,7 +5,6 @@ import upDownIcon from "../../assets/images/up-down-98px.png";
 import * as S from "../../styles/SaveImageUpload.Styled";
 
 const RegisterImageUpload = ({ images, onChange }) => {
-  //   const [images, setImages] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
   const fileRef = useRef();
 
@@ -22,23 +21,23 @@ const RegisterImageUpload = ({ images, onChange }) => {
     }
 
     if (image) {
-      //   setImages([...images, image]);
-      onChange([...images, image]);
+     
+      onChange([...images, image], []);
     }
   };
 
   const handleRemoveImage = () => {
     if (selectedIndex !== null) {
       const updateImages = images.filter((_, index) => index !== selectedIndex);
-      //   setImages(updateImages); // 이부분만 전체로 덮어씌운다?
-      onChange(updateImages);
+      const removedId = images[selectedIndex].id;
+      onChange(updateImages, [{ id: removedId }]);
       setSelectedIndex(null);
     }
   };
 
   const handleSelectImage = (index) => {
     setSelectedIndex(index);
-  }; 
+  };
 
   const handleMoveUp = () => {
     if (selectedIndex !== null && selectedIndex > 0) {
@@ -48,8 +47,8 @@ const RegisterImageUpload = ({ images, onChange }) => {
         newImages[selectedIndex],
         newImages[selectedIndex - 1],
       ];
-      //   setImages(newImages);
-      onChange(newImages);
+      
+      onChange(newImages, []);
       setSelectedIndex(selectedIndex - 1);
     }
   };
@@ -61,8 +60,8 @@ const RegisterImageUpload = ({ images, onChange }) => {
         newImages[selectedIndex],
         newImages[selectedIndex + 1],
       ];
-      //   setImages(newImages);
-      onChange(newImages);
+      
+      onChange(newImages, []);
       setSelectedIndex(selectedIndex + 1);
     }
   };

@@ -2,12 +2,12 @@ import React, { useContext } from "react";
 import withDogLogoUpdate from "../../assets/images/withdog-logo-update.png";
 import { AuthContext } from "../auth/AuthContextProvider";
 import * as S from "../../styles/Header.Styled";
-import Loading from "./Loading";
+// import Loading from "./Loading";
 
 const Header = () => {
   const { isLogin, memberInfo, logout } = useContext(AuthContext); // loading 제거
-  console.log("Header isLogin = ", isLogin);
-  console.log("Header memberInfo = ", memberInfo);
+  // console.log("Header isLogin = ", isLogin);
+  // console.log("Header memberInfo = ", memberInfo);
 
   // if (!memberInfo) {
   //   return <Loading />;

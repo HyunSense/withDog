@@ -1,89 +1,8 @@
-import styled from "styled-components";
 import AdminEditItem from "./AdminEditItem";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { deletePlaces, getAllPlaces } from "../apis/place";
+import { deletePlaces, getAllPlaces } from "../../apis/place";
 import { useNavigate } from "react-router-dom";
-
-const StyledEditBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  background-color: #ffffff;
-`;
-
-const StyledEdit = styled.div`
-  height: 100%;
-  flex: 1 0 0px;
-  /* overflow: scroll; */
-  overflow-y: auto;
-  ::-webkit-scrollbar {
-    display: none;
-  }
-  scrollbar-width: none;
-`;
-
-const StyledCategoryBox = styled.div`
-  /* position: sticky; */
-  /* top: 48px; */
-  /* z-index: 1000; */
-  display: flex;
-  align-items: center;
-  padding: 15px 16px 15px 16px;
-  /* padding: 20px 10px 20px 10px; */
-  margin-bottom: 10px;
-  gap: 0 1px;
-  background-color: #ffffff;
-  border-top: 1px solid #eff2f2;
-  border-bottom: 1px solid #eff2f2;
-`;
-
-const StyledCategoryButton = styled.button`
-  cursor: pointer;
-  border: none;
-  background: none;
-  font-size: 1.4rem;
-  font-weight: 500;
-  border-radius: 8px;
-  color: ${({$isActive}) => ($isActive ? "#ffffff" : "#000000")};
-  background-color: ${({$isActive}) => ($isActive && "#022733")};
-  padding: 1px 7px;
-`;
-
-const StyledItemList = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 0 16px;
-  gap: 25px 0;
-  /* overflow: scroll;  */
-  background-color: #ffffff;
-`;
-
-const StyledRemoveButtonBox = styled.div`
-  position: sticky;
-  bottom: 0px;
-  width: 100%;
-  padding: 12px 16px 34px 16px;
-  border-top: 1px solid #eff2f2;
-  background-color: #ffffff;
-`;
-
-const StyledRemoveButton = styled.button`
-  display: flex;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.5rem;
-  font-weight: 600;
-  height: 48px;
-  color: #ffffff;
-  background-color: ${({ $isActive }) => ($isActive ? "#022733" : "#dde2e3")};
-  cursor: ${({ $isActive }) => $isActive && "pointer"};
-  /* #dde2e3 */
-  /* #61d377 */
-`;
+import * as S from "../../styles/AdminEdit.Styled";
 
 const AdminEdit = () => {
   const [places, setPlaces] = useState([]);
@@ -184,20 +103,20 @@ const AdminEdit = () => {
 
   return (
     <>
-      <StyledEditBox>
-        <StyledEdit>
-          <StyledCategoryBox>
-            <StyledCategoryButton $isActive={selectCategory === null} onClick={() => handleCategoryClick(null)}>
+      <S.StyledEditBox>
+        <S.StyledEdit>
+          <S.StyledCategoryBox>
+            <S.StyledCategoryButton $isActive={selectCategory === null} onClick={() => handleCategoryClick(null)}>
               전체
-            </StyledCategoryButton>
-            <StyledCategoryButton $isActive={selectCategory === "camp"} onClick={() => handleCategoryClick("camp")}>
+            </S.StyledCategoryButton>
+            <S.StyledCategoryButton $isActive={selectCategory === "camp"} onClick={() => handleCategoryClick("camp")}>
               캠핑
-            </StyledCategoryButton>
-            <StyledCategoryButton $isActive={selectCategory === "park"} onClick={() => handleCategoryClick("park")}>
+            </S.StyledCategoryButton>
+            <S.StyledCategoryButton $isActive={selectCategory === "park"} onClick={() => handleCategoryClick("park")}>
               공원
-            </StyledCategoryButton>
-          </StyledCategoryBox>
-          <StyledItemList>
+            </S.StyledCategoryButton>
+          </S.StyledCategoryBox>
+          <S.StyledItemList>
             {places.map((place) => (
               <AdminEditItem
                 key={place.id}
@@ -206,19 +125,19 @@ const AdminEdit = () => {
                 onChange={() => handleCheckboxChange(place.id)}
               />
             ))}
-          </StyledItemList>
+          </S.StyledItemList>
           {hasMore && <div ref={loadMoreRef}></div>}
-        </StyledEdit>
-      </StyledEditBox>
-      <StyledRemoveButtonBox>
-        <StyledRemoveButton
+        </S.StyledEdit>
+      </S.StyledEditBox>
+      <S.StyledRemoveButtonBox>
+        <S.StyledRemoveButton
           onClick={() => handleDelete()}
           $isActive={selectedItems.length > 0}
           disabled={selectedItems.length === 0}
         >
           장소 삭제
-        </StyledRemoveButton>
-      </StyledRemoveButtonBox>
+        </S.StyledRemoveButton>
+      </S.StyledRemoveButtonBox>
     </>
   );
 };
