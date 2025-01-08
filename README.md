@@ -80,9 +80,3 @@ Route 53 + CloudFront로 연계하여 ACM(SSL) 인증서를 통한 HTTPS 도메�
     - **ACM(AWS Certificate Manager)** 및 **Route 53**과의 연계를 통해 HTTPS 도메인을 간단히 설정할 수 있습니다.
 </details>
 
-
-<details>
-    <summary><b>Axios를 활용한 이유</b></summary><br/>
-</details>
-
-
