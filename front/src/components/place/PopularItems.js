@@ -1,5 +1,6 @@
 import React from "react";
 import * as S from "../../styles/PopularItems.Styled";
+import { PriceDisplay } from "./PriceDisplay";
 
 const PopularItems = ({ item, to }) => {
   return (
@@ -8,7 +9,9 @@ const PopularItems = ({ item, to }) => {
         <S.StyledPopularItemImg src={item.thumbnailUrl} alt="인기 장소" />
       </S.StyledPopularItemImgBox>
       <S.StyledNameText>{item.name}</S.StyledNameText>
-      <S.StyledPriceText>{item.price}원~</S.StyledPriceText>
+      <S.StyledPriceText>
+        <PriceDisplay price={item.price} />
+      </S.StyledPriceText>
       <S.StyledAddressText>{item.address}</S.StyledAddressText>
     </S.StyledPopularItemBox>
   );

@@ -18,6 +18,7 @@ export const StyledDetailInfo = styled.div`
   align-items: center;
   gap: 0 10px;
   margin: ${({ $margin }) => $margin};
+  white-space: nowrap;
 `;
 
 export const StyledDetailReservationLink = styled.a`
@@ -116,6 +117,7 @@ export const StyledText = styled.p`
   font-size: 1.4rem;
   font-weight: 500;
   color: #425354;
+  white-space: ${({ $whiteSpace }) => $whiteSpace};
 `;
 
 export const StyledPriceText = styled.p`

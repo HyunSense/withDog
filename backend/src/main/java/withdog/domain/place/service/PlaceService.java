@@ -17,17 +17,15 @@ import java.util.List;
 
 public interface PlaceService {
 
-    DataResponseDto<Slice<PlaceResponseDto>> findAllPlace(String category, Pageable pageable);
+    DataResponseDto<Slice<PlaceResponseDto>> findAllPlace(int categoryId, Pageable pageable);
 
     DataResponseDto<PlaceDetailResponseDto> findPlace(Long id);
 
     ResponseDto save(PlaceFormRequestDto dto);
 
-//    ResponseDto tempLocalSave(PlaceFormRequestDto dto);
-
     ResponseDto update(Long id, PlaceFormUpdateRequestDto dto);
 
     ResponseDto delete(Long memberId, PlaceDeleteRequestDto dto);
 
-    ResponseDto getTop3(String category);
+    ResponseDto getTop3(int categoryId);
 }

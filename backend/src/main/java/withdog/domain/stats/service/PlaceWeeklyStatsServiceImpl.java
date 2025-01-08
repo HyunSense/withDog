@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import withdog.domain.place.entity.Category;
 import withdog.domain.place.entity.Place;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
 import withdog.domain.stats.repository.PlaceWeeklyStatsRepository;
@@ -43,12 +42,12 @@ public class PlaceWeeklyStatsServiceImpl implements PlaceWeeklyStatsService {
     }
 
     @Override
-    public List<PlaceWeeklyStats> getTop3PlaceWeeklyStats(Category category, Pageable pageable) {
+    public List<PlaceWeeklyStats> getTop3PlaceWeeklyStats(int categoryId, Pageable pageable) {
 
-        if (category == null) {
+        if (categoryId == 0) {
             return placeWeeklyStatsRepository.findTop3(pageable);
         }
-        return placeWeeklyStatsRepository.findTop3ByCategory(category, pageable);
+        return placeWeeklyStatsRepository.findTop3ByCategoryId(categoryId, pageable);
     }
 
     private PlaceWeeklyStats getOrCreatePlaceWeeklyStats(Place place) {

@@ -6,10 +6,8 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLogin, setIsLogin] = useState(null);
-  // const [isLogin, setIsLogin] = useState(false);
   const [memberInfo, setMemberInfo] = useState({});
-  const [loading, setLoading] = useState(true); // 이전코드
-  // const { setLoadingState } = useLoading(); // 수정해야할 코드
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const loginSetting = () => {
@@ -24,10 +22,10 @@ export const AuthProvider = ({ children }) => {
     } else {
       setIsLogin(false);
       setMemberInfo({});
-      localStorage.removeItem("member_info"); // 추가코드
+      localStorage.removeItem("member_info");
     }
 
-    setLoading(false); // 이전코드
+    setLoading(false);
     console.log("loginSetting end");
   };
 
@@ -59,6 +57,9 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("로그인 오류:", error);
+      if (error.response.data.code === 'LF') {
+        alert("아이디 또는 비밀번호가 일치하지 않습니다.");
+      }
     } 
   };
 
@@ -69,8 +70,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("member_info");
 
     try {
-      const response = await getLogout();
-      console.log("response = ", response);
+      await getLogout();
       console.log("logout success");
       navigate("/");
     } catch (error) {
@@ -84,7 +84,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isLogin, memberInfo, login, logout, loading }} // loading 제거
+      value={{ isLogin, memberInfo, login, logout, loading }}
     >
       {children}
     </AuthContext.Provider>

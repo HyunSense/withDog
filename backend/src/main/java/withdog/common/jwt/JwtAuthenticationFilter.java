@@ -34,7 +34,6 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
 
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
-//    private final TokenRepository tokenRepository;
     private final ObjectMapper objectMapper;
 
     private static final String DEFAULT_LOGIN_REQUEST_URL = "/api/v1/login";
@@ -109,7 +108,7 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(60 * 60 * 24 * 3); // 단위 s
         cookie.setHttpOnly(true);
-//        cookie.setSecure(true); //TODO: 실제 배포, 도메인 연결시 CORS문제 체크
+        cookie.setSecure(true); //TODO: 실제 배포, 도메인 연결시 CORS문제 체크
         cookie.setPath("/");
 //        cookie.setDomain(); //서로 다른 도메인 일경우 체크 필요
         //Same-site: default Lax, post요청시 cookie가 필요하다면 RepsonseCookkie 객체를 통해 Same-site 변경 필요
@@ -122,7 +121,6 @@ public class JwtAuthenticationFilter extends AbstractAuthenticationProcessingFil
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
 
-        log.info("Authentication failed");
         log.error("Authentication failed: {}", failed.getMessage());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

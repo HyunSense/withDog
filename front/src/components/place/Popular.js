@@ -4,6 +4,7 @@ import trendingIcon from "../../assets/images/trending-icon.png";
 import PopularItems from "./PopularItems";
 import { useLocation } from "react-router-dom";
 import { getTop3Places } from "../../apis/place";
+import { CATEGORY_MAP } from "../../constants/categoryMap";
 
 const Popular = () => {
   const location = useLocation();
@@ -12,7 +13,6 @@ const Popular = () => {
 
   const [popularTitle, setPopularTitle] = useState();
   const [top3Places, setTop3Places] = useState([]);
-  // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const popularTitles = {
@@ -25,26 +25,23 @@ const Popular = () => {
 
     const getTop3 = async () => {
       try {
-        // setLoading(true);
-        const response = await getTop3Places({ category: category });
+        const categoryId = CATEGORY_MAP[category] ?? 0;
+        const response = await getTop3Places({ categoryId: categoryId });
+
         const top3Data = response.data.data;
         console.log("top3Data = ", top3Data);
         setTop3Places([...top3Data]);
+        
       } catch (error) {
         console.error("getTop3 error = ", error);
       } 
-      // finally {
-        // setLoading(false);
-      // }
+     
     };
 
     getTop3();
   }, [category]);
 
-  // if (loading) {
-  //   return <Loading />;
-  // }
-
+  
   return (
     <S.StyeldPopular>
       <S.StyledPopularTitleBox>

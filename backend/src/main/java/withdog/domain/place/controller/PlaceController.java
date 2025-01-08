@@ -2,7 +2,6 @@ package withdog.domain.place.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -11,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-//import withdog.aws.AwsFileService;
-import withdog.aws.AwsFileService;
 import withdog.common.config.auth.CustomUserDetails;
 import withdog.common.dto.response.DataResponseDto;
 import withdog.common.dto.response.ResponseDto;
@@ -21,14 +18,9 @@ import withdog.domain.bookmark.service.BookmarkService;
 import withdog.domain.place.dto.request.PlaceDeleteRequestDto;
 import withdog.domain.place.dto.request.PlaceFormRequestDto;
 import withdog.domain.place.dto.request.PlaceFormUpdateRequestDto;
-import withdog.domain.place.dto.response.BookmarkedPlaceResponseDto;
 import withdog.domain.place.dto.response.PlaceDetailResponseDto;
 import withdog.domain.place.dto.response.PlaceResponseDto;
-import withdog.domain.place.service.ImageUploadService;
 import withdog.domain.place.service.PlaceService;
-
-import java.io.IOException;
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -43,16 +35,16 @@ public class PlaceController {
     @PostMapping("/places")
     public ResponseEntity<ResponseDto> savePlace(@Valid @ModelAttribute PlaceFormRequestDto dto) {
 
-        log.info("PlaceRegisterRequestDto: {}", dto);
+        log.info("PlaceFormRequestDto: {}", dto);
 
         ResponseDto responseBody = placeService.save(dto);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
     @GetMapping("/places")
-    public ResponseEntity<DataResponseDto<Slice<PlaceResponseDto>>> getAllPlaces(@RequestParam(required = false ,name = "category") String category, @PageableDefault(size = 10) Pageable pageable) {
+    public ResponseEntity<DataResponseDto<Slice<PlaceResponseDto>>> getAllPlaces(@RequestParam(required = false, defaultValue = "0") int categoryId, @PageableDefault(size = 10) Pageable pageable) {
 
-        DataResponseDto<Slice<PlaceResponseDto>> responseBody = placeService.findAllPlace(category, pageable);
+        DataResponseDto<Slice<PlaceResponseDto>> responseBody = placeService.findAllPlace(categoryId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
@@ -122,9 +114,9 @@ public class PlaceController {
     }
 
     @GetMapping("/places/top3")
-    public ResponseEntity<ResponseDto> getTop3Places(@RequestParam(required = false, name = "category") String category) {
+    public ResponseEntity<ResponseDto> getTop3Places(@RequestParam(required = false, defaultValue = "0") int categoryId) {
 
-        ResponseDto responseBody = placeService.getTop3(category);
+        ResponseDto responseBody = placeService.getTop3(categoryId);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }

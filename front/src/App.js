@@ -14,7 +14,7 @@ import React from "react";
 import AdminEdit from "./components/admin/AdminEdit";
 import NoLoginRedirect from "./components/auth/NoLoginRedirect";
 import AdminPlaceEdit from "./components/admin/AdminPlaceEdit";
-import AdminSave from "./components/admin/AdminSave";
+import AdminPlaceSave from "./components/admin/AdminPlaceSave";
 
 function App() {
   return (
@@ -39,7 +39,7 @@ function App() {
               <Route path="/admin" element={<AdminPage />}>
                 <Route index element={<Navigate to="edit" replace />} />
                 <Route path="edit" element={<AdminEdit />} />
-                <Route path="register" element={<AdminSave />} />
+                <Route path="register" element={<AdminPlaceSave />} />
                 <Route path="edit/:id" element={<AdminPlaceEdit />} />
               </Route>
             </Route>

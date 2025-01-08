@@ -18,16 +18,13 @@ public interface PlaceWeeklyStatsRepository extends JpaRepository<PlaceWeeklySta
 
     Optional<PlaceWeeklyStats> findByPlaceAndWeekStartDate(Place place, LocalDate weekStartDate);
 
-//    @Query("select pw from PlaceWeeklyStats pw join fetch pw.place p join fetch p.category c order by pw.hitCount desc, pw.bookmarkCount * 2 desc")
-//    List<PlaceWeeklyStats> findTop3(Pageable pageable);
-
     @Query("select pw from PlaceWeeklyStats pw join fetch pw.place p join fetch p.category c where pw.weekStartDate = (select max(pw.weekStartDate) from PlaceWeeklyStats pw) order by pw.hitCount desc, pw.bookmarkCount * 2 desc")
     List<PlaceWeeklyStats> findTop3(Pageable pageable);
 
-//    @Query("select pw from PlaceWeeklyStats pw join fetch pw.place p join fetch p.category c where p.category = :category order by pw.hitCount desc, pw.bookmarkCount * 2 desc")
-//    List<PlaceWeeklyStats> findTop3ByCategory(Category category, Pageable pageable);
-
     @Query("select pw from PlaceWeeklyStats pw join fetch pw.place p join fetch p.category c where p.category = :category and pw.weekStartDate = (select max(pw.weekStartDate) from PlaceWeeklyStats pw) order by pw.hitCount desc, pw.bookmarkCount * 2 desc")
     List<PlaceWeeklyStats> findTop3ByCategory(Category category, Pageable pageable);
+
+    @Query("select pw from PlaceWeeklyStats pw join fetch pw.place p join fetch p.category c where c.id = :categoryId and pw.weekStartDate = (select max(pw.weekStartDate) from PlaceWeeklyStats pw) order by pw.hitCount desc, pw.bookmarkCount * 2 desc")
+    List<PlaceWeeklyStats> findTop3ByCategoryId(int categoryId, Pageable pageable);
 
 }

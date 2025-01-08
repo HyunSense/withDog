@@ -3,6 +3,7 @@ import * as S from "../../styles/PlaceList.Styled";
 import PlaceItems from "./PlaceItems";
 import { useLocation } from "react-router-dom";
 import { getAllPlaces } from "../../apis/place";
+import { CATEGORY_MAP } from "../../constants/categoryMap";
 
 const PlaceList = () => {
   const location = useLocation();
@@ -13,25 +14,6 @@ const PlaceList = () => {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const loadMoreRef = useRef(null);
-
-  // ============== image loading ==============
-  // const [loadedImages, setLoadedImages] = useState(0);
-  // const [loading, setLoading] = useState(true);
-  // const totalImages = places.length;
-  // console.log("totalImages = ", totalImages);
-
-  // const handleImageLoad = () => {
-  //   setLoadedImages((prev) => prev + 1);
-  // }
-
-  // useEffect(() => {
-  //   if (loadedImages === totalImages) {
-  //     setLoading(false);
-  //   }
-  // },[loadedImages, totalImages]);
-
-  // ============== image loading end==============
-
 
   useEffect(() => {
     setPlaces([]);
@@ -77,7 +59,8 @@ const PlaceList = () => {
 
   const fetchMorePlaces = async (page, category) => {
     try {
-      const response = await getAllPlaces({ page: page, category: category });
+      const categoryId = CATEGORY_MAP[category] ?? 0;
+      const response = await getAllPlaces({ page: page, categoryId: categoryId });
 
       const apiResponse = response.data;
       const slice = apiResponse.data;

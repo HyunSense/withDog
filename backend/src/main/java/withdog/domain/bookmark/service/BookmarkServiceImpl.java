@@ -92,6 +92,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         return ResponseDto.success();
     }
 
+    //TODO: byEntity가 아닌 byId로 수정필요
     @Override
     public ResponseDto deleteBookmark(Long memberId, Long placeId) {
 
@@ -109,6 +110,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         return ResponseDto.success();
     }
 
+    //TODO: byEntity가 아닌 byId로 수정필요
     @Override
     public ResponseDto deleteAllBookmarks(Long memberId, DeleteBookmarksRequestDto dto) {
 

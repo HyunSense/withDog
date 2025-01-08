@@ -11,8 +11,6 @@ import withdog.common.constant.ApiResponseCode;
 import withdog.common.dto.response.DataResponseDto;
 import withdog.common.dto.response.ResponseDto;
 import withdog.common.exception.CustomException;
-import withdog.domain.member.entity.Member;
-import withdog.domain.member.repository.MemberRepository;
 import withdog.domain.place.dto.PlaceNewImageDto;
 import withdog.domain.place.dto.PlaceUpdateImagesDto;
 import withdog.domain.place.dto.request.PlaceDeleteRequestDto;
@@ -22,7 +20,6 @@ import withdog.domain.place.dto.response.PlaceDetailResponseDto;
 import withdog.domain.place.dto.response.PlaceResponseDto;
 import withdog.domain.place.entity.Category;
 import withdog.domain.place.entity.Place;
-import withdog.domain.place.entity.PlaceImage;
 import withdog.domain.place.repository.CategoryRepository;
 import withdog.domain.place.repository.PlaceRepository;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
@@ -38,7 +35,6 @@ public class PlaceServiceImpl implements PlaceService {
 
     private final CategoryRepository categoryRepository;
     private final PlaceRepository placeRepository;
-    private final MemberRepository memberRepository;
 
     private final PlaceWeeklyStatsService placeWeeklyStatsService;
     private final PlaceImageService placeImageService;
@@ -46,17 +42,14 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Transactional(readOnly = true)
     @Override
-    public DataResponseDto<Slice<PlaceResponseDto>> findAllPlace(String category, Pageable pageable) {
+    public DataResponseDto<Slice<PlaceResponseDto>> findAllPlace(int categoryId, Pageable pageable) {
 
         Slice<Place> places;
 
-        if (category != null) {
-            Category findCategory = categoryRepository.findByName(category)
-                    .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY));
-            places = placeRepository.findAllPlacesByCategoryId(findCategory.getId(), pageable);
-
-        } else {
+        if (categoryId == 0) {
             places = placeRepository.findAllPlaces(pageable);
+        } else {
+            places = placeRepository.findAllPlacesByCategoryId(categoryId, pageable);
         }
 
         Slice<PlaceResponseDto> dto = PlaceResponseDto.fromEntitySlice(places);
@@ -77,9 +70,11 @@ public class PlaceServiceImpl implements PlaceService {
         return DataResponseDto.success(dto);
     }
 
+    // 유저 인증, 권한 Spring Security 위임
     @Override
     public ResponseDto save(PlaceFormRequestDto dto) {
 
+        //TODO: findByName -> findById 변경 필요
         Category category = categoryRepository.findByName(dto.getCategory())
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY));
         Place place = dto.toEntity(category);
@@ -100,12 +95,11 @@ public class PlaceServiceImpl implements PlaceService {
         return ResponseDto.success();
     }
 
-    //TODO: PUT or PATCH ?
-    //TODO: Entity update 메서드 필요? or Builder 생성자 그대로 사용?
+    // 유저 인증, 권한 Spring Security 위임
     @Override
     public ResponseDto update(Long id, PlaceFormUpdateRequestDto dto) {
 
-        //TODO: 꼭 findByName으로 유효성 검사를 해야하는지
+        //TODO: findByName -> findById 변경 필요
         Category category = categoryRepository.findByName(dto.getCategory())
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY));
 
@@ -127,7 +121,6 @@ public class PlaceServiceImpl implements PlaceService {
         // TODO: 삭제한다면 어떻게 할것인지?
 
         List<PlaceUpdateImagesDto> updateImages = dto.getUpdateImages(); // 수정된 이미지의 id 와 position
-        List<PlaceImage> placeImages = place.getPlaceImages();
 
         if (updateImages != null && !updateImages.isEmpty()) {
             placeImageService.update(place, updateImages);
@@ -146,22 +139,12 @@ public class PlaceServiceImpl implements PlaceService {
         return ResponseDto.success();
     }
 
+    // 유저 인증, 권한 Spring Security 위임
     @Override
     public ResponseDto delete(Long memberId, PlaceDeleteRequestDto dto) {
-        //TODO: 검증은 security에서 하기때문에? 필요없다? jwt 토큰의 유효성만으로는 안전하지않기때문에 한번더 검증?
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_MEMBER));
 
-        //TODO: role enum 리펙토링 필요
-        String role = member.getRole();
-
-        //TODO: 여기까지 코드가 도달한다?
-        if (!role.equals("ROLE_ADMIN")) {
-            throw new CustomException(ApiResponseCode.ACCESS_DENIED);
-        };
         //TODO: 벌크로 삭제하는것이 좋을지, 반복문으로 하나씩 삭제하는것이 좋을지
         //TODO: deleteAll, deleteAllbyId 모두 내부적으로 select 조회를한다. 추가적으로 검증이 필요하다면 findById작성 아니라면 작성X
-
         placeRepository.deleteAllById(dto.getIds());
 
         return ResponseDto.success();
@@ -170,18 +153,12 @@ public class PlaceServiceImpl implements PlaceService {
     //TODO: toList(), Arrays.asList, Collectors.toList() 어떤것을 사용할지
     @Transactional(readOnly = true)
     @Override
-    public ResponseDto getTop3(String category) {
+    public ResponseDto getTop3(int categoryId) {
 
         int pageNumber = 0;
         int pageSize = 3;
 
-        Category findCategory = null;
-        if (category != null) {
-            findCategory = categoryRepository.findByName(category)
-                    .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY));
-        }
-
-        List<PlaceWeeklyStats> placeWeeklyStatsList = placeWeeklyStatsService.getTop3PlaceWeeklyStats(findCategory, PageRequest.of(pageNumber, pageSize));
+        List<PlaceWeeklyStats> placeWeeklyStatsList = placeWeeklyStatsService.getTop3PlaceWeeklyStats(categoryId, PageRequest.of(pageNumber, pageSize));
         List<PlaceResponseDto> top3 = PlaceResponseDto.fromEntityList(placeWeeklyStatsList);
 
         return DataResponseDto.success(top3);
