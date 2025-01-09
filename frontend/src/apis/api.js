@@ -1,10 +1,8 @@
 import axios from "axios";
 
-
-//json. proxy 추가하는것과 차이?
 const api = axios.create({
-  // baseURL: "https://api.withdog.store/api/v1",
-  baseURL: "http://localhost:8080/api/v1",
+  baseURL: "https://api.withdog.store/api/v1",
+  // baseURL: "http://localhost:8080/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
