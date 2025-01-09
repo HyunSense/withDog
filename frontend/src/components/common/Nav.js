@@ -1,7 +1,6 @@
 import React from "react";
 import campIcon from "../../assets/images/camp-icon.png";
 import parkIcon from "../../assets/images/park-icon.png";
-import allIcon from "../../assets/images/all-150px.png";
 import { useNavigate } from "react-router-dom";
 import * as S from "../../styles/Nav.Styled";
 
@@ -17,7 +16,6 @@ const Nav = () => {
     <S.StyledNav>
       <S.StyeldNavItemBox>
         <S.StyeldNavIconBox onClick={() => navigate("/places")}>
-          {/* <S.StyeldNavIcon src={allIcon}/> */}
           <S.StyledNavAllIcon>ALL</S.StyledNavAllIcon>
         </S.StyeldNavIconBox>
         <S.StyeldNavIconText>전체</S.StyeldNavIconText>
