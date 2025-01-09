@@ -21,16 +21,20 @@ jobs:
           node-version: "20.x"
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          cd frontend
+          npm install
 
       - name: Run build
-        run: npm run build
+        run: |
+          cd frontend
+          npm run build
 
       - name: Upload react build artifact
         uses: actions/upload-artifact@v4
         with:
           name: React build artifact
-          path: ./build
+          path: ./frontend/build
 
   deploy:
     runs-on: ubuntu-latest
@@ -50,7 +54,7 @@ jobs:
 
       - name: Deploy to S3
         run: |
-          aws s3 sync ./build s3://withdog-react-web --delete
+          aws s3 sync ./frontend/build s3://withdog-react-web --delete
 
       - name: Invalidate CloudFront cache
         run: |
