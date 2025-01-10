@@ -56,7 +56,7 @@ const AdminEdit = () => {
 
   useEffect(() => {
     const observer = new IntersectionObserver(onIntersection, { threshold: 1 });
-
+    // cleanUp 함수 필요
     if (loadMoreRef.current) {
       observer.observe(loadMoreRef.current);
     }
