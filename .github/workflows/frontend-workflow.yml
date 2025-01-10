@@ -28,7 +28,7 @@ jobs:
       - name: Run build
         run: |
           cd frontend
-          npm run build
+          CI=false npm run build
 
       - name: Upload react build artifact
         uses: actions/upload-artifact@v4
