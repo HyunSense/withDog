@@ -1,7 +1,7 @@
 name: CI/CD withdog FrontEnd workflow
 
 on:
-  pull_request:
+  push:
     branches:
       - main
     paths:
