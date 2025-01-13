@@ -54,11 +54,20 @@ jobs:
       - name: List files in build/libs
         run: ls ./backend/build/libs
 
-      - name: Upload jar build artifact
+      - name: Create ZIP package with all files
+        run: |
+          mkdir deploy-package
+          cp ./backend/build/libs/withDog-0.0.1-SNAPSHOT.jar deploy-package/
+          cp -r ./backend/scripts deploy-package/
+          cp ./backend/appspec.yml deploy-package/ 
+
+          zip -r ./deploy-package.zip deploy-package/
+
+      - name: Upload ZIP artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Jar build artifact
-          path: ./backend/build/libs/withdog-0.0.1-SNAPSHOT.jar
+          name: ZIP artifact
+          path: ./deploy-package.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -66,10 +75,13 @@ jobs:
     needs: build
 
     steps:
-      - name: Download build artifact
+      - name: Download ZIP artifact
         uses: actions/download-artifact@v4
         with:
-          name: Jar build artifact
+          name: ZIP artifact
+
+      - name: List files in Current Directory
+        run: ls ./
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -77,3 +89,15 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
+
+      - name: Upload to S3 (ZIP package)
+        run: |
+           aws s3 cp deploy-package.zip s3://withdog-deploy/
+
+      - name: Start CodeDeploy deployment
+        run: |
+          aws deploy create-deployment \
+            --application-name withdog \
+            --deployment-group-name withdog-deploy-group \
+            --s3-location bucket=withdog-deploy,bundleType=zip,key=deploy-package.zip \
+            --region ap-northeast-2
