@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Jar build artifact
-          path: ./backend/build/libs/withdog-0.0.1-SNAPSHOT.jar
+          path: ./backend/build/libs/withDog-0.0.1-SNAPSHOT.jar
 
   deploy:
     runs-on: ubuntu-latest
