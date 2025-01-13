@@ -43,10 +43,13 @@ jobs:
           echo "${{secrets.APPLICATION_DB_YML}}" > application-db.yml
           cat application-db.yml
 
-      - name: Run build with gradle
+      - name: Grant execute permission to gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with gradle
         run: |
           cd backend
-          ./gradlew build -x test
+          ./gradlew clean build -x test
 
       - name: Upload jar build artifact
         uses: actions/upload-artifact@v4
