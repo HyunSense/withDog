@@ -8,7 +8,4 @@ JAR_FILE="$APP_DIR/withDog-0.0.1-SNAPSHOT.jar"
 echo "Starting the application..."
 nohup java -jar $JAR_FILE > $APP_DIR/app.log 2>&1 &
 
-# 실시간 로그 출력
-tail -f $APP_DIR/app.log &
-
 echo "Application started successfully."
