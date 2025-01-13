@@ -47,7 +47,9 @@ jobs:
         run: chmod +x ./backend/gradlew
 
       - name: Build with gradle
-        run: ./backend/gradlew clean build -x test
+        run: |
+          cd ./backend
+          ./gradlew clean build -x test
 
       - name: Upload jar build artifact
         uses: actions/upload-artifact@v4
