@@ -1,0 +1,74 @@
+name: CI/CD withdog BackEnd workflow
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+
+      - name: Create application-aws.yml
+        run: |
+          cd backend/src/main/resources
+          touch application-aws.yml
+          echo "${{secrets.APPLICATION_AWS_YML}}" > application-aws.yml
+          cat application-aws.yml
+
+      - name: Create application-jwt.yml
+        run: |
+          cd backend/src/main/resources
+          touch application-jwt.yml
+          echo "${{secrets.APPLICATION_JWT_YML}}" > application-jwt.yml
+          cat application-jwt.yml
+
+      - name: Create application-db.yml
+        run: |
+          cd backend/src/main/resources
+          touch application-db.yml
+          echo "${{secrets.APPLICATION_DB_YML}}" > application-db.yml
+          cat application-db.yml
+      
+      - name: Run build with gradle
+        run: |
+          cd backend
+          ./gradlew build -x test
+      
+      - name: Upload jar build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Jar build artifact
+          path: ./backend/build/libs/withdog-0.0.1-SNAPSHOT.jar
+  
+  deploy:
+    runs-on: ubuntu-latest
+
+    needs: build
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Jar build artifact
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      
