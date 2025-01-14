@@ -20,41 +20,44 @@
 - CDN 최적화를 통한 빠른 이미지 로드 (CloudFront + S3)
 - ServerLess S3 정적 웹 호스팅을 통한 무중단 배포
 - JWT 인증을 활용한 사용자 로그인 및 권한 관리
-- Google, Kakao 소셜 로그인
-- 반려견 동반 가능 장소 검색 및 카테고리 분류 (-------------------- 수정 필요)
+- ~~Google, Kakao 소셜 로그인~~
+- ~~반려견 동반 가능 장소 검색 및 카테고리 분류 (-------------------- 수정 필요)~~
 - 북마크 기능을 통한 사용자만의 장소 관리
 - **관리자** 인증을 통한 장소 등록,수정,삭제
-- **관리자** 블로그 URL로 스크래핑(크롤링)을 통한 장소에 관한 블로그 이미지,제목,내용 등록
+- **관리자** 인증을 통한 블로그 URL로 스크래핑(크롤링)을 통한 장소에 관한 블로그 이미지,제목,내용 등록
 
 ## 기술 스택
 ### 프론트엔드
 
-- React 18.3: 함수형 컴포넌트, Hooks를 활용한 SPA 구축
-- React Router: 페이지 라우팅
-- React Context Api: 상태 전역관리 (로그인 정보)
-- Styled-Component: 컴포넌트와 CSS를 결합해, 재사용 가능한 스타일링과 동적 스타일 처리를 구현 (CSS-in-JS 방식)
+- **React 18.3:** 함수형 컴포넌트, Hooks를 활용한 SPA 구축
+- **React Router:** 페이지 라우팅
+- **React Context Api:** 상태 전역관리 (로그인 정보)
+- **Styled-Component:** 컴포넌트와 CSS를 결합해, 재사용 가능한 스타일링과 동적 스타일 처리를 구현 (CSS-in-JS 방식)
 
 ### 백엔드
 
-- Spring Boot 3.3.4: RESTful API 구축
-- Spring Security 6.3.3: JWT 인증, 권한 관리 및 보안
-- Spring Data JPA: MySQL 연동, 데이터베이스 ORM 처리
-- Jsoup: 추가 수정 필요 --------------------
+- **Spring Boot 3.3.4:** RESTful API 구축
+- **Spring Security 6.3.3:** JWT 인증, 권한 관리 및 보안
+- **Spring Data JPA:** MySQL 연동, 데이터베이스 ORM 처리
+- **Jsoup:** Open Graph 속성을 통해 블로그 메타데이터 추출
 
 ### 데이터베이스
 
-- MySQL 8.0.4: 데이터베이스 설계, 쿼리 최적화
+- **MySQL 8.0.4:** 데이터베이스 설계, 쿼리 최적화
 
 ### 서버 환경
 
-- Nginx 1.24: 리버스 프록시 (Https 환경)
-- AWS Services
-    - Route 53: DNS 관리 및 도메인 설정
-    - ACM: Route 53 + CloudFront의 SSL 인증서 관리
-    - CloudFront: CDN을 통한 정적 이미지 파일 배포, 정적 웹 배포
-    - S3: 이미지 업로드, 정적 웹 업로드 (Serverless)
-    - EC2: SpringBoot Application, Nginx 서버 호스팅
+- **Nginx 1.24:** 리버스 프록시로 HTTPS 환경 구성
+- **AWS Services**
+    - Route 53: DNS 관리 및 사용자 지정 도메인 설정
+    - ACM: SSL 인증서 관리로 HTTPS 보안 연결 제공
+    - CloudFront: CDN을 통한 정적 이미지 파일 및 웹 배포, 캐싱 최적화
+    - S3: 정적 웹 파일 및 이미지 업로드 (Serverless)
+    - EC2: SpringBoot Application과 Nginx 서버 호스팅
     - RDS: MySQL 데이터베이스 호스팅
+ - **CI/CD**
+    - Github Actions: 자동화된 빌드, 배포 파이프라인 구현
+    - AWS CodeDeploy: EC2에 Spring Boot 애플리케이션 배포 자동화
 
 ## RestAPI 명세서
 [명세서 링크](https://hyunsense.notion.site/withDog-REST-API-16f05c7d6d428074803dfe50880ea054?pvs=4)
