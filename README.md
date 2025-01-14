@@ -1,5 +1,8 @@
 # WithDog - 반려견과 함께, 어디든지!
 
+## 도메인 주소
+### https://www.withdog.store
+
 ## 프로젝트 정보
 ### 소개 
 반려견과 함께 여행하거나 특별한 시간을 보내고자 하는 반려인들을 위해, 반려견 동반 가능한 캠핑장, 전용 공원, 펜션 등의 정보를 제공합니다.
@@ -15,6 +18,31 @@
 
 ![admin](https://github.com/user-attachments/assets/ed887958-9a99-454b-b3e1-0111a86d55a2)<br>장소 등록 및 수정 |
 ---|
+
+## RestAPI 명세서
+### [명세서 링크](https://hyunsense.notion.site/withDodg-RESTapi-17b05c7d6d42802cae8bccaff7fca8c6?pvs=4)
+기능|메서드|URL
+----|---|----|
+로그인 | POST | /api/v1/login
+로그아웃 | GET | /api/v1/logout
+회원가입 | POST | /api/v1/members
+장소 전체 조회 | GET | /api/v1/plaecs?category=${category}&page=${page}&size=${size}
+장소 상세 조회 | GET | /api/v1/places/${id}
+장소 등록 | POST | /api/v1/places
+장소 수정 | PUT | /api/v1/places
+장소 삭제 | DELETE | /api/v1/places
+북마크 상태 조회 | GET | /api/v1/places/${id}/boormarks/status
+북마크 목록 조회 | GET | /api/v1/places/bookmarks
+북마크 목록 삭제 | DELETE | /api/v1/places/bookmarks
+북마크 등록 | POST | /api/v1/places/${id}/bookmarks
+북마크 삭제 | DELETE | /api/v1/places/${id}/bookmarks
+상위 TOP3 조회 | GET | /api/v1/places/top3
+
+## ERD
+![withdog-erd](https://github.com/user-attachments/assets/be45682b-dd09-4c5d-8581-12899f0517a5)
+
+## 아키텍처
+![architecture](https://github.com/user-attachments/assets/45c5d72b-9bac-4c6d-8467-89b299bcbfe9)
 
 ## 주요기능 (추가작성 필요)
 - CDN 최적화를 통한 빠른 이미지 로드 (CloudFront + S3)
@@ -58,39 +86,3 @@
  - **CI/CD**
     - Github Actions: 자동화된 빌드, 배포 파이프라인 구현
     - AWS CodeDeploy: EC2에 Spring Boot 애플리케이션 배포 자동화
-
-## RestAPI 명세서
-[명세서 링크](https://hyunsense.notion.site/withDog-REST-API-16f05c7d6d428074803dfe50880ea054?pvs=4)
-
-## ERD
-![withdog-erd](https://github.com/user-attachments/assets/be45682b-dd09-4c5d-8581-12899f0517a5)
-
-## 아키텍처
-![architecture](https://github.com/user-attachments/assets/4ebd95a4-4622-46de-9614-1c28d2fced7e)
-
-
-### 세부사항
-#### FrontEnd
-AWS S3의 정적 웹 호스팅 기능을 사용하여 React Application을 배포하였습니다. <br/>
-Axios로 비동기 통신을 하였고, 이미지 요청은 CloudFront + S3를 사용하였습니다. <br/>
-CDN 방식의 CloudFront를 통해 S3에 저장되어있는 이미지를 빠르게 로드할 수 있으며, 캐싱 기능을 통해
-S3 의 요청부담을 감소시킬수 있었습니다. <br/>
-Route 53 + CloudFront로 연계하여 ACM(SSL) 인증서를 통한 HTTPS 도메인 환경을 구축하였습니다.
-
-<details>
-    <summary><b>S3를 선택한 이유</b></summary><br/>
-    Nginx와 S3 두 가지 배포 방식을 고민했으나, S3가 개인적으로 더 적합하다고 판단하였습니다.
-
-<br/>
-
-1. **서버 관리 부담 최소화**
-    - Nginx를 사용하려면 EC2에 별도로 Nginx를 설치하고 설정해야 합니다. <br/> 
-    현재 프리티어를 사용 중이므로, 메모리와 CPU 사용량에 대한 부담을 고려하여 S3를 선택하였습니다.
-
-2. **간단한 설정**
-    - Nginx는 설치 및 설정 과정이 복잡하지만, S3는 Serverless 방식으로 서버를 유지할 필요 없이 빌드 파일을<br/> 업로드하면 즉시 웹 호스팅이 가능합니다.
-
-3. **AWS의 다른서비스(CloudFront, Route 53, ACM)와 연계 및 HTTPS 설정**
-    - 손쉽게 AWS의 CloudFront와 연계하여 CDN 방식으로 캐싱 및 데이터 전송 최적화를 통해 더 빠르게 웹페이지를 로드할 수 있습니다.
-    - **ACM(AWS Certificate Manager)** 및 **Route 53**과의 연계를 통해 HTTPS 도메인을 간단히 설정할 수 있습니다.
-</details>
