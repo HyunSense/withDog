@@ -1,3 +1,4 @@
+![withDog-logo-192x192](https://github.com/user-attachments/assets/bd412edd-d0c7-4dc8-b294-445dbcb2d57a) 
 # WithDog - 반려견과 함께, 어디든지!
 
 ## 도메인 주소
