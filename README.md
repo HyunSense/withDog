@@ -3,10 +3,18 @@
 ## 프로젝트 정보
 ### 소개 
 반려견과 함께 여행하거나 특별한 시간을 보내고자 하는 반려인들을 위해, 반려견 동반 가능한 캠핑장, 전용 공원, 펜션 등의 정보를 제공합니다.
+
 ### 인원
 1명
 ### 프로젝트 기간
 2024-11 ~ 현재 (개발 진행 중)
+
+### 시연 영상
+![place-list](https://github.com/user-attachments/assets/6ff21f6c-b40c-469d-8025-f43a16ab2e37)<br>장소 목록 | ![place-detail](https://github.com/user-attachments/assets/75e1c64e-6add-4b72-a591-878c1fb3589e)<br>장소 상세정보 | ![place-bookmark](https://github.com/user-attachments/assets/1f673794-3eb4-4f8f-8a19-7be4342d6949)<br>장소 북마크
+---|---|---|
+
+![admin](https://github.com/user-attachments/assets/ed887958-9a99-454b-b3e1-0111a86d55a2)<br>장소 등록 및 수정 |
+---|
 
 ## 주요기능 (추가작성 필요)
 - CDN 최적화를 통한 빠른 이미지 로드 (CloudFront + S3)
@@ -49,10 +57,14 @@
     - RDS: MySQL 데이터베이스 호스팅
 
 ## RestAPI 명세서
-[api 링크]
+[명세서 링크](https://hyunsense.notion.site/withDog-REST-API-16f05c7d6d428074803dfe50880ea054?pvs=4)
+
+## ERD
+![withdog-erd](https://github.com/user-attachments/assets/be45682b-dd09-4c5d-8581-12899f0517a5)
 
 ## 아키텍처
-[아키텍처 그림]
+![architecture](https://github.com/user-attachments/assets/4ebd95a4-4622-46de-9614-1c28d2fced7e)
+
 
 ### 세부사항
 #### FrontEnd
@@ -79,4 +91,3 @@ Route 53 + CloudFront로 연계하여 ACM(SSL) 인증서를 통한 HTTPS 도메�
     - 손쉽게 AWS의 CloudFront와 연계하여 CDN 방식으로 캐싱 및 데이터 전송 최적화를 통해 더 빠르게 웹페이지를 로드할 수 있습니다.
     - **ACM(AWS Certificate Manager)** 및 **Route 53**과의 연계를 통해 HTTPS 도메인을 간단히 설정할 수 있습니다.
 </details>
-
