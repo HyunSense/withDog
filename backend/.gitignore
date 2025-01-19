@@ -46,3 +46,13 @@ out/
 /src/test/resources/application-db.yml
 /src/test/resources/application-aws.yml
 /src/test/resources/application-jwt.yml
+
+# dockerFile
+Dockerfile
+docker-compose.yml
+
+# dump sql
+/sql/
+/k6/
+/prometheus/
+/grafana/

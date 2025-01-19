@@ -39,3 +39,14 @@ server:
   port: 8080
   tomcat:
     connection-timeout: 15000
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "prometheus"
