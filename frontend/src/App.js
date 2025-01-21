@@ -15,6 +15,7 @@ import AdminEdit from "./components/admin/AdminEdit";
 import NoLoginRedirect from "./components/auth/NoLoginRedirect";
 import AdminPlaceEdit from "./components/admin/AdminPlaceEdit";
 import AdminPlaceSave from "./components/admin/AdminPlaceSave";
+import SearchPage from "./components/pages/SearchPage";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/places" element={<HomePage />} />
+            <Route path="/search" element={<SearchPage />} />
 
             <Route element={<NoLoginRedirect />}>
               <Route path="/myPage/bookmark" element={<BookmarkPage />} />
