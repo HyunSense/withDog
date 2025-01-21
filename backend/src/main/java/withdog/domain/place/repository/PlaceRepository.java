@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 //TODO: 쿼리수정필요 spirng data jpa로 c.id x => c = category
 @Repository
-public interface PlaceRepository extends JpaRepository<Place, Long> {
+public interface PlaceRepository extends JpaRepository<Place, Long>, PlaceRepositoryDynamic{
 
     // List 일경우 distinct 생략 가능(hibernate6 부터 자동 적용)
     @Query("select distinct p from Place p join fetch p.placeImages i")

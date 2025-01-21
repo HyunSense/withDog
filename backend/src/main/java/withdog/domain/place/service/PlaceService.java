@@ -28,4 +28,6 @@ public interface PlaceService {
     ResponseDto delete(Long memberId, PlaceDeleteRequestDto dto);
 
     ResponseDto getTop3(int categoryId);
+
+    DataResponseDto<Slice<PlaceResponseDto>> searchPlace(String type, String keyword, Pageable pageable);
 }
