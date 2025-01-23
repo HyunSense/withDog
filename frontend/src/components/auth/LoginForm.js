@@ -16,7 +16,8 @@ const LoginForm = () => {
 
   const handleSocialLogin = async (platfrom) => {
 
-    window.location.href = `http://localhost:8080/oauth2/authorization/${platfrom}`
+    // window.location.href = `http://localhost:8080/oauth2/authorization/${platfrom}`
+    window.location.href = `https://api.withdog.store/oauth2/authorization/${platfrom}`
   }
 
   return (  

@@ -16,7 +16,7 @@ import NoLoginRedirect from "./components/auth/NoLoginRedirect";
 import AdminPlaceEdit from "./components/admin/AdminPlaceEdit";
 import AdminPlaceSave from "./components/admin/AdminPlaceSave";
 import SearchPage from "./components/pages/SearchPage";
-import SocialLogin from "./components/auth/SocialLogin";
+import SocialLoginPage from "./components/pages/user/SocialLoginPage";
 
 function App() {
   return (
@@ -29,7 +29,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/places" element={<HomePage />} />
             <Route path="/search" element={<SearchPage />} />
-            <Route path="/login-success" element={<SocialLogin />} />
+            <Route path="/login-success" element={<SocialLoginPage />} />
 
             <Route element={<NoLoginRedirect />}>
               <Route path="/myPage/bookmark" element={<BookmarkPage />} />
