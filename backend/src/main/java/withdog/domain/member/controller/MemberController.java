@@ -37,10 +37,10 @@ public class MemberController {
 
     //TODO: 리펙토링 필요 (프론트에서 사용 X)
     @GetMapping("/members/info")
-    public ResponseEntity<ResponseDto> getMemberInfo(@RequestHeader(name = "Authorization") String authorization) {
+    public ResponseEntity<ResponseDto> getMemberInfo(@RequestParam String accessToken) {
 
-        String token = authorization.substring("Bearer ".length());
-        DataResponseDto<ResponseMemberInfoDto> responseBody = memberService.findMemberByToken(token);
+//        String token = accessToken.substring("Bearer ".length());
+        DataResponseDto<ResponseMemberInfoDto> responseBody = memberService.findMemberByToken(accessToken);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }

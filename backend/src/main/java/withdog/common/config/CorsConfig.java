@@ -21,11 +21,8 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource src = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:3000"); // [*] 특수값이 포함되어있으면, setAllowCredentials(true) 와 함께 사용불가, 사용하려면 addAllowedOriginPattern("*")
-        config.addAllowedOrigin("https://www.withdog.store");
-//        config.addAllowedOriginPattern("http://localhost:3000");
-//        config.addAllowedOriginPattern("https://d278iam8b79rj7.cloudfront.net");
-//        config.addAllowedOriginPattern("*");
+        config.addAllowedOrigin("https://www.withdog.store"); // [*] 특수값이 포함되어있으면, setAllowCredentials(true) 와 함께 사용불가, 사용하려면 addAllowedOriginPattern("*")
+        config.addAllowedOrigin("http://localhost:3000");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         config.setExposedHeaders(List.of("Authorization"));

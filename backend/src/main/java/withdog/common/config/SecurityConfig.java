@@ -7,18 +7,23 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.server.authentication.RedirectServerAuthenticationEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import withdog.common.config.auth.CustomOauth2UserService;
+import withdog.common.config.auth.Oauth2AuthenticationSuccessHandler;
 import withdog.common.constant.ApiResponseCode;
 import withdog.common.dto.response.ResponseDto;
 import withdog.common.jwt.JwtAuthenticationFilter;
@@ -36,6 +41,8 @@ public class SecurityConfig {
     private final CorsFilter corsFilter;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtTokenProvider jwtTokenProvider;
+    private final CustomOauth2UserService customOauth2UserService;
+    private final Oauth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
     private final ObjectMapper objectMapper;
 
     @Bean
@@ -45,9 +52,19 @@ public class SecurityConfig {
     }
 
     @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring()
+                .requestMatchers("/error", "/favicon.ico");
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userinfo -> userinfo.userService(customOauth2UserService)) // 생략가능
+                        .successHandler(oauth2AuthenticationSuccessHandler)
+                )
                 .logout(logout -> logout
                         .logoutUrl("/api/v1/logout")
                         .logoutSuccessHandler((request, response, authentication) -> {
