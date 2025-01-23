@@ -22,27 +22,6 @@ jobs:
           java-version: "17"
           distribution: "temurin"
 
-      - name: Create application-aws.yml
-        run: |
-          cd ./backend/src/main/resources
-          touch application-aws.yml
-          echo "${{secrets.APPLICATION_AWS_YML}}" > application-aws.yml
-          cat application-aws.yml
-
-      - name: Create application-jwt.yml
-        run: |
-          cd ./backend/src/main/resources
-          touch application-jwt.yml
-          echo "${{secrets.APPLICATION_JWT_YML}}" > application-jwt.yml
-          cat application-jwt.yml
-
-      - name: Create application-db.yml
-        run: |
-          cd ./backend/src/main/resources
-          touch application-db.yml
-          echo "${{secrets.APPLICATION_DB_YML}}" > application-db.yml
-          cat application-db.yml
-
       - name: Grant execute permission to gradlew
         run: chmod +x ./backend/gradlew
 
