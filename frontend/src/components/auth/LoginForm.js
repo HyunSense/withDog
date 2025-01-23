@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import * as S from "../../styles/LoginForm.Styled";
 import { AuthContext } from "./AuthContextProvider";
-import { getSocialLogin } from "../../apis/auth";
 
 const LoginForm = () => {
   const { login } = useContext(AuthContext);
