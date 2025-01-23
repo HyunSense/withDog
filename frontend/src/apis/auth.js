@@ -8,3 +8,6 @@ export const getLogout = () => api.get("/logout");
 
 //POST signup
 export const postSignUp = (data) => api.post("/members", data);
+
+//GET memberInfo
+export const getMemberInfo = (accessToken) => api.get(`/members/info?accessToken=${accessToken}`);

@@ -6,12 +6,7 @@ import * as S from "../../styles/Header.Styled";
 
 const Header = () => {
   const { isLogin, memberInfo, logout } = useContext(AuthContext); // loading 제거
-  // console.log("Header isLogin = ", isLogin);
-  // console.log("Header memberInfo = ", memberInfo);
 
-  // if (!memberInfo) {
-  //   return <Loading />;
-  // }
 
   return (
     <S.StyledHeader>
@@ -21,7 +16,6 @@ const Header = () => {
       {isLogin ? (
           <S.StyledAuthBox>
             <S.StyledAuthButtonBox>
-              {/* <S.StyledUserInfoText>{memberInfo.username}님</S.StyledUserInfoText> */}
               {memberInfo.role === "ROLE_ADMIN" && (
                 <S.StyledButton>
                   <S.StyledLink to={"/admin"}>

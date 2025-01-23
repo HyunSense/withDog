@@ -1,0 +1,3 @@
+spring:
+  bearer:
+    jwt: ${JWT_SECRET}
