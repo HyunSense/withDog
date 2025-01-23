@@ -45,7 +45,7 @@ export const StyledLoginButtonBox = styled.div`
 
 export const StyledLoginButton = styled.button`
   /* #dde2e3 */
-  color: #0E0E0E;
+  color: #0e0e0e;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -59,7 +59,7 @@ export const StyledLoginButton = styled.button`
 `;
 
 export const StyeldkakaoLoginButton = styled.button`
-  color: #0E0E0E;
+  color: #0e0e0e;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -67,19 +67,17 @@ export const StyeldkakaoLoginButton = styled.button`
   border: none;
   border-radius: 6px;
   height: 45px;
-  background-color: #FEE500;
+  background-color: #fee500;
   font-size: 1.5rem;
   font-weight: 500;
   cursor: pointer;
 `;
 
-export const StyledSvg = styled.svg`
-
-`;
+export const StyledSvg = styled.svg``;
 
 export const StyledText = styled.p`
   margin-left: ${({ $marginLeft }) => $marginLeft};
   font-size: 1.5rem;
   font-weight: 500;
-  color: #0E0E0E;
+  color: #0e0e0e;
 `;

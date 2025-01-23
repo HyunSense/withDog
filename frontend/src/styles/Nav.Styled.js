@@ -25,13 +25,17 @@ export const StyeldNavIconText = styled.span`
 `;
 
 export const StyeldNavIconBox = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 45px;
   height: 45px;
-  /* width: 80%; */
 `;
 export const StyeldNavIcon = styled.img`
-  width: 100%;
-  height: 100%;
+  /* width: 100%; */
+  /* height: 100%; */
+  width: ${({ width }) => width || "100%"};
+  height: ${({ height }) => height || "100%"};
 `;
 
 export const StyledNavAllIcon = styled.p`
@@ -44,5 +48,4 @@ export const StyledNavAllIcon = styled.p`
   font-weight: 600;
   color: #022733;
   /* color: #108fbd; */
-
-`
+`;

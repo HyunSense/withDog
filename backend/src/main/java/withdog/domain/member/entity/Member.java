@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -22,6 +23,8 @@ public class Member {
     private String name;
     private String email;
     private String role;
+
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
 

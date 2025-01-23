@@ -2,6 +2,7 @@ package withdog.domain.place.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -163,4 +164,14 @@ public class PlaceServiceImpl implements PlaceService {
 
         return DataResponseDto.success(top3);
     }
+
+    @Override
+    public DataResponseDto<Slice<PlaceResponseDto>> searchPlace(String type, String keyword, Pageable pageable) {
+
+        Page<Place> places = placeRepository.findAllPlacesByTypeAndKeyword(type, keyword, pageable);
+        Page<PlaceResponseDto> dto = PlaceResponseDto.fromEntityPage(places);
+
+        return DataResponseDto.success(dto);
+    }
+
 }

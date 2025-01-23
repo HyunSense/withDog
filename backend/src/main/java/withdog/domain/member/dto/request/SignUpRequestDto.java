@@ -40,7 +40,7 @@ public class SignUpRequestDto {
                 .name(name)
                 .email(email)
                 .role("ROLE_USER")
-                .createdAt(LocalDateTime.now())
+//                .createdAt(LocalDateTime.now())
                 .build();
     }
 }

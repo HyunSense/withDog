@@ -1,6 +1,7 @@
 package withdog.domain.place.dto.response;
 
 import lombok.*;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 import withdog.domain.place.entity.Place;
 import withdog.common.util.StringFilter;
@@ -35,6 +36,10 @@ public class PlaceResponseDto {
     }
 
     public static Slice<PlaceResponseDto> fromEntitySlice(Slice<Place> places) {
+        return places.map(p -> new PlaceResponseDto(p));
+    }
+
+    public static Page<PlaceResponseDto> fromEntityPage(Page<Place> places) {
         return places.map(p -> new PlaceResponseDto(p));
     }
 

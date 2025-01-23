@@ -20,10 +20,6 @@ public class JwtTokenProvider {
 //    @Value("${spring.jwt.secret}")
     @Value("${spring.bearer.jwt}")
     private String secretKey;
-//    private static final int ACCESS_TOKEN_EXPIRED_TIME = 1000 * 60 * 30; // 30 min
-    private static final int ACCESS_TOKEN_EXPIRED_TIME = 1000 * 5; // 5 s 테스트용
-//    private static final int REFRESH_TOKEN_EXPIRED_TIME = 1000 * 60 * 60 * 24 * 3; // 3 days
-    private static final int REFRESH_TOKEN_EXPIRED_TIME = 1000 * 30; // 30s 테스트용
 
     public Long getId(String token) {
 

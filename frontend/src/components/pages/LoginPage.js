@@ -19,6 +19,6 @@ function LoginPage() {
       </AuthMain>
     </StyledLoginPageContainer>
   );
-}
+} 
 
 export default LoginPage;

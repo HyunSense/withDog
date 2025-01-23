@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include: aws, jwt
+    include: aws, jwt, db
   output:
     ansi:
       enabled: always

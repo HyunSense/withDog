@@ -42,8 +42,8 @@ public class PlaceController {
     }
 
     @GetMapping("/places")
-    public ResponseEntity<DataResponseDto<Slice<PlaceResponseDto>>> getAllPlaces(@RequestParam(required = false, defaultValue = "0") int categoryId, @PageableDefault(size = 10) Pageable pageable) {
-
+    public ResponseEntity<DataResponseDto<Slice<PlaceResponseDto>>> getAllPlaces(@RequestParam(required = false, defaultValue = "0") int categoryId, @PageableDefault(page = 0, size = 10) Pageable pageable) {
+        log.info("pageable : {}", pageable.toString());
         DataResponseDto<Slice<PlaceResponseDto>> responseBody = placeService.findAllPlace(categoryId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
@@ -117,6 +117,14 @@ public class PlaceController {
     public ResponseEntity<ResponseDto> getTop3Places(@RequestParam(required = false, defaultValue = "0") int categoryId) {
 
         ResponseDto responseBody = placeService.getTop3(categoryId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    }
+
+    @GetMapping("/places/search")
+    public ResponseEntity<DataResponseDto<Slice<PlaceResponseDto>>> getSearchPlace(@RequestParam(defaultValue = "name") String type, @RequestParam(required = false ,defaultValue = "") String keyword, @PageableDefault(page = 0, size = 10) Pageable pageable) {
+
+        DataResponseDto<Slice<PlaceResponseDto>> responseBody = placeService.searchPlace(type, keyword, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }

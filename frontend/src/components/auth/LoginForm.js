@@ -13,7 +13,13 @@ const LoginForm = () => {
     login(username, password);
   };
 
-  return (
+  const handleSocialLogin = async (platfrom) => {
+
+    // window.location.href = `http://localhost:8080/oauth2/authorization/${platfrom}`
+    window.location.href = `https://api.withdog.store/oauth2/authorization/${platfrom}`
+  }
+
+  return (  
     <S.StyledLoginForm onSubmit={handleOnSubmit}>
       <S.StyledLoginInputBox>
         <S.StyledLoginInputLabel>아이디</S.StyledLoginInputLabel>
@@ -25,7 +31,7 @@ const LoginForm = () => {
       </S.StyledLoginInputBox>
       <S.StyledLoginButtonBox>
         <S.StyledLoginButton type="submit">로그인</S.StyledLoginButton>
-        <S.StyeldkakaoLoginButton type="summit" disabled>
+        <S.StyeldkakaoLoginButton onClick={() => handleSocialLogin("kakao")} type="button">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="#0E0E0E">
             <path
               fillRule="evenodd"
@@ -36,7 +42,7 @@ const LoginForm = () => {
           </svg>
           <S.StyledText $marginLeft="8px">카카오로 로그인</S.StyledText>
         </S.StyeldkakaoLoginButton>
-        <S.StyledLoginButton type="submit" disabled>
+        <S.StyledLoginButton onClick={() => handleSocialLogin("google")} type="button">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="#0E0E0E">
             <rect width="24" height="24" fill="white"></rect>
             <path

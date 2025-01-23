@@ -38,11 +38,22 @@ out/
 
 ### Custom ###
 # main
-/src/main/resources/application-db.yml
-/src/main/resources/application-aws.yml
-/src/main/resources/application-jwt.yml
+#/src/main/resources/application-db.yml
+#/src/main/resources/application-aws.yml
+#/src/main/resources/application-jwt.yml
+/src/main/resources/application-testing.yml
 
 # test
-/src/test/resources/application-db.yml
-/src/test/resources/application-aws.yml
-/src/test/resources/application-jwt.yml
+#/src/test/resources/application-db.yml
+#/src/test/resources/application-aws.yml
+#/src/test/resources/application-jwt.yml
+
+# dockerFile
+Dockerfile
+docker-compose.yml
+
+# dump sql
+/sql/
+/k6/
+/prometheus/
+/grafana/
