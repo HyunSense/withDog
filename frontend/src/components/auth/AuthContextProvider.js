@@ -72,6 +72,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await getLogout();
       console.log("logout success");
+      alert("로그아웃 되었습니다.");
       navigate("/");
     } catch (error) {
       console.error("logout error = ", error);
@@ -84,7 +85,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isLogin, memberInfo, login, logout, loading }}
+      value={{ isLogin, memberInfo, login, logout, loading, loginSetting, setIsLogin, setMemberInfo }}
     >
       {children}
     </AuthContext.Provider>

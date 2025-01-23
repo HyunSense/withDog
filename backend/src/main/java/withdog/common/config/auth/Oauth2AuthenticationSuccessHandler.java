@@ -42,7 +42,8 @@ public class Oauth2AuthenticationSuccessHandler implements AuthenticationSuccess
         response.addHeader("Authorization", "Bearer " + accessToken);
         response.addCookie(createCookie(TokenType.REFRESH.name(), refreshToken));
 
-        String domain = "http://localhost:3000";
+//        String domain = "http://localhost:3000";
+        String domain = "https://www.withdog.store";
         String redirectUrl = UriComponentsBuilder
                 .fromHttpUrl(domain)
                 .path("login-success")
