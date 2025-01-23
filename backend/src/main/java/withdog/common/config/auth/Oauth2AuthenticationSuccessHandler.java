@@ -48,6 +48,8 @@ public class Oauth2AuthenticationSuccessHandler implements AuthenticationSuccess
                 .fromHttpUrl(domain)
                 .path("login-success")
                 .queryParam("accessToken", accessToken)
+                .queryParam("username", username)
+                .queryParam("role", role)
                 .build().toUriString();
 
         response.sendRedirect(redirectUrl);
