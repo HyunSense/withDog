@@ -5,7 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import withdog.common.constant.ApiResponseCode;
+import withdog.common.exception.CustomException;
 import withdog.domain.place.entity.Place;
+import withdog.domain.place.repository.CategoryRepository;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
 import withdog.domain.stats.repository.PlaceWeeklyStatsRepository;
 
@@ -20,6 +23,7 @@ import java.util.List;
 public class PlaceWeeklyStatsServiceImpl implements PlaceWeeklyStatsService {
 
     private final PlaceWeeklyStatsRepository placeWeeklyStatsRepository;
+    private final CategoryRepository categoryRepository;
 
 
     @Override
@@ -43,6 +47,10 @@ public class PlaceWeeklyStatsServiceImpl implements PlaceWeeklyStatsService {
 
     @Override
     public List<PlaceWeeklyStats> getTop3PlaceWeeklyStats(int categoryId, Pageable pageable) {
+
+        if (categoryId != 0 && !categoryRepository.existsById(categoryId)) {
+            throw new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY);
+        }
 
         if (categoryId == 0) {
             return placeWeeklyStatsRepository.findTop3(pageable);
