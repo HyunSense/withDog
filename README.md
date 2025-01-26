@@ -17,8 +17,8 @@
 ![place-list](https://github.com/user-attachments/assets/6ff21f6c-b40c-469d-8025-f43a16ab2e37)<br>장소 목록 | ![place-detail](https://github.com/user-attachments/assets/75e1c64e-6add-4b72-a591-878c1fb3589e)<br>장소 상세정보 | ![place-bookmark](https://github.com/user-attachments/assets/1f673794-3eb4-4f8f-8a19-7be4342d6949)<br>장소 북마크
 ---|---|---|
 
-![admin](https://github.com/user-attachments/assets/ed887958-9a99-454b-b3e1-0111a86d55a2)<br>장소 등록 및 수정 |
----|
+![admin](https://github.com/user-attachments/assets/ed887958-9a99-454b-b3e1-0111a86d55a2)<br>장소 등록 및 수정 | ![search](https://github.com/user-attachments/assets/ea553011-5a8d-4fe5-ab80-b6e2fe6628ed)<br>장소 검색 | ![login-join](https://github.com/user-attachments/assets/cd1f74e0-ee16-4dbc-85ee-527069911edd)<br>(소셜)로그인 & 회원가입
+---|---|---|
 
 ## RestAPI 명세서
 ### [명세서 링크](https://hyunsense.notion.site/withDodg-RESTapi-17b05c7d6d42802cae8bccaff7fca8c6?pvs=4)
@@ -49,8 +49,8 @@
 - CDN 최적화를 통한 빠른 이미지 로드 (CloudFront + S3)
 - ServerLess S3 정적 웹 호스팅을 통한 무중단 배포
 - JWT 인증을 활용한 사용자 로그인 및 권한 관리
-- ~~Google, Kakao 소셜 로그인~~
-- ~~반려견 동반 가능 장소 검색 및 카테고리 분류 (-------------------- 수정 필요)~~
+- Google, Kakao 소셜 로그인
+- 반려견 동반 가능 장소 검색 및 카테고리 분류
 - 북마크 기능을 통한 사용자만의 장소 관리
 - **관리자** 인증을 통한 장소 등록,수정,삭제
 - **관리자** 인증을 통한 블로그 URL로 스크래핑(크롤링)을 통한 장소에 관한 블로그 이미지,제목,내용 등록
