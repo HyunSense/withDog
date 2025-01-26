@@ -45,6 +45,10 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public DataResponseDto<Slice<PlaceResponseDto>> findAllPlace(int categoryId, Pageable pageable) {
 
+        if (categoryId != 0 && !categoryRepository.existsById(categoryId)) {
+            throw new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY);
+        }
+
         Slice<Place> places;
 
         if (categoryId == 0) {
@@ -75,13 +79,11 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public ResponseDto save(PlaceFormRequestDto dto) {
 
-        //TODO: findByName -> findById 변경 필요
-        Category category = categoryRepository.findByName(dto.getCategory())
+        Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY));
         Place place = dto.toEntity(category);
         placeRepository.save(place);
 
-        //TODO: PlaceNewImageDto 변경필요 name 필드추가
         List<PlaceNewImageDto> newImageDtos = dto.getImages();
 
         if (newImageDtos != null && !newImageDtos.isEmpty()) {
@@ -100,8 +102,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public ResponseDto update(Long id, PlaceFormUpdateRequestDto dto) {
 
-        //TODO: findByName -> findById 변경 필요
-        Category category = categoryRepository.findByName(dto.getCategory())
+        Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY));
 
         Place place = placeRepository.findByIdWithCategoryAndPlaceImages(id)
