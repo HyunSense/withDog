@@ -43,16 +43,18 @@ const PlaceList = () => {
     // IntersectionObserver 파라미터에 onIntersection 설정
     const observer = new IntersectionObserver(onIntersection, { threshold: 1 });
 
-    if (loadMoreRef.current) {
+    const currentRef = loadMoreRef.current;
+    
+    if (currentRef) {
       // loadMoreRef가 존재하면 observer로 해당요소 관찰
-      observer.observe(loadMoreRef.current);
+      observer.observe(currentRef);
     }
 
     return () => {
       // 클린업 함수 컴포넌트 언마운트시 실행
-      if (loadMoreRef.current) {
+      if (currentRef) {
         // 컴포넌트가 언마운트되거나 더 이상 관찰이 필요없을때(observer 해제할때) 반환
-        observer.unobserve(loadMoreRef.current);
+        observer.unobserve(currentRef);
       }
     };
   }, [onIntersection]);
@@ -64,7 +66,6 @@ const PlaceList = () => {
 
       const apiResponse = response.data;
       const slice = apiResponse.data;
-      console.log("slice = ", slice);
 
       setPlaces((prevPlaces) => [...prevPlaces, ...slice.content]);
 

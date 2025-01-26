@@ -34,10 +34,7 @@ const Postcode = ({ children, addressChange }) => {
     const addressPart1 = `${sido} ${sigungu}`;
     const addressPart2 = fullAddress.replace(addressPart1, "").trim();
 
-    console.log("addressPart1 = ", addressPart1);
-    console.log("addressPart2 = ", addressPart2);
     const address = {addressPart1, addressPart2};
-    console.log("address = ", address);
     addressChange(address);
   };
 

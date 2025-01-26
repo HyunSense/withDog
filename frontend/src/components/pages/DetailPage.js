@@ -19,7 +19,6 @@ function DetailPage() {
       try {
         const response = await getPlace(id);
 
-        console.log("response.data = ", response.data.data);
         setPlace(response.data.data);
       } catch (error) {
         console.error("fetching Error = ", error);

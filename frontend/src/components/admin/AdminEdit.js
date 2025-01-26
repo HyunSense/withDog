@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { deletePlaces, getAllPlaces } from "../../apis/place";
 import { useNavigate } from "react-router-dom";
 import * as S from "../../styles/AdminEdit.Styled";
+import { CATEGORY_MAP } from "../../constants/categoryMap";
 
 const AdminEdit = () => {
   const [places, setPlaces] = useState([]);
@@ -14,7 +15,6 @@ const AdminEdit = () => {
 
   const navigate = useNavigate();
   const handleCategoryClick = (category) => {
-    console.log("category = ", category);
     setSelectCategory(category);
 
     setPage(0);
@@ -29,7 +29,6 @@ const AdminEdit = () => {
   };
 
   const handleCheckboxChange = (id) => {
-    console.log("checkBox id = ", id);
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
     );
@@ -40,8 +39,13 @@ const AdminEdit = () => {
       return;
     }
 
-    console.log("selectedItems = ", selectedItems);
-    fetchDeletePlaces(selectedItems);
+    const isConfirmed = window.confirm(`${selectedItems.length}개의 장소를 삭제 하시겠습니까?`);
+
+    if (isConfirmed) {
+      fetchDeletePlaces(selectedItems);
+    } else {
+      console.log("삭제취소");
+    }
   };
 
   const onIntersection = useCallback(
@@ -56,23 +60,23 @@ const AdminEdit = () => {
 
   useEffect(() => {
     const observer = new IntersectionObserver(onIntersection, { threshold: 1 });
-    // cleanUp 함수 필요
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
+
+    const currentRef = loadMoreRef.current;
+
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
   }, [onIntersection]);
 
   const fetchDeletePlaces = async (ids) => {
     try {
-      console.log("ids = ", ids);
-      const response = await deletePlaces({ids: ids});
-      console.log("fetchDeletePlaces response = ", response);
+      await deletePlaces({ids: ids});
     } catch (error) {
       console.error("fetchDeletePalces error = ", error);
     }
@@ -83,9 +87,8 @@ const AdminEdit = () => {
 
   const fetchMorePlaces = async (page, category) => {
     try {
-      console.log("fetchMorePlaces Category = ", category);
-      const response = await getAllPlaces({ page: page, category: category });
-      console.log("adminEdit response = ", response);
+      const categoryId = CATEGORY_MAP[category] ?? 0;
+      const response = await getAllPlaces({ page: page, categoryId: categoryId });
       const apiResponse = response.data;
       const slice = apiResponse.data;
 

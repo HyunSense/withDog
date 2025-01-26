@@ -10,7 +10,6 @@ import { addBookmark, deleteBookmark, getBookmarkStatus } from "../../apis/place
 const fetchBookmarkStatus = async (placeId, setIsBookmarked) => {
   try {
     const response = await getBookmarkStatus(placeId);
-    console.log("fetchBookmarkStatus response = ", response);
     const bookmarkStatus = response.data.data.bookmarked;
     setIsBookmarked(bookmarkStatus);
   } catch (error) {

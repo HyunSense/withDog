@@ -26,7 +26,6 @@ const SignUpForm = () => {
 
   const handleOnSubmit = async (e) => {
     e.preventDefault();
-    console.log(values);
 
     if (password !== passwordConfirm) {
       alert("비밀번호가 일치하지 않습니다.");
@@ -43,7 +42,6 @@ const SignUpForm = () => {
     try {
       const response = await postSignUp(signUpData);
 
-      console.log("response=", response);
 
       if (response.status === 200) {
         console.log("회원가입 완료");

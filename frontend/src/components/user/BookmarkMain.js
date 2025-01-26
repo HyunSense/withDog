@@ -7,7 +7,6 @@ const BookmarkMain = () => {
   const [selectedMarks, setSelectedMarks] = useState([]);
 
   const handleBookmarkChange = (id) => {
-    console.log("id = ", id);
     // id받아온다.
     // selectedMarks 의 이전데이터에 id를 포함하고 있는지 없는지?
     // 포함하고있다면 이전데이터에서 id가 아닌것은 제거한다.(filter)
@@ -24,7 +23,6 @@ const BookmarkMain = () => {
   const fetchBookmarks = async () => {
     try {
       const response = await getAllBookmarks();
-      console.log("fetchBookmarks response = ", response);
       const apiResponse = response.data;
       setBookmarkedPlaces(apiResponse.data);
       setSelectedMarks([]);
@@ -37,16 +35,13 @@ const BookmarkMain = () => {
     if (selectedMarks.length === 0) {
       return;
     }
-    console.log("selectedMarks = ", selectedMarks);
     fetchBookmarkDelete(selectedMarks);
   };
 
   const fetchBookmarkDelete = async (ids) => {
     try {
-      console.log("ids = ", ids);
       // const data = {bookmarkPlaceIds : ids};
       await deleteSelectedBookmarks(ids);
-      console.log("Success deleted bookmkars");
 
       fetchBookmarks();
     } catch (error) {

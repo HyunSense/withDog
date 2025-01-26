@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const loginSetting = () => {
-    console.log("loginSetting start");
     const token = localStorage.getItem("access_token");
     const storedMemberInfo = localStorage.getItem("member_info");
 
@@ -26,7 +25,6 @@ export const AuthProvider = ({ children }) => {
     }
 
     setLoading(false);
-    console.log("loginSetting end");
   };
 
   const login = async (username, password) => {
@@ -37,7 +35,6 @@ export const AuthProvider = ({ children }) => {
         password: password,
       });
 
-      console.log("response = ", response);
       const authorizationHeader = response.headers["authorization"];
       const loginResponse = response.data.data;
 
@@ -71,7 +68,6 @@ export const AuthProvider = ({ children }) => {
 
     try {
       await getLogout();
-      console.log("logout success");
       alert("로그아웃 되었습니다.");
       navigate("/");
     } catch (error) {

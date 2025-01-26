@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import Search from "./Search";
 import { useSearchParams } from "react-router-dom";
 import { getSearch } from "../../apis/place";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -87,27 +86,32 @@ const StyledPlaceListBox = styled.div`
 `;
 
 const SearchMain = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [searchType, setSearchType] = useState(
-    searchParams.get("type") || "name"
-  );
-  const [keyword, setKeyword] = useState(searchParams.get("keyword") || "");
   const [places, setPlaces] = useState([]);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
-  const [totalCount, setTotalCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(null);
   const loadMoreRef = useRef(null);
 
+  const [type, setType] = useState("name");
+  const [keyword, setKeyword] = useState("");
+
+  const [inputKeyword, setInputKeyword] = useState("");
+
+  const [serachParams, setSearchParams] = useSearchParams();
+
   const handleSearch = () => {
-    if (!keyword.trim()) {
+    if (!inputKeyword.trim()) {
       alert("검색어를 입력하세요.");
       return;
     }
 
-    setSearchParams({ type: searchType, keyword: keyword });
+    
+    setKeyword(inputKeyword)
     setPlaces([]);
     setPage(0);
     setHasMore(true);
+
+    setSearchParams({ type, keyword: inputKeyword });
   };
 
   const handleKeyDown = (e) => {
@@ -116,36 +120,49 @@ const SearchMain = () => {
     }
   };
 
-  const onIntersection = useCallback(
-    (entries) => {
+  //URL 변경 감지 및 초기화
+  useEffect(() => {
+    const currentType = serachParams.get("type") || "name";
+    const currentKeyword = serachParams.get("keyword") || "";
+
+    setType(currentType);
+    setKeyword(currentKeyword);
+
+
+  }, [serachParams]);
+
+  const onIntersection = useCallback((entries) => {
+
+      if (keyword.trim() === "") {
+        return;
+      }
+
       const firstEntity = entries[0];
 
       if (firstEntity.isIntersecting && hasMore) {
-        fetchSearchPlaces(searchType, keyword, page);
+        fetchSearchPlaces(type, keyword, page);
       }
     },
-    [hasMore, searchType, keyword, page]
+    [hasMore, type, keyword, page]
   );
 
   useEffect(() => {
 
-    // 검색어가 없거나 검색을 처음 시작할 때는 검색 X
-    if (!keyword.trim()) {
-        return;
-      }
-
     const observer = new IntersectionObserver(onIntersection, { threshold: 1 });
 
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
+    const currentRef = loadMoreRef.current;
+
+    if (currentRef) {
+      observer.observe(currentRef);
     }
 
     return () => {
-      if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
+      if (currentRef) {
+        observer.unobserve(currentRef);
       }
     };
-  }, [onIntersection, keyword]);
+
+  }, [onIntersection]);
 
   const fetchSearchPlaces = async (type, keyword, page) => {
     try {
@@ -164,6 +181,7 @@ const SearchMain = () => {
       if (paging.last) {
         setHasMore(false);
       } else {
+        // setHasMore(true);
         setPage((prevPage) => prevPage + 1);
       }
     } catch (error) {
@@ -176,16 +194,17 @@ const SearchMain = () => {
       <StyledSearch>
         <StyledSearchBox>
           <StyledComboBox
-            value={searchType}
-            onChange={(e) => setSearchType(e.target.value)}
+            value={type}
+            onChange={(e) => setType(e.target.value)}
           >
             <option value="name">이름</option>
             <option value="area">지역</option>
           </StyledComboBox>
           <StyledSearchInput
+            type="text"
             placeholder="지역 또는 장소를 입력하세요."
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            value={inputKeyword}
+            onChange={(e) => setInputKeyword(e.target.value)}
             onKeyDown={handleKeyDown}
           />
           <StyledSearchButton onClick={handleSearch}>

@@ -13,12 +13,8 @@ const usePlaceForm = (initValues) => {
     phone: initValues.phone || "",
     addressPart1: initValues.addressPart1 || "",
     addressPart2: initValues.addressPart2 || "",
-    // price: initValues.price || "",
     price: initValues.price === undefined || initValues.price === null ? "" : initValues.price,
     reservationUrl: initValues.reservationUrl || "",
-    // blogUrls: initValues.placeBlogs
-    //   ? initValues.placeBlogs.map((blog) => blog.blogUrl)
-    //   : ["", "", "", ""], // placeBlogs 반복 수정필요 블로그 등록안할시 input창 사라짐
     blogUrls: blogUrls,
   });
 
