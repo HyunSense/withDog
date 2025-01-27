@@ -38,6 +38,7 @@
 북마크 등록 | POST | /api/v1/places/${id}/bookmarks
 북마크 삭제 | DELETE | /api/v1/places/${id}/bookmarks
 상위 TOP3 조회 | GET | /api/v1/places/top3
+장소 검색 | GET | /api/v1/places/search?type=${type}&keyword=${keyword}&page=${page}&size=${size}
 
 ## ERD
 ![withdog-erd](https://github.com/user-attachments/assets/be45682b-dd09-4c5d-8581-12899f0517a5)
