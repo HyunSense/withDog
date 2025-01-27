@@ -32,6 +32,16 @@ export const StyledSignUpInput = styled.input`
     border-color: #108fbd;
     outline: none;
   }
+
+  &:-webkit-autofill {
+    background-color: none !important;
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+  }
+
+  &:-moz-autofill {
+    background-color: none !important;
+    box-shadow: 0 0 0px 1000px #fff inset !important;
+  }
 `;
 
 export const StyledSingUpButton = styled.button`
@@ -48,4 +58,12 @@ export const StyledSingUpButton = styled.button`
   font-size: 1.8rem;
   font-weight: 700;
   cursor: pointer;
+`;
+
+export const StyledFormErrorText = styled.p`
+
+  color: #F44336;
+  padding-left: 3px;
+  font-size: 1.3rem;
+
 `;

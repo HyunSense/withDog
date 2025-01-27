@@ -25,7 +25,6 @@ const DetailSlider = ({ imgs }) => {
     <S.StyledDetailSlider {...settings}>
       {imgs.map((i) => (
         <S.StyledDetailImgBox key={i.imagePosition}>
-          {/* <S.StyledDetailImg src={`http://192.168.0.5:8080${i.imageUrl}`} /> */}
           <S.StyledDetailImg src={i.imageUrl} alt="이미지"/>
         </S.StyledDetailImgBox>
       ))}

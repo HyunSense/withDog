@@ -4,8 +4,6 @@ import { Navigate, Outlet } from "react-router-dom";
 
 const LoginRedirect = () => {
   const { isLogin } = useContext(AuthContext);
-  console.log("LoginRedirect");
-  console.log("isLogin = ", isLogin);
   if (isLogin === true) {
     return <Navigate to="/" />;
   }

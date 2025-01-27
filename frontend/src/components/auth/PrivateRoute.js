@@ -5,10 +5,6 @@ import Loading from "../common/Loading";
 
 const PrivateRoute = ({ roles }) => {
   const { isLogin, memberInfo, loading } = useContext(AuthContext);
-  // const { isLogin, memberInfo} = useContext(AuthContext);
-  console.log("PrivateRoute isLogin = ", isLogin);
-  console.log("PrivateRoute memberInfo = ", memberInfo);
-  // if (!memberInfo.role) {
   if (loading) {
     return <Loading />;
   }

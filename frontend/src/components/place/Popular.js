@@ -29,7 +29,6 @@ const Popular = () => {
         const response = await getTop3Places({ categoryId: categoryId });
 
         const top3Data = response.data.data;
-        console.log("top3Data = ", top3Data);
         setTop3Places([...top3Data]);
         
       } catch (error) {

@@ -14,7 +14,6 @@ const AdminPlaceEdit = () => {
   const fetchPlaceDetail = async (id) => {
     try {
       const response = await getPlace(id);
-      console.log("Fetched place data = ", response.data.data);
       setPlace(response.data.data);
     } catch (error) {
       console.error("Failed to fetch place details: ", error);
@@ -30,8 +29,7 @@ const AdminPlaceEdit = () => {
   const handleEdit = async (formData) => {
     setLoading(true);
     try {
-      const response = await updatePlaces(place.id, formData);
-      console.log("Update Success: ", response);
+      await updatePlaces(place.id, formData);
       alert("수정 되었습니다.");
       navigate("/admin/edit");
     } catch (error) {

@@ -1,5 +1,6 @@
 package withdog.domain.place.dto.request;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -17,8 +18,9 @@ import java.util.List;
 @ToString
 public class PlaceFormRequestDto {
 
-    @NotBlank(message = "Not Blank CategoryName")
-    private String category;
+    @NotNull(message = "CategoryId must not be null")
+    @Min(value = 1, message = "CategoryId must be greater than 0")
+    private int categoryId;
 
     @NotBlank(message = "Not Blank Name")
     private String name;
@@ -46,8 +48,8 @@ public class PlaceFormRequestDto {
     private List<PlaceNewImageDto> images;
 
     @Builder
-    public PlaceFormRequestDto(String category, String name, String phone, String addressPart1, String addressPart2, int price, String reservationUrl, String description, List<String> blogUrls, List<PlaceNewImageDto> images) {
-        this.category = category;
+    public PlaceFormRequestDto(int categoryId, String name, String phone, String addressPart1, String addressPart2, int price, String reservationUrl, String description, List<String> blogUrls, List<PlaceNewImageDto> images) {
+        this.categoryId = categoryId;
         this.name = name;
         this.phone = phone;
         this.addressPart1 = addressPart1;

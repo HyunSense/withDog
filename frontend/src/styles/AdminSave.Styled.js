@@ -57,6 +57,28 @@ export const StyledInput = styled.input`
   border-radius: 5px;
   font-size: 1.5rem;
   padding: 0 8px;
+
+  &:-webkit-autofill {
+    background-color: none !important;
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+  }
+
+  &:-moz-autofill {
+    background-color: none !important;
+    box-shadow: 0 0 0px 1000px #fff inset !important;
+  }
+
+  &[type="number"]::-webkit-inner-spin-button,
+  &[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox의 숫자 input에서 화살표 없애기 */
+  &[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
 `;
 
 export const StyledAddressInputBox = styled.div`

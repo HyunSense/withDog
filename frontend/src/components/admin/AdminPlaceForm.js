@@ -2,11 +2,11 @@ import { useState } from "react";
 import * as S from "../../styles/AdminSave.Styled";
 import SaveImageUpload from "./SaveImageUpload";
 import Postcode from "./Postcode";
-import { blogsValidation } from "../../validation/PlaceFormValidation.";
 import usePlaceForm from "../../hooks/usePlaceForm";
+import { CATEGORY_MAP } from "../../constants/categoryMap";
 
 const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
-  const [selected, setSelected] = useState(initValues.category || "camp");
+  const [selectedCategory, setSelectedCategory] = useState(initValues.category || "camp");
   const {
     values,
     images,
@@ -21,11 +21,9 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
   // 별도의 ResponseDto 필요? blog, image
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    console.log("images = ", images);
-    console.log("removedImages = ", removedImages);
-    
+    const categoryId = CATEGORY_MAP[selectedCategory];
     const formData = new FormData();
-    formData.append("category", selected);
+    formData.append("categoryId", categoryId);
     formData.append("name", values.name);
     formData.append("phone", values.phone);
     formData.append("addressPart1", values.addressPart1);
@@ -43,22 +41,10 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
       }));
       const filteredImagePositions = imagePositions.filter((image) => image.id);
 
-      // imagePositions.forEach((image, index) => {
-      // filteredImagePositions.forEach((image, index) => {
-      //   formData.append(`updateImages.images[${index}].id`, image.id);
-      //   formData.append(
-      //     `updateImages.images[${index}].position`,
-      //     image.position
-      //   );
-      // });
-
       filteredImagePositions.forEach((image, index) => {
         formData.append(`updateImages[${index}].imageId`, image.id);
         formData.append(`updateImages[${index}].imagePosition`, image.position);
       })
-
-      console.log("filteredImagePositions = ", filteredImagePositions);
-
 
       const filteredRemovedImages = removedImages.filter((image) => image.id);
       filteredRemovedImages.forEach((image, index) =>
@@ -69,11 +55,6 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
         formData.append(`removedImageIds[${index}]`, image.id);
       })
 
-      console.log("filteredRemovedImages = ", filteredRemovedImages);
-
-      // const newImages = images.filter((image) =>!("id" in image));
-      
-      // reduce 공부
       const newImages = images.reduce((acc, image, index) => {
         if (!("id" in image)) {
           acc.push({name: image.name ,image: image, position: index });
@@ -85,12 +66,7 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
         formData.append(`newImages[${index}].position`, image.position);
         formData.append(`newImages[${index}].name`, image.name);
       });
-      console.log("newImages = ", newImages);
 
-      console.log("===========================");
-
-      // setImages((prev) => [...prev]); //필요? 그냥 새로고침?
-      // submit할때 검증에서 실패하면 작성한 내용들이 그대로 다시 담겨있어야됨
     } else {
       images.forEach((image, index) => {
         formData.append(`images[${index}].image`, image);
@@ -99,18 +75,6 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
       });
     }
 
-    const entries = formData.entries();
-    for (const pair of entries) {
-      console.log(pair[0] + ": " + pair[1]);
-    }
-
-    //리펙토링 필요
-    // if (blogsValidation(filteredblogUrls)) {
-    //   onSubmit(formData);
-    // } else {
-    //   console.log("blogsValidation Failed");
-    //   alert("블로그 주소 http://, https:// 는 필수입니다.")
-    // }
     onSubmit(formData);
   };
 
@@ -123,8 +87,8 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
             <S.StyledCategoryButton
               type="button"
               $borderRadius="5px 0px 0px 5px"
-              $isSelected={selected === "camp"}
-              onClick={() => setSelected("camp")}
+              $isSelected={selectedCategory === "camp"}
+              onClick={() => setSelectedCategory("camp")}
             >
               <S.StyledText>캠핑</S.StyledText>
             </S.StyledCategoryButton>
@@ -132,8 +96,8 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
               type="button"
               $borderRadius="0px 5px 5px 0px"
               $borderLeft="none"
-              $isSelected={selected === "park"}
-              onClick={() => setSelected("park")}
+              $isSelected={selectedCategory === "park"}
+              onClick={() => setSelectedCategory("park")}
             >
               <S.StyledText>공원</S.StyledText>
             </S.StyledCategoryButton>

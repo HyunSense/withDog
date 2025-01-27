@@ -37,7 +37,8 @@ public class MemberServiceImpl implements MemberService{
             throw new CustomException(DUPLICATE_USERNAME);
         }
 
-        if (memberRepository.existsByEmail(signUpRequestDto.getEmail())) {
+        if (signUpRequestDto.getEmail() != null && !signUpRequestDto.getEmail().isEmpty() &&
+                memberRepository.existsByEmail(signUpRequestDto.getEmail())) {
             throw new CustomException(DUPLICATE_EMAIL);
         }
 
