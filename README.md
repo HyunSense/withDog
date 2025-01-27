@@ -88,3 +88,4 @@
  - **CI/CD**
     - Github Actions: 자동화된 빌드, 배포 파이프라인 구현
     - AWS CodeDeploy: EC2에 Spring Boot 애플리케이션 배포 자동화
+    - AWS SSM(Parameter Store)를 통한 애플리케이션 환경변수 설정
