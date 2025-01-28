@@ -10,10 +10,10 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = NotBlankElementsValidator.class)
-public @interface NotBlankElements {
+@Constraint(validatedBy = UrlListValidator.class)
+public @interface ValidUrl {
 
-    String message() default "List must not contain blank elements";
+    String message() default "Invalid URL format. Ensure it starts with 'http://' or 'https://'.";;
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

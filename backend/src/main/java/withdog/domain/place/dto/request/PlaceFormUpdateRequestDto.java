@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import withdog.common.validator.NotBlankElements;
+import withdog.common.validator.ValidUrl;
 import withdog.domain.place.dto.PlaceNewImageDto;
 import withdog.domain.place.dto.PlaceUpdateImagesDto;
 import withdog.domain.place.entity.Category;
@@ -44,7 +44,7 @@ public class PlaceFormUpdateRequestDto {
 
     private String description;
 
-    @NotBlankElements(message = "Not Blank BlogUrls")
+    @ValidUrl(message = "Not Blank BlogUrls")
     @Size(max = 4, message = "BlogUrls can have at most {max} items")
     private List<String> blogUrls;
 

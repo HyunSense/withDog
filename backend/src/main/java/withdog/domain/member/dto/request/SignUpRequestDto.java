@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 public class SignUpRequestDto {
-    @NotBlank
+    @NotBlank(message = "Not Blank username")
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "Not Blank password")
     private String password;
 
-    @NotBlank
+    @NotBlank(message = "Not Blank Name")
     private String name;
 
     private String email;

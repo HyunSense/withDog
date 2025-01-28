@@ -8,7 +8,7 @@ import lombok.*;
 import withdog.domain.place.dto.PlaceNewImageDto;
 import withdog.domain.place.entity.Category;
 import withdog.domain.place.entity.Place;
-import withdog.common.validator.NotBlankElements;
+import withdog.common.validator.ValidUrl;
 
 import java.util.List;
 
@@ -18,9 +18,9 @@ import java.util.List;
 @ToString
 public class PlaceFormRequestDto {
 
-    @NotNull(message = "CategoryId must not be null")
+    @NotNull(message = "Not Blank Category")
     @Min(value = 1, message = "CategoryId must be greater than 0")
-    private int categoryId;
+    private Integer categoryId;
 
     @NotBlank(message = "Not Blank Name")
     private String name;
@@ -34,14 +34,14 @@ public class PlaceFormRequestDto {
     private String addressPart2;
 
     @NotNull(message = "Not Blank Price")
-    private int price;
+    private Integer price;
 
     private String reservationUrl;
 
     private String description;
 
-    // Custom Validation Annotation
-    @NotBlankElements(message = "Not Blank BlogUrls")
+    // Custom Annotation
+    @ValidUrl
     @Size(max = 4, message = "BlogUrls can have at most {max} items")
     private List<String> blogUrls;
 

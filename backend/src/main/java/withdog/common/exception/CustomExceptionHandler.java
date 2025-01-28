@@ -7,9 +7,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import withdog.common.constant.ApiResponseCode;
+import withdog.common.dto.response.DataResponseDto;
 import withdog.common.dto.response.ResponseDto;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,13 +39,11 @@ public class CustomExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseDto> handleValidationException(MethodArgumentNotValidException e) {
 
-        List<String> ErrorMessageList = e.getBindingResult().getFieldErrors().stream()
-                .map(error -> error.getDefaultMessage()).collect(Collectors.toList());
-
-        String combinedMessage = String.join(", ", ErrorMessageList);
+        Map<String, String> errors = e.getBindingResult().getFieldErrors().stream()
+                .collect(Collectors.toMap(error -> error.getField(), error -> error.getDefaultMessage()));
 
         return ResponseEntity.status(ApiResponseCode.CONTENTS_ERROR.getStatus())
-        .body(ResponseDto.failure(ApiResponseCode.CONTENTS_ERROR.getCode(), combinedMessage));
+        .body(DataResponseDto.failure(ApiResponseCode.CONTENTS_ERROR.getCode(), ApiResponseCode.CONTENTS_ERROR.getMessage(), errors));
     }
 
 }
