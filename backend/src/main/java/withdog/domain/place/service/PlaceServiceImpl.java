@@ -69,13 +69,13 @@ public class PlaceServiceImpl implements PlaceService {
     public DataResponseDto<PlaceDetailResponseDto> findPlace(Long id) {
 
         // OneToMany 2개의 컬렉션
-        // PlaceImages fetch join, PlaceBlogs 별도 쿼리 조회
+        //TODO: PlaceImages fetch join, PlaceBlogs 별도 쿼리 조회 또는
+        //TODO: PlaceImages 지연로딩을 할지 고민 필요
         Place place = placeRepository.findByIdWithCategoryAndPlaceImages(id)
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_PLACE));
-        List<PlaceBlog> placeBlogs = placeBlogRepository.findByPlace(place);
 
         placeWeeklyStatsService.increaseHitCount(place);
-        PlaceDetailResponseDto dto = PlaceDetailResponseDto.fromEntity(place, placeBlogs);
+        PlaceDetailResponseDto dto = PlaceDetailResponseDto.fromEntity(place);
         return DataResponseDto.success(dto);
     }
 

@@ -24,32 +24,41 @@ repositories {
 }
 
 dependencies {
+    // Spring Boot BOM
+    implementation platform("org.springframework.boot:spring-boot-dependencies:3.3.4")
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'com.auth0:java-jwt:4.4.0'
-    implementation 'org.jsoup:jsoup:1.18.1'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
-    //aws
-    implementation(platform("software.amazon.awssdk:bom:2.29.30"))
-    implementation("software.amazon.awssdk:s3")
+    implementation 'com.auth0:java-jwt:4.4.0'
+    implementation 'org.jsoup:jsoup:1.18.1'
+
+    // AWS SDK BOM
+    implementation platform("software.amazon.awssdk:bom:2.29.30")
+    implementation 'software.amazon.awssdk:s3'
     implementation 'software.amazon.awssdk:sso' // identity center 사용시
     implementation 'software.amazon.awssdk:ssooidc' // identity center 사용시
 
-
-//    implementation 'org.springframework.boot:spring-boot-starter-actuator'
-//    implementation("io.micrometer:micrometer-registry-prometheus")
-
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // MySQL Connector
+    runtimeOnly 'com.mysql:mysql-connector-j:8.3.0'
+
+    // Development-only dependencies
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    developmentOnly 'com.h2database:h2'
+
+    // Testing dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+//    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+//    implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 tasks.named('test') {
