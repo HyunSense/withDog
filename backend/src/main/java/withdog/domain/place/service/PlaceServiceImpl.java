@@ -42,7 +42,6 @@ public class PlaceServiceImpl implements PlaceService {
     private final PlaceWeeklyStatsService placeWeeklyStatsService;
     private final PlaceImageService placeImageService;
     private final PlaceBlogService placeBlogService;
-    private final PlaceBlogRepository placeBlogRepository;
 
     @Transactional(readOnly = true)
     @Override
