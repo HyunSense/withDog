@@ -36,7 +36,7 @@ spring:
       # 정적 리소스 매핑 끄기
       add-mappings: false
   profiles:
-    include: aws, jwt, db
+    include: aws, jwt, db, testing
   output:
     ansi:
       enabled: always
@@ -49,6 +49,7 @@ spring:
         format_sql: true
         highlight_sql: true
         default_batch_fetch_size: 100
+    open-in-view: false
 
 server:
   address: 0.0.0.0 #외부접속허용

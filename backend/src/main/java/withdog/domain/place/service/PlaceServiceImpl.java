@@ -21,7 +21,9 @@ import withdog.domain.place.dto.response.PlaceDetailResponseDto;
 import withdog.domain.place.dto.response.PlaceResponseDto;
 import withdog.domain.place.entity.Category;
 import withdog.domain.place.entity.Place;
+import withdog.domain.place.entity.PlaceBlog;
 import withdog.domain.place.repository.CategoryRepository;
+import withdog.domain.place.repository.PlaceBlogRepository;
 import withdog.domain.place.repository.PlaceRepository;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
 import withdog.domain.stats.service.PlaceWeeklyStatsService;
@@ -40,6 +42,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final PlaceWeeklyStatsService placeWeeklyStatsService;
     private final PlaceImageService placeImageService;
     private final PlaceBlogService placeBlogService;
+    private final PlaceBlogRepository placeBlogRepository;
 
     @Transactional(readOnly = true)
     @Override
@@ -66,12 +69,13 @@ public class PlaceServiceImpl implements PlaceService {
     public DataResponseDto<PlaceDetailResponseDto> findPlace(Long id) {
 
         // OneToMany 2개의 컬렉션
-        // PlaceImages fetch join 후 PlaceBlogs 지연 로딩 조회
+        // PlaceImages fetch join, PlaceBlogs 별도 쿼리 조회
         Place place = placeRepository.findByIdWithCategoryAndPlaceImages(id)
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_PLACE));
+        List<PlaceBlog> placeBlogs = placeBlogRepository.findByPlace(place);
 
         placeWeeklyStatsService.increaseHitCount(place);
-        PlaceDetailResponseDto dto = PlaceDetailResponseDto.fromEntity(place);
+        PlaceDetailResponseDto dto = PlaceDetailResponseDto.fromEntity(place, placeBlogs);
         return DataResponseDto.success(dto);
     }
 

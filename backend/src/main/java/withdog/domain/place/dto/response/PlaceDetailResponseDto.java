@@ -7,6 +7,7 @@ import lombok.ToString;
 import withdog.domain.place.dto.PlaceBlogDto;
 import withdog.domain.place.dto.PlaceImageDto;
 import withdog.domain.place.entity.Place;
+import withdog.domain.place.entity.PlaceBlog;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,7 +30,7 @@ public class PlaceDetailResponseDto {
 
 
 //    @Builder
-    public PlaceDetailResponseDto(Place place) {
+    private PlaceDetailResponseDto(Place place, List<PlaceBlog> placeBlogs) {
 
         this.category = place.getCategory().getName();
         this.id = place.getId();
@@ -41,12 +42,14 @@ public class PlaceDetailResponseDto {
         this.reservationUrl = place.getReservationUrl();
         this.placeImages = place.getPlaceImages().stream()
                 .map(i -> PlaceImageDto.builder().placeImage(i).build()).collect(Collectors.toList());
-        this.placeBlogs = place.getPlaceBlogs().stream() // Lazy 로딩 발생
+//        this.placeBlogs = place.getPlaceBlogs().stream() // Lazy 로딩 발생
+//                .map(b -> PlaceBlogDto.builder().placeBlog(b).build()).collect(Collectors.toList());
+        this.placeBlogs = placeBlogs.stream()
                 .map(b -> PlaceBlogDto.builder().placeBlog(b).build()).collect(Collectors.toList());
     }
 
 
-    public static PlaceDetailResponseDto fromEntity(Place place) {
-        return new PlaceDetailResponseDto(place);
+    public static PlaceDetailResponseDto fromEntity(Place place, List<PlaceBlog> placeBlogs) {
+        return new PlaceDetailResponseDto(place, placeBlogs);
     }
 }
