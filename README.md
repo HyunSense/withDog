@@ -66,7 +66,7 @@
 **AWS S3** | - **이미지 파일 저장소**: 반려견 관련 이미지 파일 저장 및 안정적인 제공<br>- **Spring Boot 배포 저장소**: 백엔드 애플리케이션 배포 파일 저장 및 관리<br>- **정적 웹호스팅**: 프론트엔드 정적 파일(HTML, CSS, JS) 호스팅으로 서버리스 환경 구현<br> → 이를 통해 무중단 배포 및 빠른 업데이트가 가능
 **AWS CloudFront** | - 엣지 서버를 통한 콘텐츠 캐싱 및 배포<br> - **빠른 배포 및 낮은 지연 시간**: 정적 콘텐츠의 빠른 로딩과 응답속도 개선<br> (이미지 로딩 속도 약 30% 개선)<br> - **캐싱 정책 적용**: 원본(S3) 요청 횟수 대폭 감소 및 안정적 서비스 제공
 **Nginx** | 리버스 프록시 및 SSL (Let's Encrypt) 설정으로 HTTPS 환경 제공, `https://api.withdog.store`<br> -> `http://localhost:8080` 요청을 중계
-**GitHub Actions + CodeDeploy** | CI/CD 자동화 배포 (배포 시간 단축: 5분 → 1분)
+**GitHub Actions<br> + CodeDeploy** | CI/CD 자동화 배포 (배포 시간 단축: 5분 → 1분)
 
 ## Architecture
 ![architecture](https://github.com/user-attachments/assets/d2f98c37-711b-46c8-917e-eb094caacf63)
