@@ -71,6 +71,12 @@
 ## Architecture
 ![architecture](https://github.com/user-attachments/assets/d2f98c37-711b-46c8-917e-eb094caacf63)
 
+## ERD
+### 🔗 [ERD-cloud](https://www.erdcloud.com/d/J8ax78zWsn5kLZ5Fj)
+![withdog-erd](https://github.com/user-attachments/assets/bfcfca2f-a9b6-4a07-94d9-b94e185485d8)
+- 북마크 설계: Member-Place 간 N:M 관계를 연결테이블(bookmarks)로 분리 (복합 PK로 데이터 무결성 보장)
+- 주간 통계: place_weekly-stats 테이블을 통해 조회수/북마크 추적 (월요일 기준 롤링)
+
 ## 📈 핵심 기능
 ### 1️⃣ 장소 탐색
 - 카테고리/키워드 검색:
@@ -105,12 +111,6 @@
 - 안전한 계정 관리:
     - JWT 기반 자동 토큰 갱신
     - Redis를 활용한 보안 강화(추후 지원 예정)
-
-## ERD
-### 🔗 [ERD-cloud](https://www.erdcloud.com/d/J8ax78zWsn5kLZ5Fj)
-![withdog-erd](https://github.com/user-attachments/assets/bfcfca2f-a9b6-4a07-94d9-b94e185485d8)
-- 북마크 설계: Member-Place 간 N:M 관계를 연결테이블(bookmarks)로 분리 (복합 PK로 데이터 무결성 보장)
-- 주간 통계: place_weekly-stats 테이블을 통해 조회수/북마크 추적 (월요일 기준 롤링)
 
 ## 🎯 성과 및 배운 점
 - UI/UX 개선
