@@ -72,7 +72,7 @@ const DetailMain = ({ place }) => {
             >
               <S.StyledDetailInfoBlogImgBox>
                 <S.StyledDetailInfoBlogImg
-                  referrerPolicy="same-origin"
+                  referrerPolicy="no-referrer"
                   src={blog.imageUrl}
                 />
                 <S.StyledDetailInfoBlogImgTextBox>
