@@ -56,6 +56,9 @@ public class Place {
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaceWeeklyStats> placeWeeklyStats = new ArrayList<>();
 
+//    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<PlaceDetailType> placeDetailTypes = new ArrayList<>();
+
     //TODO: 연관된 엔티티(PlaceBlog, PlaceImage) 에서는 Place Entity를 Setter로 사용해도되는지?
     public void addBlog(PlaceBlog placeBlog) {
         placeBlogs.add(placeBlog);
