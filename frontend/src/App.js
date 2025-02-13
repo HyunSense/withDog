@@ -17,8 +17,12 @@ import AdminPlaceEdit from "./components/admin/AdminPlaceEdit";
 import AdminPlaceSave from "./components/admin/AdminPlaceSave";
 import SearchPage from "./components/pages/SearchPage";
 import SocialLoginPage from "./components/pages/user/SocialLoginPage";
+import SearchModalPage from "./components/pages/SearchModalPage";
+import useViewportHeight from "./hooks/useViewportHeight";
 
 function App() {
+  useViewportHeight();
+
   return (
     <>
       <GlobalStyle />
@@ -29,6 +33,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/places" element={<HomePage />} />
             <Route path="/search" element={<SearchPage />} />
+            <Route path="/search/modal" element={<SearchModalPage />} />
             <Route path="/login-success" element={<SocialLoginPage />} />
 
             <Route element={<NoLoginRedirect />}>

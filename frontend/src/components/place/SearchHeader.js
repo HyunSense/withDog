@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import PrevButton from "../common/PrevButton";
-import Search from "./Search";
 
 const StyledSearchHeader = styled.header`
   position: sticky;

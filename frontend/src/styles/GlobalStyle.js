@@ -78,6 +78,11 @@ export const GlobalStyle = createGlobalStyle`
     font-family: 'Spoqa Han Sans Neo', 'sans-serif'; // 명시적으로 폰트 지정
     font-size: inherit; // 폰트 크기를 상속받게 설정
   }
+
+  #modal-root {
+    position: relative;
+    z-index: 1000;
+  }
 `;
 
 

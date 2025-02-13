@@ -51,3 +51,8 @@ export const getTop3Places = (params) =>
 // GET PlacesSearch
 export const getSearch = (params) =>
   api.get("/places/search", {params: params});
+
+// GET SearchFilter
+export const getSearchFilter = (params) => 
+  // api.get("/places/search/result", {params: params});
+  api.get(`/places/search/result?${params}`);

@@ -1,108 +1,13 @@
-import { useState } from "react";
-import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import * as S from "../../styles/Search.Styled";
 
-const StyledSearch = styled.section`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 15px 15px 0 15px;
-  margin-bottom: 30px;
-`;
-
-const StyledSearchBox = styled.div`
-  display: flex;
-  align-items: center;
-  border: 1px solid #dde2e3;
-  border-radius: 6px;
-  overflow: hidden;
-  width: 100%;
-  height: 40px;
-`;
-
-const StyledComboBox = styled.select`
-  border: none;
-  background: none;
-  padding: 0 10px;
-  padding-right: 24px;
-  font-size: 1.4rem;
-  cursor: pointer;
-  height: 100%;
-
-  appearance: none;
-  -webkit-appearance: none; /* Safari 지원 */
-  -moz-appearance: none; /* Firefox 지원 */
-  background: url("data:image/svg+xml,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22%230E0E0E%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20d%3D%22M5.1065%209.66987C5.3994%209.37697%205.87427%209.37697%206.16716%209.66987L12.0008%2015.5035L17.8344%209.66987C18.1273%209.37697%2018.6022%209.37697%2018.8951%209.66987C19.188%209.96276%2019.188%2010.4376%2018.8951%2010.7305L12.5311%2017.0945C12.2382%2017.3874%2011.7634%2017.3874%2011.4705%2017.0945L5.1065%2010.7305C4.81361%2010.4376%204.81361%209.96276%205.1065%209.66987Z%22%20fill%3D%22current%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E")
-    no-repeat right center;
-  &:focus {
-    outline: none;
-  }
-`;
-
-const StyledSearchInput = styled.input`
-  flex: 1;
-  border: none;
-  padding: 0 10px;
-  font-size: 1.4rem;
-  height: 100%;
-
-  border-left: 1px solid #dde2e3;
-  /* border-right: 1px solid #dde2e3; */
-
-  &:focus {
-    outline: none;
-  }
-`;
-
-const StyledSearchButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: none;
-  padding: 0 15px;
-  cursor: pointer;
-  font-size: 1.4rem;
-  height: 100%;
-`;
-
-const Search = ({initType, initKeyword}) => {
-  const [searchType, setSearchType] = useState(initType || "name");
-  const [keyword, setKeyword] = useState(initKeyword || "");
-
-  const handleSearch = () => {
-    if (!keyword.trim()) {
-        alert("검색어를 입력하세요.");
-        return;
-    }
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
-  };
-
+const Search = ({ onOpen }) => {
   return (
-    <StyledSearch>
-      <StyledSearchBox>
-        <StyledComboBox
-          value={searchType}
-          onChange={(e) => setSearchType(e.target.value)}
-        >
-          <option value="name">이름</option>
-          <option value="area">지역</option>
-        </StyledComboBox>
-        <StyledSearchInput
-          placeholder="지역 또는 장소를 입력하세요."
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-        <StyledSearchButton onClick={handleSearch}>
+    <S.StyledSearch>
+      <S.StyledSearchFakeInput onClick={onOpen}>
+        <S.StyledSearchIconBox>
           <svg
-            width="22"
-            height="22"
+            width="20"
+            height="20"
             viewBox="0 0 24 24"
             fill="#4E5354"
             xmlns="http://www.w3.org/2000/svg"
@@ -114,9 +19,10 @@ const Search = ({initType, initKeyword}) => {
               fill="current"
             ></path>
           </svg>
-        </StyledSearchButton>
-      </StyledSearchBox>
-    </StyledSearch>
+        </S.StyledSearchIconBox>
+        <S.StyledFakeInputText>어디로 떠날까요?</S.StyledFakeInputText>
+      </S.StyledSearchFakeInput>
+    </S.StyledSearch>
   );
 };
 
