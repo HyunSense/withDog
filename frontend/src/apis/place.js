@@ -56,3 +56,6 @@ export const getSearch = (params) =>
 export const getSearchFilter = (params) => 
   // api.get("/places/search/result", {params: params});
   api.get(`/places/search/result?${params}`);
+
+export const getSearchPlaces = (params) => 
+  api.get(`/places/search/result?${params}`);

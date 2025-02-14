@@ -74,7 +74,7 @@ export const StyledSearchKeywordBox = styled.div`
   display: flex;
   flex-direction: column;
   gap: 15px;
-  margin: 10px 15px 0px 15px;
+  margin: 2px 15px 0px 15px;
   padding: 20px 16px;
   background-color: #ffffff;
   border-radius: 8px;

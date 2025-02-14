@@ -1,6 +1,6 @@
 import * as S from "../../styles/Search.Styled";
 
-const Search = ({ onOpen }) => {
+const SearchFake = ({ onOpen }) => {
   return (
     <S.StyledSearch>
       <S.StyledSearchFakeInput onClick={onOpen}>
@@ -26,4 +26,4 @@ const Search = ({ onOpen }) => {
   );
 };
 
-export default Search;
+export default SearchFake;

@@ -19,6 +19,7 @@ import SearchPage from "./components/pages/SearchPage";
 import SocialLoginPage from "./components/pages/user/SocialLoginPage";
 import SearchModalPage from "./components/pages/SearchModalPage";
 import useViewportHeight from "./hooks/useViewportHeight";
+import SearchResult from "./components/place/SearchResult";
 
 function App() {
   useViewportHeight();
@@ -32,6 +33,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/places" element={<HomePage />} />
+            <Route path="/search/result" element={<SearchResult />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/search/modal" element={<SearchModalPage />} />
             <Route path="/login-success" element={<SocialLoginPage />} />

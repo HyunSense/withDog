@@ -6,11 +6,13 @@ import FilterSection from "../searchFilter/FilterSection";
 import FilterItem from "../searchFilter/FilterItem";
 import * as S from "../../styles/SearchFilter.Styled";
 import { getSearchFilter } from "../../apis/place";
+import { useNavigate } from "react-router-dom";
 
 const SearchModal = ({ onClose }) => {
 
   const [keyword, setKeyword] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -44,25 +46,23 @@ const SearchModal = ({ onClose }) => {
   };
 
   const handleSearch = async () => {
-    console.log("search selectedFilters = ", selectedFilters);
 
-    const queryObj = { ...selectedFilters };
+    const queryObj = {...selectedFilters};
     if (keyword.trim()) {
       queryObj.keyword = keyword;
     }
-    console.log("queryObj = ", queryObj);
-
     const queryStr = new URLSearchParams(queryObj).toString();
-    console.log("queryStr = ", queryStr);
+    navigate(`/search/result?${queryStr}`);
+    onClose();
 
-    try {
-      const response = await getSearchFilter(queryStr);
+  };
 
-      console.log("response = ", response);
-    } catch (error) {
-      console.error("검색 중 오류 발생:", error);
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
     }
   };
+
   return ReactDOM.createPortal(
     <S.StyledModalOverlay>
       <S.StyledSearchModal>
@@ -120,6 +120,7 @@ const SearchModal = ({ onClose }) => {
                 placeholder="장소를 검색하세요."
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
+                onKeyDown={handleKeyDown}
               />
             </S.StyledSearchKeywordInputBox>
           </S.StyledSearchKeywordBox>

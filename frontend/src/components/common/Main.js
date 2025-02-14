@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Popular from "../place/Popular";
 import PlaceList from "../place/PlaceList";
-import Nav from "./Nav";
-import Search from "../place/Search";
+import SearchFake from "../place/SearchFake";
 import SearchModal from "../pages/SearchModal";
 
 const StyledMain = styled.main``;
@@ -14,8 +13,7 @@ const Main = () => {
   return (
     <>
       <StyledMain>
-        <Search onOpen={() => setIsModalOpen(true)}/>
-        {/* <Nav /> */}
+        <SearchFake onOpen={() => setIsModalOpen(true)} />
         <Popular />
         <PlaceList />
       </StyledMain>
