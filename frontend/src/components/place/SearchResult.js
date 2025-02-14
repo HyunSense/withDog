@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import * as S from "../../styles/PlaceList.Styled";
-import { getAllPlaces, getSearchPlaces } from "../../apis/place";
-import { CATEGORY_MAP } from "../../constants/categoryMap";
+import { getSearchPlaces } from "../../apis/place";
 import PlaceItems from "./PlaceItems";
 import * as StyledPlaceList from "../../styles/PlaceList.Styled";
 import styled from "styled-components";
@@ -47,11 +45,6 @@ const StyledSearchResultInputBox = styled.div`
   /* margin: 10px 0 0 0; */
   padding: 0 16px 20px 16px;
   background-color: #ffffff;
-
-  /* transition: opacity 200ms ease-in-out, transform 200ms ease-in-out; */
-  /* opacity: ${props => (props.isVisible ? 1 : 0)}; */
-  /* transform: ${props => (props.isVisible ? 'translateY(0)' : 'translateY(-100%)')}; */
-  /* pointer-events: ${props => (!props.isVisible && 'none')}; */
 `;
 
 const StyledSearchResultInput = styled.div`
@@ -65,7 +58,6 @@ const StyledSearchResultInput = styled.div`
   padding: 0 20px;
   cursor: pointer;
   background-color: #f8fafb;
-  /* background-color: #f5f5f5; */
 `;
 
 // StyledSearchIconBox 통합필요?
@@ -106,69 +98,57 @@ const StyledPlaceListBox = styled.div`
 `;
 
 const SearchResult = () => {
-
-//   const [isVisible, setIsVisible] = useState(true);
-//   const [lastScrollY, setLastScrollY] = useState(0);
-
-//   const handleScroll = () => {
-//     if (window.scrollY > lastScrollY) {
-//       // Scroll down
-//       setIsVisible(false);
-//     } else {
-//       // Scroll up
-//       setIsVisible(true);
-//     }
-//     setLastScrollY(window.scrollY);
-//   };
-
-//   useEffect(() => {
-//     window.addEventListener("scroll", handleScroll);
-
-//     // Clean up event listener
-//     return () => {
-//       window.removeEventListener("scroll", handleScroll);
-//     };
-//   }, []);
-
-
-
-
-
-
-  
-
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [places, setPlaces] = useState([]);
   const [page, setPage] = useState(0); // page는 0부터 시작
   const [hasMore, setHasMore] = useState(true);
   const loadMoreRef = useRef(null);
   const [searchParams] = useSearchParams();
-  const [isLoading, setIsLoading] = useState(false);
-  const [queryObj, setQueryObj] = useState();
+  const searchParamsRef = useRef(searchParams);
 
   useEffect(() => {
-    setQueryObj(Object.fromEntries(searchParams.entries()));
-
     setPlaces([]);
     setHasMore(true);
     setPage(0);
   }, [searchParams]);
 
+  // useRef를 통해 searchParams 최신값 유지
+  useEffect(() => {
+    searchParamsRef.current = searchParams;
+  }, [searchParams]);
+
+  const fetchSearchResult = useCallback(async (pageNum) => {
+    try {
+      const params = {
+        ...Object.fromEntries(searchParamsRef.current.entries()),
+        page: pageNum,
+        size: 10,
+      };
+      const response = await getSearchPlaces(params);
+      const { content, sliceInfo } = response.data.data;
+      setPlaces((prev) => [...prev, ...content]);
+      if (sliceInfo.last) {
+        setHasMore(false);
+      } else {
+        setPage((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.log("검색 결과 오류 = ", error);
+    }
+  }, []);
+
   const onIntersection = useCallback(
     (entries) => {
       const firstEntity = entries[0];
       if (firstEntity.isIntersecting && hasMore) {
-        fetchSearchResult(page, queryObj);
+        fetchSearchResult(page);
       }
     },
-    [hasMore, page, queryObj]
+    [hasMore, page, fetchSearchResult]
   );
-
 
   useEffect(() => {
     const observer = new IntersectionObserver(onIntersection, { threshold: 1 });
-
     const currentRef = loadMoreRef.current;
 
     if (currentRef) {
@@ -182,31 +162,6 @@ const SearchResult = () => {
     };
   }, [onIntersection]);
 
-  const fetchSearchResult = async (page, queryObj) => {
-    setIsLoading(true);
-    try {
-      const updatedQueryObj = { ...queryObj, page, size: 10 };
-      const queryStr = new URLSearchParams(updatedQueryObj).toString();
-
-      const response = await getSearchPlaces(queryStr);
-      console.log("response = ", response);
-      const placeList = response.data.data.content;
-      const sliceInfo = response.data.data.sliceInfo;
-      setPlaces((prev) => [...prev, ...placeList]);
-
-      if (sliceInfo.last) {
-        setHasMore(false);
-      } else {
-        setPage((prev) => prev + 1);
-      }
-    } catch (error) {
-      console.log("검색 결과 오류 = ", error);
-    } 
-    finally {
-        setIsLoading(false);
-    }
-  };
-
   return (
     <>
       <StyledSearchHeader>
@@ -217,7 +172,6 @@ const SearchResult = () => {
         <StyledDummyBox></StyledDummyBox>
       </StyledSearchHeader>
       <StyledSearchResultInputBox>
-      {/* <StyledSearchResultInputBox isVisible={isVisible}> */}
         <StyledSearchResultInput onClick={() => setIsModalOpen(true)}>
           <StyledSearchResultIconBox>
             <svg
@@ -239,9 +193,9 @@ const SearchResult = () => {
             <StyledSearchResultInputText>
               {searchParams.get("keyword") || "어디로 떠날까요?"}
             </StyledSearchResultInputText>
-            <StyledSearchResultInputInfo>
-              검색조건 캠핑,펜션 외 2 없으면 필터
-            </StyledSearchResultInputInfo>
+            {/* <StyledSearchResultInputInfo> */}
+            {/* 검색조건 캠핑,펜션 외 2 없으면 필터 */}
+            {/* </StyledSearchResultInputInfo> */}
           </StyledSearchResultInputTextBox>
         </StyledSearchResultInput>
       </StyledSearchResultInputBox>
