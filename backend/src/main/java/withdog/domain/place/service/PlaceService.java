@@ -4,16 +4,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import withdog.common.dto.response.DataResponseDto;
 import withdog.common.dto.response.ResponseDto;
-import withdog.domain.bookmark.dto.request.DeleteBookmarksRequestDto;
-import withdog.domain.place.dto.request.PlaceDeleteRequestDto;
-import withdog.domain.place.dto.request.PlaceFormRequestDto;
-import withdog.domain.place.dto.request.PlaceFormUpdateRequestDto;
-import withdog.domain.place.dto.response.BookmarkedPlaceResponseDto;
+import withdog.domain.place.dto.request.*;
 import withdog.domain.place.dto.response.PlaceDetailResponseDto;
 import withdog.domain.place.dto.response.PlaceResponseDto;
-
-import java.io.IOException;
-import java.util.List;
 
 public interface PlaceService {
 
@@ -21,7 +14,8 @@ public interface PlaceService {
 
     DataResponseDto<PlaceDetailResponseDto> findPlace(Long id);
 
-    ResponseDto save(PlaceFormRequestDto dto);
+//    ResponseDto save(PlaceFormRequestDto dto);
+    ResponseDto save(PlaceFormRequestDto2 dto);
 
     ResponseDto update(Long id, PlaceFormUpdateRequestDto dto);
 
@@ -30,4 +24,10 @@ public interface PlaceService {
     ResponseDto getTop3(int categoryId);
 
     DataResponseDto<Slice<PlaceResponseDto>> searchPlace(String type, String keyword, Pageable pageable);
+
+    ResponseDto searchFilterPlace(PlaceSearchRequestDto dto, Pageable pageable);
+
+    ResponseDto recentPlaces(int limit);
+
+    ResponseDto randomPlaces(int limit);
 }

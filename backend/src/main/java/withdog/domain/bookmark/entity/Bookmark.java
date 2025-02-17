@@ -11,7 +11,7 @@ import withdog.domain.place.entity.Place;
 @Entity
 @Getter
 @Table(name = "bookmarks")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @IdClass(BookmarkId.class)
 public class Bookmark {
 

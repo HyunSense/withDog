@@ -18,9 +18,12 @@ import withdog.domain.bookmark.service.BookmarkService;
 import withdog.domain.place.dto.request.PlaceDeleteRequestDto;
 import withdog.domain.place.dto.request.PlaceFormRequestDto;
 import withdog.domain.place.dto.request.PlaceFormUpdateRequestDto;
+import withdog.domain.place.dto.request.PlaceSearchRequestDto;
 import withdog.domain.place.dto.response.PlaceDetailResponseDto;
 import withdog.domain.place.dto.response.PlaceResponseDto;
 import withdog.domain.place.service.PlaceService;
+
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -47,6 +50,13 @@ public class PlaceController {
         DataResponseDto<Slice<PlaceResponseDto>> responseBody = placeService.findAllPlace(categoryId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    }
+
+    @GetMapping("/places/types")
+    public ResponseEntity<ResponseDto> getPlaceTypes(@RequestParam List<String> types, @RequestParam int limit) {
+
+        
+        return null;
     }
 
     @GetMapping("/places/{id}")
@@ -125,6 +135,34 @@ public class PlaceController {
     public ResponseEntity<DataResponseDto<Slice<PlaceResponseDto>>> getSearchPlace(@RequestParam(defaultValue = "name") String type, @RequestParam(required = false ,defaultValue = "") String keyword, @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
         DataResponseDto<Slice<PlaceResponseDto>> responseBody = placeService.searchPlace(type, keyword, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    }
+
+    @GetMapping("/places/recent")
+    public ResponseEntity<ResponseDto> getRecentPlaces(@RequestParam(name = "size") int limit) {
+
+        int maxLimit = Math.min(limit, 10);
+        ResponseDto responseBody = placeService.recentPlaces(maxLimit);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    }
+
+    @GetMapping("/places/random")
+    public ResponseEntity<ResponseDto> getRandomPlace(@RequestParam(name = "size") int limit) {
+
+        int maxLimit = Math.min(limit, 10);
+        ResponseDto responseBody = placeService.randomPlaces(maxLimit);
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    }
+
+
+    @GetMapping("/places/search/result")
+    public ResponseEntity<ResponseDto> getSearchFilter(@ModelAttribute PlaceSearchRequestDto dto, @PageableDefault(page = 0, size = 10) Pageable pageable) {
+
+        log.info("placeSearchRequestDto: {}", dto.toString());
+        log.info("pageable [OFFSET: {}] [SIZE: {}]", pageable.getOffset(), pageable.getPageSize());
+
+        ResponseDto responseBody = placeService.searchFilterPlace(dto, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }

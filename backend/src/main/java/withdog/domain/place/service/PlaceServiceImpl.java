@@ -9,22 +9,23 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import withdog.common.constant.ApiResponseCode;
+import withdog.common.dto.SliceInfo;
 import withdog.common.dto.response.DataResponseDto;
 import withdog.common.dto.response.ResponseDto;
+import withdog.common.dto.response.SliceResponseDto;
 import withdog.common.exception.CustomException;
 import withdog.domain.place.dto.PlaceNewImageDto;
 import withdog.domain.place.dto.PlaceUpdateImagesDto;
-import withdog.domain.place.dto.request.PlaceDeleteRequestDto;
-import withdog.domain.place.dto.request.PlaceFormRequestDto;
-import withdog.domain.place.dto.request.PlaceFormUpdateRequestDto;
+import withdog.domain.place.dto.request.*;
 import withdog.domain.place.dto.response.PlaceDetailResponseDto;
 import withdog.domain.place.dto.response.PlaceResponseDto;
 import withdog.domain.place.entity.Category;
 import withdog.domain.place.entity.Place;
-import withdog.domain.place.entity.PlaceBlog;
+import withdog.domain.place.entity.filter.FilterOption;
+import withdog.domain.place.entity.filter.PlaceFilter;
 import withdog.domain.place.repository.CategoryRepository;
-import withdog.domain.place.repository.PlaceBlogRepository;
 import withdog.domain.place.repository.PlaceRepository;
+import withdog.domain.place.repository.filter.FilterOptionRepository;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
 import withdog.domain.stats.service.PlaceWeeklyStatsService;
 
@@ -42,6 +43,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final PlaceWeeklyStatsService placeWeeklyStatsService;
     private final PlaceImageService placeImageService;
     private final PlaceBlogService placeBlogService;
+    private final FilterOptionRepository filterOptionRepository;
 
     @Transactional(readOnly = true)
     @Override
@@ -79,13 +81,45 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     // 유저 인증, 권한 Spring Security 위임
+//    @Override
+//    public ResponseDto save(PlaceFormRequestDto dto) {
+//
+//        Category category = categoryRepository.findById(dto.getCategoryId())
+//                .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY));
+//        Place place = dto.toEntity(category);
+//        placeRepository.save(place);
+//
+//        List<PlaceNewImageDto> newImageDtos = dto.getImages();
+//
+//        if (newImageDtos != null && !newImageDtos.isEmpty()) {
+//            placeImageService.save(place, newImageDtos);
+//        }
+//
+//        List<String> blogUrls = dto.getBlogUrls();
+//        if (blogUrls != null && !blogUrls.isEmpty()) {
+//            placeBlogService.save(place, blogUrls);
+//        }
+//
+//        return ResponseDto.success();
+//    }
+
     @Override
-    public ResponseDto save(PlaceFormRequestDto dto) {
+    public ResponseDto save(PlaceFormRequestDto2 dto) {
 
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY));
         Place place = dto.toEntity(category);
         placeRepository.save(place);
+
+        List<Integer> filterOptionIds = dto.getFilterOptionId();
+        for (Integer filterOptionId : filterOptionIds) {
+            FilterOption filterOption = filterOptionRepository.findById(filterOptionId)
+                    .orElseThrow(() -> new IllegalArgumentException("예외처리 필요함"));
+
+            PlaceFilter placeFilter = new PlaceFilter(place, filterOption);
+            place.addFilter(placeFilter);
+        }
+
 
         List<PlaceNewImageDto> newImageDtos = dto.getImages();
 
@@ -164,7 +198,7 @@ public class PlaceServiceImpl implements PlaceService {
         int pageSize = 3;
 
         List<PlaceWeeklyStats> placeWeeklyStatsList = placeWeeklyStatsService.getTop3PlaceWeeklyStats(categoryId, PageRequest.of(pageNumber, pageSize));
-        List<PlaceResponseDto> top3 = PlaceResponseDto.fromEntityList(placeWeeklyStatsList);
+        List<PlaceResponseDto> top3 = PlaceResponseDto.fromEntityPlaceWeeklyStatsList(placeWeeklyStatsList);
 
         return DataResponseDto.success(top3);
     }
@@ -178,4 +212,46 @@ public class PlaceServiceImpl implements PlaceService {
         return DataResponseDto.success(dto);
     }
 
+    // TODO: 데이터 반환타입 ResponseDto, DataResponseDto 통일이 필요
+    @Override
+    public ResponseDto searchFilterPlace(PlaceSearchRequestDto dto, Pageable pageable) {
+
+        Slice<Place> slicePlaces = placeRepository.searchPlacesWithMultiFilters(
+                dto.getKeyword(), dto.getCity(), dto.getTypes(),
+                dto.getPetAccessTypes(), dto.getPetSizes(), dto.getServices(), pageable);
+
+        List<Place> places = slicePlaces.getContent();
+        boolean hasNext = slicePlaces.hasNext();
+        boolean first = slicePlaces.isFirst();
+        boolean last = slicePlaces.isLast();
+        int page = slicePlaces.getNumber();
+        int size = slicePlaces.getSize();
+
+        List<PlaceResponseDto> placeResponseDto = PlaceResponseDto.fromEntityList(places);
+        SliceInfo sliceInfo = new SliceInfo(page, size, first, last, hasNext);
+        SliceResponseDto<PlaceResponseDto> responseDtos = new SliceResponseDto<>(sliceInfo, placeResponseDto);
+
+        return DataResponseDto.success(responseDtos);
+    }
+
+    @Override
+    public ResponseDto recentPlaces(int limit) {
+
+        PageRequest pageRequest = PageRequest.of(0, limit);
+
+        List<Place> places = placeRepository.findByOrderByCreatedAtDesc(pageRequest);
+        List<PlaceResponseDto> responseDtos = PlaceResponseDto.fromEntityList(places);
+
+        return DataResponseDto.success(responseDtos);
+    }
+
+    @Override
+    public ResponseDto randomPlaces(int limit) {
+
+        PageRequest pageRequest = PageRequest.of(0, limit);
+        List<Place> places = placeRepository.findByOrderByRandom(pageRequest);
+        List<PlaceResponseDto> responseDtos = PlaceResponseDto.fromEntityList(places);
+
+        return DataResponseDto.success(responseDtos);
+    }
 }

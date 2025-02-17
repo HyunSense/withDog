@@ -43,7 +43,12 @@ public class PlaceResponseDto {
         return places.map(p -> new PlaceResponseDto(p));
     }
 
-    public static List<PlaceResponseDto> fromEntityList(List<PlaceWeeklyStats> placeWeeklyStatsList) {
+    public static List<PlaceResponseDto> fromEntityPlaceWeeklyStatsList(List<PlaceWeeklyStats> placeWeeklyStatsList) {
         return placeWeeklyStatsList.stream().map(p -> new PlaceResponseDto(p.getPlace())).collect(Collectors.toList());
+    }
+
+    public static List<PlaceResponseDto> fromEntityList(List<Place> places) {
+
+        return places.stream().map(p -> new PlaceResponseDto(p)).collect(Collectors.toList());
     }
 }

@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @Getter
 @Entity
 @Table(name = "place_weekly_stats")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class PlaceWeeklyStats {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

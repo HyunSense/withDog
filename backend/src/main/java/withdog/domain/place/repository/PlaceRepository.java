@@ -28,4 +28,14 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, PlaceReposi
     @Query("select distinct p from Place p left join fetch p.category left join fetch p.placeImages pi where p.id = :id order by pi.imagePosition")
     Optional<Place> findByIdWithCategoryAndPlaceImages(@Param("id") Long id);
 
+    @Query("select distinct p from Place p join p.placeFilters pf join pf.filterOption fo where fo.value = :type")
+    Slice<Place> findPlacesByType(@Param("type") String type, Pageable pageable);
+
+    @Query("select distinct p from Place p join p.placeFilters pf join pf.filterOption fo where fo.value in :types")
+    List<Place> findPlacesByTypes(@Param("types") List<String> types, Pageable pageable);
+
+    List<Place> findByOrderByCreatedAtDesc(Pageable pageable);
+
+    @Query("select p from Place p order by rand()")
+    List<Place> findByOrderByRandom(Pageable pageable);
 }

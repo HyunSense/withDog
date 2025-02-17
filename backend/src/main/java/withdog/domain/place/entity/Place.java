@@ -9,6 +9,8 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import withdog.domain.bookmark.entity.Bookmark;
+import withdog.domain.place.entity.filter.FilterOption;
+import withdog.domain.place.entity.filter.PlaceFilter;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
 
 import java.time.LocalDateTime;
@@ -18,7 +20,7 @@ import java.util.List;
 @Entity
 @Getter
 @Table(name = "places")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Place {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,13 +58,17 @@ public class Place {
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaceWeeklyStats> placeWeeklyStats = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<PlaceDetailType> placeDetailTypes = new ArrayList<>();
+    // ---- 검색 필터링을 위한 필드 추가 start ----
+
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PlaceFilter> placeFilters = new ArrayList<>();
+
+    // ---- 검색 필터링을 위한 필드 추가 end ----
 
     //TODO: 연관된 엔티티(PlaceBlog, PlaceImage) 에서는 Place Entity를 Setter로 사용해도되는지?
     public void addBlog(PlaceBlog placeBlog) {
-        placeBlogs.add(placeBlog);
         placeBlog.setPlace(this);
+        placeBlogs.add(placeBlog);
     }
 
     public void addImage(PlaceImage placeImage) {
@@ -70,6 +76,11 @@ public class Place {
         placeImages.add(placeImage);
         this.thumbnailUrl = placeImages.get(0).getImageUrl();
     }
+
+    public void addFilter(PlaceFilter placeFilter) {
+        placeFilters.add(placeFilter);
+    }
+
 
     public void update(Place updatePlace) {
         this.category = updatePlace.getCategory();
