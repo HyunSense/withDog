@@ -3,26 +3,22 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import * as S from "../../styles/AdminEditItem.Styled";
 
-const AdminEditItem = ({ item, checked, onChange }) => {
+const AdminEditItem = ({ item: place, checked, onChange }) => {
   const navigate = useNavigate();
 
   const handleEditClick = () => {
-    navigate(`${item.id}`);
+    navigate(`${place.id}`);
   };
 
   return (
     <S.StyledItem>
-      <S.StyledItemInfo
-        to={`/places/${item.category}/${encodeURIComponent(item.name)}/${
-          item.id
-        }`}
-      >
+      <S.StyledItemInfo to={`/places/${place.category}/${place.id}`}>
         <S.StyledItemThumbnailBox>
-          <S.StyledItemThumbnail src={item.thumbnailUrl} alt="이미지" />
+          <S.StyledItemThumbnail src={place.thumbnailUrl} alt="이미지" />
         </S.StyledItemThumbnailBox>
         <S.StyledItemTextBox>
-          <S.StyledPlaceText>{item.name}</S.StyledPlaceText>
-          <S.StyledAddressText>{item.address}</S.StyledAddressText>
+          <S.StyledPlaceText>{place.name}</S.StyledPlaceText>
+          <S.StyledAddressText>{place.address}</S.StyledAddressText>
         </S.StyledItemTextBox>
       </S.StyledItemInfo>
       <S.StyledItemUpdateBox>
@@ -31,11 +27,11 @@ const AdminEditItem = ({ item, checked, onChange }) => {
         </S.StyledItemEditButton>
         <S.StyledItemRemoveCheckBox
           type="checkbox"
-          id={`checkbox-${item.id}`}
+          id={`checkbox-${place.id}`}
           checked={checked}
           onChange={onChange}
         />
-        <S.StyledItemRemoveCheckBoxLabel htmlFor={`checkbox-${item.id}`}>
+        <S.StyledItemRemoveCheckBoxLabel htmlFor={`checkbox-${place.id}`}>
           <S.StyledItemRemoveCheckBoxSvg
             width="24"
             height="24"

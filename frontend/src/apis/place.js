@@ -50,13 +50,29 @@ export const getTop3Places = (params) =>
 
 // GET PlacesSearch
 export const getSearch = (params) =>
-  api.get("/places/search", {params: params});
+  api.get("/places/search", { params: params });
 
 // GET SearchFilter
-export const getSearchFilter = (params) => 
+export const getSearchFilter = (params) =>
   // api.get("/places/search/result", {params: params});
   api.get(`/places/search/result?${params}`);
 
-export const getSearchPlaces = (params) => 
+// GET SearchPlaces
+export const getSearchPlaces = (params) =>
   // api.get(`/places/search/result?${params}`);
-  api.get("/places/search/result", {params: params});
+  api.get("/places/search/result", { params: params });
+
+export const getPlacesByType = (params) =>
+  api.get("/places/type", { params: params });
+
+// GET RecentPlaces
+export const getRecentPlaces = (params) => 
+  api.get("/places/recent", {params: params});
+
+// GET RandomPlaces
+export const getRandomPlaces = (params) =>
+  api.get("places/random", {params: params});
+
+// GET getAdminPlace
+export const getAdminPlace = (id) =>
+  api.get(`admin/places/${id}`);

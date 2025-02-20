@@ -10,6 +10,8 @@ export const FILTER_OPTIONS = [
         { label: '음식점', value: 'restaurant' },
       ],
       multiSelect: true,
+      adminMultiSelect: false,
+      isRequired: true,
     },
     {
       id: 'city',
@@ -35,6 +37,8 @@ export const FILTER_OPTIONS = [
 
       ],
       multiSelect: true,
+      adminMultiSelect: false,
+      isRequired: true,
     },
     {
       id: 'petAccessTypes',
@@ -44,6 +48,8 @@ export const FILTER_OPTIONS = [
         { label: '반려견 전용', value: 'petOnly' },
       ],
       multiSelect: true,
+      adminMultiSelect: false,
+      isRequired: true,
     },
     {
       id: 'petSizes',
@@ -54,6 +60,8 @@ export const FILTER_OPTIONS = [
         { label: '대형견', value: 'lg' },
       ],
       multiSelect: true,
+      adminMultiSelect: true,
+      isRequired: true,
     },
     {
       id: 'services',
@@ -64,5 +72,7 @@ export const FILTER_OPTIONS = [
         { label: '야외 시설 보유', value: 'outdoorFacilities' },
       ],
       multiSelect: true,
+      adminMultiSelect: true,
+      isRequired: false,
     },
   ];

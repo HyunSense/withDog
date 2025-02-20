@@ -113,8 +113,10 @@ export const StyledSearchKeywordInput = styled.input`
 `;
 
 export const StyledSearchFilterContainer = styled.div`
-  margin: 4px 15px;
-  padding: 16px 16px;
+  padding: ${({mode}) => (mode === "admin" ? "20px 0px" : "16px 16px")};
+  margin: ${({mode}) => (mode === "admin" ? "0px" : "4px 15px")};
+  /* margin: 4px 15px; */
+  /* padding: 16px 16px; */
   border-radius: 8px;
   background-color: #ffffff;
 `;

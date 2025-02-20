@@ -206,9 +206,7 @@ const SearchResult = () => {
             <PlaceItems
               item={place}
               key={place.id}
-              to={`/places/${place.category}/${encodeURIComponent(
-                place.name
-              )}/${place.id}`}
+              to={`/places/${place.category}/${place.id}`}
             />
           ))}
         </StyledPlaceList.StyledPlaceItemList>

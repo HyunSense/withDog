@@ -5,6 +5,7 @@ const AdminMain = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  //추후 <Link> 태그로 변경 필요
   return (
     <S.StyledAdminMain>
       <S.StyledNav>

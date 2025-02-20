@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { getPlace, updatePlaces } from "../../apis/place";
+import { getAdminPlace, updatePlaces } from "../../apis/place";
 import AdminPlaceForm from "./AdminPlaceForm";
+import AdminPlaceForm2 from "./AdminPlaceForm2";
 import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../common/Loading";
 
@@ -13,7 +14,9 @@ const AdminPlaceEdit = () => {
 
   const fetchPlaceDetail = async (id) => {
     try {
-      const response = await getPlace(id);
+      // const response = await getPlace(id);
+      const response = await getAdminPlace(id);
+      console.log("response = ", response);
       setPlace(response.data.data);
     } catch (error) {
       console.error("Failed to fetch place details: ", error);
@@ -45,7 +48,8 @@ const AdminPlaceEdit = () => {
   }
 
   return (
-    <AdminPlaceForm initValues={place} isEdit={true} onSubmit={handleEdit} />
+    // <AdminPlaceForm initValues={place} isEdit={true} onSubmit={handleEdit} />
+    <AdminPlaceForm2 initValues={place} isEdit={true} onSubmit={handleEdit} />
   );
 };
 

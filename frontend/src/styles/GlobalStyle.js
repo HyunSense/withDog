@@ -59,19 +59,8 @@ export const GlobalStyle = createGlobalStyle`
   a {
     outline: none;
     text-decoration: none;
-    color: black;
+    color: inherit;
 
-    &:visited {
-      color: black;
-    }
-
-    &:link {
-      color: black;
-    }
-
-    &:active {
-      color: black;
-    }
   }
 
   input, button, textarea, select {

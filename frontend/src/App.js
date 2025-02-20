@@ -55,7 +55,7 @@ function App() {
               </Route>
             </Route>
             <Route
-              path="/places/:category/:name/:id"
+              path="/places/:category/:id"
               element={<DetailPage />}
             />
           </Routes>

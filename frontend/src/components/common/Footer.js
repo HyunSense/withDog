@@ -1,5 +1,5 @@
 import React from "react";
-import withDogLogoFooter from "../../assets/images/withDog-logo-text-black.png";
+import withDogLogoFooter from "../../assets/images/withDog-logo-black.png";
 import githubIcon from "../../assets/images/github-icon-80px-black.png";
 import notionIcon from "../../assets/images/notion-icon-80px-black.png";
 import googleIcon from "../../assets/images/google-icon-80px-black.png";
