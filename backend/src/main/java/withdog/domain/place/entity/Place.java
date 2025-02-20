@@ -1,21 +1,20 @@
 package withdog.domain.place.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import withdog.domain.bookmark.entity.Bookmark;
-import withdog.domain.place.entity.filter.FilterOption;
 import withdog.domain.place.entity.filter.PlaceFilter;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -23,7 +22,8 @@ import java.util.List;
 @NoArgsConstructor
 public class Place {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -58,14 +58,10 @@ public class Place {
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlaceWeeklyStats> placeWeeklyStats = new ArrayList<>();
 
-    // ---- 검색 필터링을 위한 필드 추가 start ----
-
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PlaceFilter> placeFilters = new ArrayList<>();
+    private Set<PlaceFilter> placeFilters = new HashSet<>();
 
-    // ---- 검색 필터링을 위한 필드 추가 end ----
-
-    //TODO: 연관된 엔티티(PlaceBlog, PlaceImage) 에서는 Place Entity를 Setter로 사용해도되는지?
     public void addBlog(PlaceBlog placeBlog) {
         placeBlog.setPlace(this);
         placeBlogs.add(placeBlog);
@@ -77,10 +73,14 @@ public class Place {
         this.thumbnailUrl = placeImages.get(0).getImageUrl();
     }
 
-    public void addFilter(PlaceFilter placeFilter) {
-        placeFilters.add(placeFilter);
+    public void addFilters(Set<PlaceFilter> placeFilter) {
+        placeFilters.addAll(placeFilter);
     }
 
+    public void updateFilters(Set<PlaceFilter> placeFilter) {
+        placeFilters.clear();
+        placeFilters.addAll(placeFilter);
+    }
 
     public void update(Place updatePlace) {
         this.category = updatePlace.getCategory();

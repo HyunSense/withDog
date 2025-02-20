@@ -1,16 +1,19 @@
 package withdog.domain.place.dto.request;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import withdog.common.validator.ValidUrl;
+import withdog.domain.place.dto.FilterDto;
 import withdog.domain.place.dto.PlaceNewImageDto;
 import withdog.domain.place.entity.Category;
 import withdog.domain.place.entity.Place;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -18,7 +21,7 @@ import java.util.List;
 @ToString
 public class PlaceFormRequestDto2 {
 
-    private List<Integer> filterOptionId;
+    private String filters;
 
     @NotNull(message = "Not Blank Category")
     @Min(value = 1, message = "CategoryId must be greater than 0")

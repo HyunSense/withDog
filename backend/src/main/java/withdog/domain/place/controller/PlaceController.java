@@ -9,18 +9,18 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import withdog.common.config.auth.CustomUserDetails;
 import withdog.common.dto.response.DataResponseDto;
 import withdog.common.dto.response.ResponseDto;
 import withdog.domain.bookmark.dto.request.DeleteBookmarksRequestDto;
 import withdog.domain.bookmark.service.BookmarkService;
-import withdog.domain.place.dto.request.PlaceDeleteRequestDto;
-import withdog.domain.place.dto.request.PlaceFormRequestDto;
-import withdog.domain.place.dto.request.PlaceFormUpdateRequestDto;
-import withdog.domain.place.dto.request.PlaceSearchRequestDto;
+import withdog.domain.place.dto.PlaceNewImageDto;
+import withdog.domain.place.dto.request.*;
 import withdog.domain.place.dto.response.PlaceDetailResponseDto;
 import withdog.domain.place.dto.response.PlaceResponseDto;
+import withdog.domain.place.dto.response.PlaceWithFilterDetailResponseDto;
 import withdog.domain.place.service.PlaceService;
 
 import java.util.List;
@@ -35,34 +35,37 @@ public class PlaceController {
     private final BookmarkService bookmarkService;
 
     //TODO: 변경필요, Image Resizing 필요
+    //TODO: @RequestPart 추후 변경 고려
     @PostMapping("/places")
-    public ResponseEntity<ResponseDto> savePlace(@Valid @ModelAttribute PlaceFormRequestDto dto) {
+    public ResponseEntity<ResponseDto> savePlace(@Valid @ModelAttribute PlaceFormRequestDto2 dto) {
 
         log.info("PlaceFormRequestDto: {}", dto);
-
         ResponseDto responseBody = placeService.save(dto);
+
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
     @GetMapping("/places")
-    public ResponseEntity<DataResponseDto<Slice<PlaceResponseDto>>> getAllPlaces(@RequestParam(required = false, defaultValue = "0") int categoryId, @PageableDefault(page = 0, size = 10) Pageable pageable) {
+    public ResponseEntity<ResponseDto> getAllPlaces(@RequestParam(required = false, defaultValue = "0") int categoryId, @PageableDefault(page = 0, size = 10) Pageable pageable) {
         log.info("pageable : {}", pageable.toString());
         DataResponseDto<Slice<PlaceResponseDto>> responseBody = placeService.findAllPlace(categoryId, pageable);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    @GetMapping("/places/types")
-    public ResponseEntity<ResponseDto> getPlaceTypes(@RequestParam List<String> types, @RequestParam int limit) {
-
-        
-        return null;
-    }
 
     @GetMapping("/places/{id}")
-    public ResponseEntity<DataResponseDto<PlaceDetailResponseDto>> getPlace(@PathVariable Long id) {
+    public ResponseEntity<ResponseDto> getPlace(@PathVariable Long id) {
 
         DataResponseDto<PlaceDetailResponseDto> responseBody = placeService.findPlace(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseBody);
+    }
+
+    @GetMapping("/admin/places/{id}")
+    public ResponseEntity<ResponseDto> getAdminPlace(@PathVariable Long id) {
+
+        DataResponseDto<PlaceWithFilterDetailResponseDto> responseBody = placeService.findPlaceWithFilter(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }

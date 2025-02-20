@@ -6,6 +6,7 @@ import withdog.common.dto.response.DataResponseDto;
 import withdog.common.dto.response.ResponseDto;
 import withdog.domain.place.dto.request.*;
 import withdog.domain.place.dto.response.PlaceDetailResponseDto;
+import withdog.domain.place.dto.response.PlaceWithFilterDetailResponseDto;
 import withdog.domain.place.dto.response.PlaceResponseDto;
 
 public interface PlaceService {
@@ -14,7 +15,10 @@ public interface PlaceService {
 
     DataResponseDto<PlaceDetailResponseDto> findPlace(Long id);
 
-//    ResponseDto save(PlaceFormRequestDto dto);
+    DataResponseDto<PlaceDetailResponseDto> findPlaceForUpdate(Long id);
+
+    DataResponseDto<PlaceWithFilterDetailResponseDto> findPlaceWithFilter(Long id);
+
     ResponseDto save(PlaceFormRequestDto2 dto);
 
     ResponseDto update(Long id, PlaceFormUpdateRequestDto dto);

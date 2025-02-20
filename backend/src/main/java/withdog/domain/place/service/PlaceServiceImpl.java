@@ -16,20 +16,25 @@ import withdog.common.dto.response.SliceResponseDto;
 import withdog.common.exception.CustomException;
 import withdog.domain.place.dto.PlaceNewImageDto;
 import withdog.domain.place.dto.PlaceUpdateImagesDto;
-import withdog.domain.place.dto.request.*;
+import withdog.domain.place.dto.request.PlaceDeleteRequestDto;
+import withdog.domain.place.dto.request.PlaceFormRequestDto2;
+import withdog.domain.place.dto.request.PlaceFormUpdateRequestDto;
+import withdog.domain.place.dto.request.PlaceSearchRequestDto;
 import withdog.domain.place.dto.response.PlaceDetailResponseDto;
 import withdog.domain.place.dto.response.PlaceResponseDto;
+import withdog.domain.place.dto.response.PlaceWithFilterDetailResponseDto;
 import withdog.domain.place.entity.Category;
 import withdog.domain.place.entity.Place;
-import withdog.domain.place.entity.filter.FilterOption;
+import withdog.domain.place.entity.PlaceBlog;
+import withdog.domain.place.entity.PlaceImage;
 import withdog.domain.place.entity.filter.PlaceFilter;
 import withdog.domain.place.repository.CategoryRepository;
 import withdog.domain.place.repository.PlaceRepository;
-import withdog.domain.place.repository.filter.FilterOptionRepository;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
 import withdog.domain.stats.service.PlaceWeeklyStatsService;
 
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -43,7 +48,7 @@ public class PlaceServiceImpl implements PlaceService {
     private final PlaceWeeklyStatsService placeWeeklyStatsService;
     private final PlaceImageService placeImageService;
     private final PlaceBlogService placeBlogService;
-    private final FilterOptionRepository filterOptionRepository;
+    private final PlaceFilterService placeFilterService;
 
     @Transactional(readOnly = true)
     @Override
@@ -69,18 +74,54 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public DataResponseDto<PlaceDetailResponseDto> findPlace(Long id) {
 
-        // OneToMany 2개의 컬렉션
-        //TODO: PlaceImages fetch join, PlaceBlogs 별도 쿼리 조회 또는
-        //TODO: PlaceImages 지연로딩을 할지 고민 필요
-        Place place = placeRepository.findByIdWithCategoryAndPlaceImages(id)
+        // 기존: Image, Filter fetch join, Blog Lazy loading -> 조회 쿼리 감소, 일관성 X
+        // 변경: Entity 별 조회 -> 조회 쿼리 증가, 일관성 O
+        Place place = placeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_PLACE));
 
+        List<PlaceImage> images = placeImageService.findImages(id);
+        List<PlaceBlog> blogs = placeBlogService.findBlogs(id);
+        Set<PlaceFilter> filters = placeFilterService.findFilters(id);
         placeWeeklyStatsService.increaseHitCount(place);
-        PlaceDetailResponseDto dto = PlaceDetailResponseDto.fromEntity(place);
+        PlaceDetailResponseDto dto = PlaceDetailResponseDto.fromEntity(place, images, blogs, filters);
+
+        return DataResponseDto.success(dto);
+    }
+
+    @Override
+    public DataResponseDto<PlaceDetailResponseDto> findPlaceForUpdate(Long id) {
+
+        Place place = placeRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_PLACE));
+
+        List<PlaceImage> images = placeImageService.findImages(id);
+        List<PlaceBlog> blogs = placeBlogService.findBlogs(id);
+        Set<PlaceFilter> filters = placeFilterService.findFilters(id);
+        PlaceDetailResponseDto dto = PlaceDetailResponseDto.fromEntity(place, images, blogs, filters);
+
+        return DataResponseDto.success(dto);
+    }
+
+
+    @Override
+    public DataResponseDto<PlaceWithFilterDetailResponseDto> findPlaceWithFilter(Long id) {
+
+//        Place place = placeRepository.findByIdWithPlaceBlogsAndPlaceFilters(id)
+//                .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_PLACE));
+
+        Place place = placeRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_PLACE));
+
+        List<PlaceImage> images = placeImageService.findImages(id);
+        List<PlaceBlog> blogs = placeBlogService.findBlogs(id);
+        Set<PlaceFilter> filters = placeFilterService.findFilters(id);
+
+        PlaceWithFilterDetailResponseDto dto = PlaceWithFilterDetailResponseDto.fromEntity(place, images, blogs, filters);
         return DataResponseDto.success(dto);
     }
 
     // 유저 인증, 권한 Spring Security 위임
+    //TODO: placeRepository.save() 위치 체크
 //    @Override
 //    public ResponseDto save(PlaceFormRequestDto dto) {
 //
@@ -103,23 +144,18 @@ public class PlaceServiceImpl implements PlaceService {
 //        return ResponseDto.success();
 //    }
 
+    // 유저 인증, 권한 Spring Security 위임
+    //TODO: placeRepository.save() 위치 체크
     @Override
     public ResponseDto save(PlaceFormRequestDto2 dto) {
 
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY));
         Place place = dto.toEntity(category);
-        placeRepository.save(place);
 
-        List<Integer> filterOptionIds = dto.getFilterOptionId();
-        for (Integer filterOptionId : filterOptionIds) {
-            FilterOption filterOption = filterOptionRepository.findById(filterOptionId)
-                    .orElseThrow(() -> new IllegalArgumentException("예외처리 필요함"));
+        Set<PlaceFilter> placeFilters = placeFilterService.getPlaceFilters(dto.getFilters(), place);
 
-            PlaceFilter placeFilter = new PlaceFilter(place, filterOption);
-            place.addFilter(placeFilter);
-        }
-
+        place.addFilters(placeFilters);
 
         List<PlaceNewImageDto> newImageDtos = dto.getImages();
 
@@ -132,6 +168,7 @@ public class PlaceServiceImpl implements PlaceService {
             placeBlogService.save(place, blogUrls);
         }
 
+        placeRepository.save(place);
         return ResponseDto.success();
     }
 
@@ -141,9 +178,11 @@ public class PlaceServiceImpl implements PlaceService {
 
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY));
-
+        //TODO: CATEGORY 제거필요
         Place place = placeRepository.findByIdWithCategoryAndPlaceImages(id)
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_PLACE));
+        Set<PlaceFilter> placeFilters = placeFilterService.getPlaceFilters(dto.getFilters(), place);
+        place.updateFilters(placeFilters);
 
         Place updatePlace = dto.textFieldToEntity(category);
         place.update(updatePlace);
@@ -156,8 +195,7 @@ public class PlaceServiceImpl implements PlaceService {
             placeBlogService.save(place, blogUrls);
         }
 
-        // TODO: 테이블상에는 삭제가되었는데 로컬에서 실제 데이터는 삭제할 것인지?
-        // TODO: 삭제한다면 어떻게 할것인지?
+        // TODO: 테이블상에는 삭제가되었는데 클라우드에서 실제 데이터는 삭제할 것인지?, 삭제한다면 어떻게 할것인지?
 
         List<PlaceUpdateImagesDto> updateImages = dto.getUpdateImages(); // 수정된 이미지의 id 와 position
 

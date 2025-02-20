@@ -18,10 +18,4 @@ public class PlaceSearchRequestDto {
     private List<String> petAccessTypes;
     private List<String> petSizes;
     private List<String> services;
-//    private List<String> types = new ArrayList<>();
-//    private List<String> city = new ArrayList<>();
-//    private List<String> petAccessTypes = new ArrayList<>();
-//    private List<String> petSizes = new ArrayList<>();
-//    private List<String> services = new ArrayList<>();
-
 }

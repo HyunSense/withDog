@@ -19,14 +19,23 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, PlaceReposi
     List<Place> findAllWithPlaceImages();
 
     // 반환타입 Slice
-    @Query("select p from Place p join fetch p.category c where c.id = :categoryId ")
+    @Query("select p from Place p join fetch p.category c where c.id = :categoryId order by p.createdAt desc")
     Slice<Place> findAllPlacesByCategoryId(int categoryId, Pageable pageable);
 
-    @Query("select p from Place p join fetch p.category")
+    @Query("select p from Place p join fetch p.category order by p.createdAt desc")
     Slice<Place> findAllPlaces(Pageable pageable);
 
     @Query("select distinct p from Place p left join fetch p.category left join fetch p.placeImages pi where p.id = :id order by pi.imagePosition")
     Optional<Place> findByIdWithCategoryAndPlaceImages(@Param("id") Long id);
+
+    @Query("select p from Place p join fetch p.placeBlogs pb where p.id = :id")
+    Optional<Place> findByIdWithPlaceBlogs(Long id);
+
+    @Query("select distinct p from Place p left join fetch p.placeBlogs pb left join fetch p.placeFilters pf left join fetch pf.filterOption fo left join fetch fo.filterCategory fc where p.id = :id")
+    Optional<Place> findByIdWithPlaceBlogsAndPlaceFilters(Long id);
+
+    @Query("select distinct p from Place p left join fetch p.placeImages pi where p.id = :id")
+    Optional<Place> findByIdWithPlaceImages(Long id);
 
     @Query("select distinct p from Place p join p.placeFilters pf join pf.filterOption fo where fo.value = :type")
     Slice<Place> findPlacesByType(@Param("type") String type, Pageable pageable);

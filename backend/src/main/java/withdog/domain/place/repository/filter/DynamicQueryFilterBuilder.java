@@ -24,6 +24,7 @@ public class DynamicQueryFilterBuilder {
         }
     }
 
+    //TODO: 리펙토링 필요
     public DynamicQueryFilterBuilder withKeyword(String keyword) {
         if (keyword != null && !keyword.isBlank()) {
             jpql.append(whereAdded ? " and " : " where ")

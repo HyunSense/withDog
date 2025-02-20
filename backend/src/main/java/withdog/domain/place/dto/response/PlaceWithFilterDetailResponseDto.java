@@ -1,6 +1,5 @@
 package withdog.domain.place.dto.response;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -19,7 +18,8 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @ToString
-public class PlaceDetailResponseDto {
+public class PlaceWithFilterDetailResponseDto {
+
 
     private String category;
     private Long id;
@@ -29,16 +29,14 @@ public class PlaceDetailResponseDto {
     private String addressPart2;
     private String phone;
     private String reservationUrl;
-    private List<PlaceImageDto> placeImages;
     private List<PlaceBlogDto> placeBlogs;
+    private List<PlaceImageDto> placeImages;
     private Map<String, List<String>> filters;
 
 
-
-    private PlaceDetailResponseDto(Place place, List<PlaceImage> placeImages,
-                                   List<PlaceBlog> placeBlogs,
-                                   Set<PlaceFilter> placeFilters) {
-
+    private PlaceWithFilterDetailResponseDto(Place place, List<PlaceImage> placeImages,
+                                             List<PlaceBlog> placeBlogs,
+                                             Set<PlaceFilter> placeFilters) {
         this.category = place.getCategory().getName();
         this.id = place.getId();
         this.name = place.getName();
@@ -57,9 +55,11 @@ public class PlaceDetailResponseDto {
     }
 
 
-    public static PlaceDetailResponseDto fromEntity(Place place, List<PlaceImage> placeImages,
-                                                    List<PlaceBlog> placeBlogs,
-                                                    Set<PlaceFilter> placeFilters) {
-        return new PlaceDetailResponseDto(place, placeImages, placeBlogs, placeFilters);
+    public static PlaceWithFilterDetailResponseDto fromEntity(Place place,
+                                                              List<PlaceImage> placeImages,
+                                                              List<PlaceBlog> placeBlogs,
+                                                              Set<PlaceFilter> placeFilters) {
+
+        return new PlaceWithFilterDetailResponseDto(place, placeImages, placeBlogs, placeFilters);
     }
 }

@@ -16,11 +16,14 @@ import withdog.domain.place.entity.Category;
 import withdog.domain.place.entity.Place;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
 @ToString
 public class PlaceFormUpdateRequestDto {
+
+    private String filters;
 
     @NotNull(message = "CategoryId must not be null")
     @Min(value = 1, message = "CategoryId must be greater than 0")
