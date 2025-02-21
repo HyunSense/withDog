@@ -80,10 +80,10 @@ public class PlaceController {
     }
 
     @DeleteMapping("/places")
-    public ResponseEntity<ResponseDto> deletePlace(@RequestBody PlaceDeleteRequestDto dto, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<ResponseDto> deletePlace(@RequestParam List<Long> ids) {
 
-        log.info("PlaceDeleteRequestDto: {}", dto);
-        ResponseDto responseBody = placeService.delete(customUserDetails.getId(), dto);
+        log.info("ids: {}", ids);
+        ResponseDto responseBody = placeService.delete(ids);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
@@ -119,9 +119,9 @@ public class PlaceController {
     }
 
     @DeleteMapping("/places/bookmarks")
-    public ResponseEntity<ResponseDto> deleteSelectedBookmarks(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody DeleteBookmarksRequestDto dto) {
+    public ResponseEntity<ResponseDto> deleteSelectedBookmarks(@RequestParam List<Long> ids, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
 
-        ResponseDto responseBody = bookmarkService.deleteAllBookmarks(customUserDetails.getId(), dto);
+        ResponseDto responseBody = bookmarkService.deleteAllBookmarks(ids, customUserDetails.getId());
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }

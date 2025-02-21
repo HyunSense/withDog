@@ -9,6 +9,8 @@ import withdog.domain.place.dto.response.PlaceDetailResponseDto;
 import withdog.domain.place.dto.response.PlaceWithFilterDetailResponseDto;
 import withdog.domain.place.dto.response.PlaceResponseDto;
 
+import java.util.List;
+
 public interface PlaceService {
 
     DataResponseDto<Slice<PlaceResponseDto>> findAllPlace(int categoryId, Pageable pageable);
@@ -23,7 +25,7 @@ public interface PlaceService {
 
     ResponseDto update(Long id, PlaceFormUpdateRequestDto dto);
 
-    ResponseDto delete(Long memberId, PlaceDeleteRequestDto dto);
+    ResponseDto delete(List<Long> ids);
 
     ResponseDto getTop3(int categoryId);
 

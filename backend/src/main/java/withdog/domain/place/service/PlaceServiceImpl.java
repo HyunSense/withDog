@@ -106,9 +106,6 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public DataResponseDto<PlaceWithFilterDetailResponseDto> findPlaceWithFilter(Long id) {
 
-//        Place place = placeRepository.findByIdWithPlaceBlogsAndPlaceFilters(id)
-//                .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_PLACE));
-
         Place place = placeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_PLACE));
 
@@ -121,31 +118,6 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     // 유저 인증, 권한 Spring Security 위임
-    //TODO: placeRepository.save() 위치 체크
-//    @Override
-//    public ResponseDto save(PlaceFormRequestDto dto) {
-//
-//        Category category = categoryRepository.findById(dto.getCategoryId())
-//                .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY));
-//        Place place = dto.toEntity(category);
-//        placeRepository.save(place);
-//
-//        List<PlaceNewImageDto> newImageDtos = dto.getImages();
-//
-//        if (newImageDtos != null && !newImageDtos.isEmpty()) {
-//            placeImageService.save(place, newImageDtos);
-//        }
-//
-//        List<String> blogUrls = dto.getBlogUrls();
-//        if (blogUrls != null && !blogUrls.isEmpty()) {
-//            placeBlogService.save(place, blogUrls);
-//        }
-//
-//        return ResponseDto.success();
-//    }
-
-    // 유저 인증, 권한 Spring Security 위임
-    //TODO: placeRepository.save() 위치 체크
     @Override
     public ResponseDto save(PlaceFormRequestDto2 dto) {
 
@@ -218,11 +190,10 @@ public class PlaceServiceImpl implements PlaceService {
 
     // 유저 인증, 권한 Spring Security 위임
     @Override
-    public ResponseDto delete(Long memberId, PlaceDeleteRequestDto dto) {
+    public ResponseDto delete(List<Long> ids) {
 
-        //TODO: 벌크로 삭제하는것이 좋을지, 반복문으로 하나씩 삭제하는것이 좋을지
-        //TODO: deleteAll, deleteAllbyId 모두 내부적으로 select 조회를한다. 추가적으로 검증이 필요하다면 findById작성 아니라면 작성X
-        placeRepository.deleteAllById(dto.getIds());
+        // 내부적으로 select 조회
+        placeRepository.deleteAllById(ids);
 
         return ResponseDto.success();
     }

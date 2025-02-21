@@ -1,7 +1,7 @@
 package withdog.domain.bookmark.service;
 
 import withdog.common.dto.response.ResponseDto;
-import withdog.domain.bookmark.dto.request.DeleteBookmarksRequestDto;
+import java.util.List;
 
 public interface BookmarkService {
 
@@ -9,6 +9,6 @@ public interface BookmarkService {
     ResponseDto findAllBookmarkedPlace(Long memberId);
     ResponseDto addBookmark(Long memberId, Long placeId);
     ResponseDto deleteBookmark(Long memberId, Long placeId);
-    ResponseDto deleteAllBookmarks(Long memberId, DeleteBookmarksRequestDto dto);
+    ResponseDto deleteAllBookmarks(List<Long> placeIds, Long memberId);
 
 }

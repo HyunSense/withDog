@@ -92,7 +92,6 @@ public class BookmarkServiceImpl implements BookmarkService {
         return ResponseDto.success();
     }
 
-    //TODO: byEntity가 아닌 byId로 수정필요
     @Override
     public ResponseDto deleteBookmark(Long memberId, Long placeId) {
 
@@ -110,21 +109,24 @@ public class BookmarkServiceImpl implements BookmarkService {
         return ResponseDto.success();
     }
 
-    //TODO: byEntity가 아닌 byId로 수정필요
     @Override
-    public ResponseDto deleteAllBookmarks(Long memberId, DeleteBookmarksRequestDto dto) {
+    public ResponseDto deleteAllBookmarks(List<Long> ids, Long memberId) {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_MEMBER));
 
-        List<Place> places = placeRepository.findAllById(dto.getBookmarkPlaceIds());
-        if (places.size() != dto.getBookmarkPlaceIds().size()) {
+        List<Place> places = placeRepository.findAllById(ids);
+        if (places.size() != ids.size()) {
             throw new CustomException(ApiResponseCode.NOT_EXIST_PLACE);
         }
 
         bookmarkRepository.deleteAllByMemberAndPlaces(member, places);
 
-        log.info("All Bookmarks deleted for memberId: {}, placeId: {}", memberId, dto.getBookmarkPlaceIds());
+        for (Place place : places) {
+            placeWeeklyStatsService.decreaseBookmarkCount(place);
+        }
+
+        log.info("All Bookmarks deleted for memberId: {}, placeId: {}", memberId, ids);
         return ResponseDto.success();
     }
 }

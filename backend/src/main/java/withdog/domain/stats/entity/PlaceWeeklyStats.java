@@ -18,10 +18,6 @@ public class PlaceWeeklyStats {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name="category_id")
-//    private Category category;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "place_id")
     private Place place;
@@ -43,10 +39,6 @@ public class PlaceWeeklyStats {
         hitCount++;
     }
 
-//    public void decreaseHit() {
-//        hitCount--;
-//    }
-
     public void increaseBookmarkCount() {
         bookmarkCount++;
     }
@@ -56,7 +48,6 @@ public class PlaceWeeklyStats {
             bookmarkCount--;
         }
     }
-
 
     @Builder
     public PlaceWeeklyStats(Place place, LocalDate weekStartDate) {

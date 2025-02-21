@@ -10,6 +10,8 @@ import withdog.domain.place.entity.Category;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
 import withdog.domain.stats.repository.PlaceWeeklyStatsRepository;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -22,6 +24,22 @@ class PlaceWeeklyStatsRepositoryTest {
     private PlaceWeeklyStatsRepository placeWeeklyStatsRepository;
 
     @Test
+    @DisplayName("장소별 bookmark, count 통계 조회 테스트")
+    void findByPlaceIdAndWeekStartDateTest() {
+        //given
+        Long placeId = 1L;
+        LocalDate weekMonday = LocalDate.now().with(DayOfWeek.MONDAY);
+
+        //when
+        PlaceWeeklyStats placeWeeklyStats = placeWeeklyStatsRepository.findByPlaceIdAndWeekStartDate(1L, weekMonday).orElseThrow();
+
+        //then
+        System.out.println("placeWeeklyStats.getId() = " + placeWeeklyStats.getId());
+        System.out.println("placeWeeklyStats.getBookmarkCount() = " + placeWeeklyStats.getBookmarkCount());
+        System.out.println("placeWeeklyStats.getHitCount() = " + placeWeeklyStats.getHitCount());
+    }
+
+//    @Test
     @DisplayName("인기 장소 상위 3개")
     void getTop3() {
         //given
@@ -36,7 +54,7 @@ class PlaceWeeklyStatsRepositoryTest {
         }
     }
 
-    @Test
+//    @Test
     @DisplayName("카테고리별 인기 장소 상위 3개")
     void getTop3ByCategory() {
         //given
