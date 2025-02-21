@@ -1,6 +1,5 @@
 package withdog.domain.place.dto.response;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 @ToString
 public class PlaceDetailResponseDto {
 
-    private String category;
     private Long id;
     private String name;
     private int price;
@@ -39,7 +37,6 @@ public class PlaceDetailResponseDto {
                                    List<PlaceBlog> placeBlogs,
                                    Set<PlaceFilter> placeFilters) {
 
-        this.category = place.getCategory().getName();
         this.id = place.getId();
         this.name = place.getName();
         this.price = place.getPrice();

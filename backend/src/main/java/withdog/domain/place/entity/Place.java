@@ -25,11 +25,6 @@ public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
-
     private String name;
     private String thumbnailUrl;
     private int price;
@@ -83,7 +78,6 @@ public class Place {
     }
 
     public void update(Place updatePlace) {
-        this.category = updatePlace.getCategory();
         this.name = updatePlace.getName();
         this.price = updatePlace.getPrice();
         this.addressPart1 = updatePlace.getAddressPart1();
@@ -98,9 +92,8 @@ public class Place {
     }
 
     @Builder
-    public Place(Long id, Category category, String name, String thumbnailUrl, int price, String addressPart1, String addressPart2, String phone, String reservationUrl, String description) {
+    public Place(Long id, String name, String thumbnailUrl, int price, String addressPart1, String addressPart2, String phone, String reservationUrl, String description) {
         this.id = id;
-        this.category = category;
         this.name = name;
         this.thumbnailUrl = thumbnailUrl;
         this.price = price;

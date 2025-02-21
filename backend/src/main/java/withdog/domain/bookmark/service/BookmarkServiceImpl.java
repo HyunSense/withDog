@@ -8,7 +8,6 @@ import withdog.common.constant.ApiResponseCode;
 import withdog.common.dto.response.DataResponseDto;
 import withdog.common.dto.response.ResponseDto;
 import withdog.common.exception.CustomException;
-import withdog.domain.bookmark.dto.request.DeleteBookmarksRequestDto;
 import withdog.domain.bookmark.dto.response.BookmarkStatusDto;
 import withdog.domain.bookmark.entity.Bookmark;
 import withdog.domain.bookmark.repository.BookmarkRepository;
@@ -17,13 +16,8 @@ import withdog.domain.member.repository.MemberRepository;
 import withdog.domain.place.dto.response.BookmarkedPlaceResponseDto;
 import withdog.domain.place.entity.Place;
 import withdog.domain.place.repository.PlaceRepository;
-import withdog.domain.stats.entity.PlaceWeeklyStats;
-import withdog.domain.stats.repository.PlaceWeeklyStatsRepository;
 import withdog.domain.stats.service.PlaceWeeklyStatsService;
-import withdog.domain.stats.service.PlaceWeeklyStatsServiceImpl;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +34,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Transactional(readOnly = true)
     @Override
-    public ResponseDto checkBookmark(Long memberId, Long placeId) {
+    public DataResponseDto<BookmarkStatusDto> checkBookmark(Long memberId, Long placeId) {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_MEMBER));
@@ -56,7 +50,7 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     @Transactional(readOnly = true)
     @Override
-    public ResponseDto findAllBookmarkedPlace(Long memberId) {
+    public DataResponseDto<List<BookmarkedPlaceResponseDto>> findAllBookmarkedPlace(Long memberId) {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_MEMBER));
@@ -64,7 +58,6 @@ public class BookmarkServiceImpl implements BookmarkService {
         List<Place> places = bookmarkRepository.findAllBookmarkedPlacesByMember(member);
         List<BookmarkedPlaceResponseDto> dtos = places.stream().map((place -> BookmarkedPlaceResponseDto.builder()
                 .id(place.getId())
-                .category(place.getCategory().getName())
                 .name(place.getName())
                 .address(place.getAddressPart1())
                 .thumbnailUrl(place.getThumbnailUrl())

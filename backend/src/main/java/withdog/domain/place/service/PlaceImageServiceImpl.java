@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import withdog.aws.AwsFileService;
 import withdog.common.constant.ApiResponseCode;
 import withdog.common.exception.CustomException;
-import withdog.domain.place.dto.PlaceImageDto;
 import withdog.domain.place.dto.PlaceNewImageDto;
 import withdog.domain.place.dto.PlaceUpdateImagesDto;
 import withdog.domain.place.entity.Place;
@@ -15,7 +14,6 @@ import withdog.domain.place.entity.PlaceImage;
 import withdog.domain.place.repository.PlaceImageRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor

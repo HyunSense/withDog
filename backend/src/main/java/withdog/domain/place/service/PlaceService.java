@@ -1,39 +1,40 @@
 package withdog.domain.place.service;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import withdog.common.dto.response.DataResponseDto;
 import withdog.common.dto.response.ResponseDto;
-import withdog.domain.place.dto.request.*;
+import withdog.common.dto.response.SliceResponseDto;
+import withdog.domain.place.dto.request.PlaceFormRequestDto;
+import withdog.domain.place.dto.request.PlaceFormUpdateRequestDto;
+import withdog.domain.place.dto.request.PlaceSearchRequestDto;
 import withdog.domain.place.dto.response.PlaceDetailResponseDto;
-import withdog.domain.place.dto.response.PlaceWithFilterDetailResponseDto;
 import withdog.domain.place.dto.response.PlaceResponseDto;
 
 import java.util.List;
 
 public interface PlaceService {
 
-    DataResponseDto<Slice<PlaceResponseDto>> findAllPlace(int categoryId, Pageable pageable);
+    DataResponseDto<SliceResponseDto<PlaceResponseDto>> findAllPlace(Pageable pageable);
 
     DataResponseDto<PlaceDetailResponseDto> findPlace(Long id);
 
     DataResponseDto<PlaceDetailResponseDto> findPlaceForUpdate(Long id);
 
-    DataResponseDto<PlaceWithFilterDetailResponseDto> findPlaceWithFilter(Long id);
-
-    ResponseDto save(PlaceFormRequestDto2 dto);
+    ResponseDto save(PlaceFormRequestDto dto);
 
     ResponseDto update(Long id, PlaceFormUpdateRequestDto dto);
 
     ResponseDto delete(List<Long> ids);
 
-    ResponseDto getTop3(int categoryId);
+    DataResponseDto<List<PlaceResponseDto>> getTop3();
 
-    DataResponseDto<Slice<PlaceResponseDto>> searchPlace(String type, String keyword, Pageable pageable);
+    DataResponseDto<SliceResponseDto<PlaceResponseDto>> searchFilterPlace(PlaceSearchRequestDto dto, Pageable pageable);
 
-    ResponseDto searchFilterPlace(PlaceSearchRequestDto dto, Pageable pageable);
+    DataResponseDto<Long> searchFilterCountPlaces(PlaceSearchRequestDto dto);
 
-    ResponseDto recentPlaces(int limit);
+    DataResponseDto<List<PlaceResponseDto>> recentPlaces(int limit);
 
-    ResponseDto randomPlaces(int limit);
+    DataResponseDto<List<PlaceResponseDto>> randomPlaces(int limit);
+
+    DataResponseDto<Long> countPlaces();
 }

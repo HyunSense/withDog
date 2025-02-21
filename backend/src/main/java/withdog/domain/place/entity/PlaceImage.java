@@ -53,12 +53,4 @@ public class PlaceImage {
     public void updatePosition(int imagePosition) {
         this.imagePosition = imagePosition;
     }
-
-//    public static PlaceImageDto toPlaceImageDto(PlaceImage placeImage) {
-//
-//        return PlaceImageDto.builder()
-//                .imagePosition(placeImage.getImagePosition())
-//                .imageUrl(placeImage.getImageUrl())
-//                .build();
-//    }
 }

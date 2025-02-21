@@ -1,31 +1,22 @@
 package withdog.domain.place.dto.request;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import withdog.common.validator.ValidUrl;
-import withdog.domain.place.dto.FilterDto;
 import withdog.domain.place.dto.PlaceNewImageDto;
-import withdog.domain.place.entity.Category;
 import withdog.domain.place.entity.Place;
 
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
-public class PlaceFormRequestDto2 {
+public class PlaceFormRequestDto {
 
     private String filters;
-
-    @NotNull(message = "Not Blank Category")
-    @Min(value = 1, message = "CategoryId must be greater than 0")
-    private Integer categoryId;
 
     @NotBlank(message = "Not Blank Name")
     private String name;
@@ -53,8 +44,7 @@ public class PlaceFormRequestDto2 {
     private List<PlaceNewImageDto> images;
 
     @Builder
-    public PlaceFormRequestDto2(int categoryId, String name, String phone, String addressPart1, String addressPart2, int price, String reservationUrl, String description, List<String> blogUrls, List<PlaceNewImageDto> images) {
-        this.categoryId = categoryId;
+    public PlaceFormRequestDto(String name, String phone, String addressPart1, String addressPart2, int price, String reservationUrl, String description, List<String> blogUrls, List<PlaceNewImageDto> images) {
         this.name = name;
         this.phone = phone;
         this.addressPart1 = addressPart1;
@@ -66,10 +56,9 @@ public class PlaceFormRequestDto2 {
         this.images = images;
     }
 
-    public Place toEntity(Category category) {
+    public Place toEntity() {
 
         return Place.builder()
-                .category(category)
                 .name(this.name)
                 .phone(this.phone)
                 .addressPart1(this.addressPart1)

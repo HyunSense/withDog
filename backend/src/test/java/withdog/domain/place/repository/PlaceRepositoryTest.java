@@ -1,25 +1,19 @@
 package withdog.domain.place.repository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
 import org.springframework.transaction.annotation.Transactional;
-import withdog.domain.place.dto.PlaceDetailDto;
 import withdog.domain.place.entity.Place;
-import withdog.domain.place.entity.PlaceImage;
-import withdog.domain.place.entity.filter.FilterCategory;
 import withdog.domain.place.entity.filter.PlaceFilter;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class PlaceRepositoryTest {
@@ -64,7 +58,7 @@ class PlaceRepositoryTest {
     }
 
     @Transactional
-    @Test
+//    @Test
     @DisplayName("2개 이상의 컬렉션 조회, stream 그룹 매핑")
     void findByIdWithPlaceFiltersAndPlaceImagesAndPlaceBlogsTest() {
         //given

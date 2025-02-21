@@ -15,6 +15,11 @@ public class DynamicQueryFilterBuilder {
         return this;
     }
 
+    public DynamicQueryFilterBuilder baseCountQuery() {
+        jpql.append("select count(p) from Place p ");
+        return this;
+    }
+
     private void addCondition(String condition, String paramName, List<String> values) {
         if (values != null && !values.isEmpty()) {
             jpql.append(whereAdded ? " and " : " where ");
@@ -81,6 +86,14 @@ public class DynamicQueryFilterBuilder {
         jpql.append(" order by p.").append(field);
         return this;
     }
+
+//    public String getCountJpql() {
+//        String countJpql = jpql.toString()
+//                .replace("select p from Place p", "select count(p) from Place p");
+//
+//        countJpql = countJpql.replaceAll(" order by.*", "");
+//        return countJpql.trim();
+//    }
 
     public String getJpql() {
         return jpql.toString().trim();

@@ -16,19 +16,15 @@ import withdog.common.dto.response.SliceResponseDto;
 import withdog.common.exception.CustomException;
 import withdog.domain.place.dto.PlaceNewImageDto;
 import withdog.domain.place.dto.PlaceUpdateImagesDto;
-import withdog.domain.place.dto.request.PlaceDeleteRequestDto;
-import withdog.domain.place.dto.request.PlaceFormRequestDto2;
+import withdog.domain.place.dto.request.PlaceFormRequestDto;
 import withdog.domain.place.dto.request.PlaceFormUpdateRequestDto;
 import withdog.domain.place.dto.request.PlaceSearchRequestDto;
 import withdog.domain.place.dto.response.PlaceDetailResponseDto;
 import withdog.domain.place.dto.response.PlaceResponseDto;
-import withdog.domain.place.dto.response.PlaceWithFilterDetailResponseDto;
-import withdog.domain.place.entity.Category;
 import withdog.domain.place.entity.Place;
 import withdog.domain.place.entity.PlaceBlog;
 import withdog.domain.place.entity.PlaceImage;
 import withdog.domain.place.entity.filter.PlaceFilter;
-import withdog.domain.place.repository.CategoryRepository;
 import withdog.domain.place.repository.PlaceRepository;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
 import withdog.domain.stats.service.PlaceWeeklyStatsService;
@@ -42,9 +38,7 @@ import java.util.Set;
 @Service
 public class PlaceServiceImpl implements PlaceService {
 
-    private final CategoryRepository categoryRepository;
     private final PlaceRepository placeRepository;
-
     private final PlaceWeeklyStatsService placeWeeklyStatsService;
     private final PlaceImageService placeImageService;
     private final PlaceBlogService placeBlogService;
@@ -52,25 +46,17 @@ public class PlaceServiceImpl implements PlaceService {
 
     @Transactional(readOnly = true)
     @Override
-    public DataResponseDto<Slice<PlaceResponseDto>> findAllPlace(int categoryId, Pageable pageable) {
+    public DataResponseDto<SliceResponseDto<PlaceResponseDto>> findAllPlace(Pageable pageable) {
 
-        if (categoryId != 0 && !categoryRepository.existsById(categoryId)) {
-            throw new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY);
-        }
+        Slice<Place> slicePlaces = placeRepository.findAllPlaces(pageable);
 
-        Slice<Place> places;
+        List<PlaceResponseDto> placeResponseDto = PlaceResponseDto.fromEntityList(slicePlaces.getContent());
+        SliceResponseDto<PlaceResponseDto> responseDtos = toSliceResponse(slicePlaces, placeResponseDto);
 
-        if (categoryId == 0) {
-            places = placeRepository.findAllPlaces(pageable);
-        } else {
-            places = placeRepository.findAllPlacesByCategoryId(categoryId, pageable);
-        }
-
-        Slice<PlaceResponseDto> dto = PlaceResponseDto.fromEntitySlice(places);
-
-        return DataResponseDto.success(dto);
+        return DataResponseDto.success(responseDtos);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public DataResponseDto<PlaceDetailResponseDto> findPlace(Long id) {
 
@@ -88,6 +74,7 @@ public class PlaceServiceImpl implements PlaceService {
         return DataResponseDto.success(dto);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public DataResponseDto<PlaceDetailResponseDto> findPlaceForUpdate(Long id) {
 
@@ -102,28 +89,11 @@ public class PlaceServiceImpl implements PlaceService {
         return DataResponseDto.success(dto);
     }
 
-
-    @Override
-    public DataResponseDto<PlaceWithFilterDetailResponseDto> findPlaceWithFilter(Long id) {
-
-        Place place = placeRepository.findById(id)
-                .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_PLACE));
-
-        List<PlaceImage> images = placeImageService.findImages(id);
-        List<PlaceBlog> blogs = placeBlogService.findBlogs(id);
-        Set<PlaceFilter> filters = placeFilterService.findFilters(id);
-
-        PlaceWithFilterDetailResponseDto dto = PlaceWithFilterDetailResponseDto.fromEntity(place, images, blogs, filters);
-        return DataResponseDto.success(dto);
-    }
-
     // 유저 인증, 권한 Spring Security 위임
     @Override
-    public ResponseDto save(PlaceFormRequestDto2 dto) {
+    public ResponseDto save(PlaceFormRequestDto dto) {
 
-        Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY));
-        Place place = dto.toEntity(category);
+        Place place = dto.toEntity();
 
         Set<PlaceFilter> placeFilters = placeFilterService.getPlaceFilters(dto.getFilters(), place);
 
@@ -148,15 +118,12 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public ResponseDto update(Long id, PlaceFormUpdateRequestDto dto) {
 
-        Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_CATEGORY));
-        //TODO: CATEGORY 제거필요
-        Place place = placeRepository.findByIdWithCategoryAndPlaceImages(id)
+        Place place = placeRepository.findByIdWithPlaceImages(id)
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_PLACE));
         Set<PlaceFilter> placeFilters = placeFilterService.getPlaceFilters(dto.getFilters(), place);
         place.updateFilters(placeFilters);
 
-        Place updatePlace = dto.textFieldToEntity(category);
+        Place updatePlace = dto.textFieldToEntity();
         place.update(updatePlace);
 
 
@@ -198,53 +165,45 @@ public class PlaceServiceImpl implements PlaceService {
         return ResponseDto.success();
     }
 
-    //TODO: toList(), Arrays.asList, Collectors.toList() 어떤것을 사용할지
     @Transactional(readOnly = true)
     @Override
-    public ResponseDto getTop3(int categoryId) {
-
+    public DataResponseDto<List<PlaceResponseDto>> getTop3() {
+        //TODO: 하드코딩 수정 필요
         int pageNumber = 0;
         int pageSize = 3;
 
-        List<PlaceWeeklyStats> placeWeeklyStatsList = placeWeeklyStatsService.getTop3PlaceWeeklyStats(categoryId, PageRequest.of(pageNumber, pageSize));
+        List<PlaceWeeklyStats> placeWeeklyStatsList = placeWeeklyStatsService.getTop3PlaceWeeklyStats(PageRequest.of(pageNumber, pageSize));
         List<PlaceResponseDto> top3 = PlaceResponseDto.fromEntityPlaceWeeklyStatsList(placeWeeklyStatsList);
 
         return DataResponseDto.success(top3);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public DataResponseDto<Slice<PlaceResponseDto>> searchPlace(String type, String keyword, Pageable pageable) {
-
-        Page<Place> places = placeRepository.findAllPlacesByTypeAndKeyword(type, keyword, pageable);
-        Page<PlaceResponseDto> dto = PlaceResponseDto.fromEntityPage(places);
-
-        return DataResponseDto.success(dto);
-    }
-
-    // TODO: 데이터 반환타입 ResponseDto, DataResponseDto 통일이 필요
-    @Override
-    public ResponseDto searchFilterPlace(PlaceSearchRequestDto dto, Pageable pageable) {
+    public DataResponseDto<SliceResponseDto<PlaceResponseDto>> searchFilterPlace(PlaceSearchRequestDto dto, Pageable pageable) {
 
         Slice<Place> slicePlaces = placeRepository.searchPlacesWithMultiFilters(
                 dto.getKeyword(), dto.getCity(), dto.getTypes(),
                 dto.getPetAccessTypes(), dto.getPetSizes(), dto.getServices(), pageable);
 
-        List<Place> places = slicePlaces.getContent();
-        boolean hasNext = slicePlaces.hasNext();
-        boolean first = slicePlaces.isFirst();
-        boolean last = slicePlaces.isLast();
-        int page = slicePlaces.getNumber();
-        int size = slicePlaces.getSize();
-
-        List<PlaceResponseDto> placeResponseDto = PlaceResponseDto.fromEntityList(places);
-        SliceInfo sliceInfo = new SliceInfo(page, size, first, last, hasNext);
-        SliceResponseDto<PlaceResponseDto> responseDtos = new SliceResponseDto<>(sliceInfo, placeResponseDto);
+        List<PlaceResponseDto> placeResponseDto = PlaceResponseDto.fromEntityList(slicePlaces.getContent());
+        SliceResponseDto<PlaceResponseDto> responseDtos = toSliceResponse(slicePlaces, placeResponseDto);
 
         return DataResponseDto.success(responseDtos);
     }
 
     @Override
-    public ResponseDto recentPlaces(int limit) {
+    public DataResponseDto<Long> searchFilterCountPlaces(PlaceSearchRequestDto dto) {
+
+        Long totalCount = placeRepository.getSearchPlacesTotalCount(dto.getKeyword(), dto.getCity(), dto.getTypes(),
+                dto.getPetAccessTypes(), dto.getPetSizes(), dto.getServices());
+
+        return DataResponseDto.success(totalCount);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public DataResponseDto<List<PlaceResponseDto>> recentPlaces(int limit) {
 
         PageRequest pageRequest = PageRequest.of(0, limit);
 
@@ -254,13 +213,33 @@ public class PlaceServiceImpl implements PlaceService {
         return DataResponseDto.success(responseDtos);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public ResponseDto randomPlaces(int limit) {
+    public DataResponseDto<List<PlaceResponseDto>> randomPlaces(int limit) {
 
         PageRequest pageRequest = PageRequest.of(0, limit);
         List<Place> places = placeRepository.findByOrderByRandom(pageRequest);
         List<PlaceResponseDto> responseDtos = PlaceResponseDto.fromEntityList(places);
 
         return DataResponseDto.success(responseDtos);
+    }
+
+    @Override
+    public DataResponseDto<Long> countPlaces() {
+
+        Long count = placeRepository.countBy();
+
+        return DataResponseDto.success(count);
+    }
+
+    private <T> SliceResponseDto<T> toSliceResponse(Slice<?> slice, List<T> content) {
+        SliceInfo info = new SliceInfo(
+                slice.getNumber(),
+                slice.getSize(),
+                slice.isFirst(),
+                slice.isLast(),
+                slice.hasNext()
+        );
+        return new SliceResponseDto<>(info, content);
     }
 }

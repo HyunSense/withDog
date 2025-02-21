@@ -10,17 +10,11 @@ import java.util.List;
 
 public interface PlaceRepositoryDynamic {
 
-//    Slice<Place> findAllPlacesByTypeAndKeyword(String type, String keyword, Pageable pageable);
-
-    Page<Place> findAllPlacesByTypeAndKeyword(String type, String keyword, Pageable pageable);
-
-    List<Place> searchPlacesWithMultiFiltersUsingSubQuery();
-
-//    Slice<Place> searchPlacesWithMultiFilters(String keyword, List<String> city, List<String> types,
-//                                             List<String> petAccessTypes, List<String> petSizes,
-//                                             List<String> services, int offset, int size, String sort);
-
     Slice<Place> searchPlacesWithMultiFilters(String keyword, List<String> city, List<String> types,
                                               List<String> petAccessTypes, List<String> petSizes,
                                               List<String> services, Pageable pageable);
+
+    Long getSearchPlacesTotalCount(String keyword, List<String> city, List<String> types,
+                                   List<String> petAccessTypes, List<String> petSizes,
+                                   List<String> services);
 }

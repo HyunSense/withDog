@@ -4,7 +4,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import withdog.domain.place.entity.Category;
 import withdog.domain.place.entity.Place;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
 
@@ -18,13 +17,8 @@ public interface PlaceWeeklyStatsRepository extends JpaRepository<PlaceWeeklySta
 
     Optional<PlaceWeeklyStats> findByPlaceAndWeekStartDate(Place place, LocalDate weekStartDate);
 
-    @Query("select pw from PlaceWeeklyStats pw join fetch pw.place p join fetch p.category c where pw.weekStartDate = (select max(pw.weekStartDate) from PlaceWeeklyStats pw) order by pw.bookmarkCount * 2 desc, pw.hitCount desc, p.createdAt desc")
+    @Query("select pw from PlaceWeeklyStats pw join fetch pw.place p " +
+            "where pw.weekStartDate = (select max(pw.weekStartDate) from PlaceWeeklyStats pw) " +
+            "order by pw.bookmarkCount * 2 desc, pw.hitCount desc, p.id desc")
     List<PlaceWeeklyStats> findTop3(Pageable pageable);
-
-    @Query("select pw from PlaceWeeklyStats pw join fetch pw.place p join fetch p.category c where c.id = :categoryId and pw.weekStartDate = (select max(pw.weekStartDate) from PlaceWeeklyStats pw) order by pw.bookmarkCount * 2 desc, pw.hitCount desc, p.createdAt desc")
-    List<PlaceWeeklyStats> findTop3ByCategoryId(int categoryId, Pageable pageable);
-
-    //TEST code
-    @Query("select pw from PlaceWeeklyStats pw join fetch pw.place p join fetch p.category c where p.category = :category and pw.weekStartDate = (select max(pw.weekStartDate) from PlaceWeeklyStats pw) order by pw.bookmarkCount * 2 desc, pw.hitCount desc, p.createdAt desc")
-    List<PlaceWeeklyStats> findTop3ByCategory(Category category, Pageable pageable);
 }

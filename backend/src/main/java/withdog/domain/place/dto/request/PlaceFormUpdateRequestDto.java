@@ -1,7 +1,6 @@
 package withdog.domain.place.dto.request;
 
 
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,11 +11,9 @@ import lombok.ToString;
 import withdog.common.validator.ValidUrl;
 import withdog.domain.place.dto.PlaceNewImageDto;
 import withdog.domain.place.dto.PlaceUpdateImagesDto;
-import withdog.domain.place.entity.Category;
 import withdog.domain.place.entity.Place;
 
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -24,10 +21,6 @@ import java.util.Map;
 public class PlaceFormUpdateRequestDto {
 
     private String filters;
-
-    @NotNull(message = "CategoryId must not be null")
-    @Min(value = 1, message = "CategoryId must be greater than 0")
-    private int categoryId;
 
     @NotBlank(message = "Not Blank Name")
     private String name;
@@ -57,9 +50,8 @@ public class PlaceFormUpdateRequestDto {
 
     private List<Long> removedImageIds;
 
-    public Place textFieldToEntity(Category category) {
+    public Place textFieldToEntity() {
         return Place.builder()
-                .category(category)
                 .name(this.getName())
                 .price(this.getPrice())
                 .addressPart1(this.getAddressPart1())
@@ -71,8 +63,7 @@ public class PlaceFormUpdateRequestDto {
     }
 
     @Builder
-    public PlaceFormUpdateRequestDto(int categoryId, String name, String phone, String addressPart1, String addressPart2, int price, String reservationUrl, String description, List<String> blogUrls, List<PlaceNewImageDto> newImages, List<PlaceUpdateImagesDto> updateImages, List<Long> removedImageIds) {
-        this.categoryId = categoryId;
+    public PlaceFormUpdateRequestDto(String name, String phone, String addressPart1, String addressPart2, int price, String reservationUrl, String description, List<String> blogUrls, List<PlaceNewImageDto> newImages, List<PlaceUpdateImagesDto> updateImages, List<Long> removedImageIds) {
         this.name = name;
         this.phone = phone;
         this.addressPart1 = addressPart1;
