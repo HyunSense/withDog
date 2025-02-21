@@ -56,7 +56,6 @@ public class PlaceServiceImpl implements PlaceService {
         return DataResponseDto.success(responseDtos);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public DataResponseDto<PlaceDetailResponseDto> findPlace(Long id) {
 

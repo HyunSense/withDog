@@ -13,7 +13,6 @@ const AdminEdit = () => {
 
   const fetchCountPlaces = async () => {
     const response = await getCountPlaces();
-    console.log("response count = ", response.data.data);
     const countPlaces = response.data.data;
     setCount(countPlaces);
   };
@@ -84,7 +83,6 @@ const AdminEdit = () => {
   const fetchMorePlaces = async (page) => {
     try {
       const response = await getAllPlaces({ page: page });
-      console.log("response = ", response);
       const { content, sliceInfo } = response.data.data;
 
       setPlaces((prev) => [...prev, ...content]);

@@ -92,7 +92,6 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
         formData.append(`images[${index}].name`, image.name);
       });
     }
-    console.log("selectedFilters = ", selectedFilters)
     onSubmit(formData);
   };
 
