@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { getAdminPlace, updatePlaces } from "../../apis/place";
 import AdminPlaceForm from "./AdminPlaceForm";
-import AdminPlaceForm2 from "./AdminPlaceForm2";
 import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../common/Loading";
 
@@ -10,11 +9,9 @@ const AdminPlaceEdit = () => {
   const { id } = useParams();
   const [place, setPlace] = useState(null);
   const [loading, setLoading] = useState(true);
-  // const navigate = useNavigate();
 
   const fetchPlaceDetail = async (id) => {
     try {
-      // const response = await getPlace(id);
       const response = await getAdminPlace(id);
       console.log("response = ", response);
       setPlace(response.data.data);
@@ -48,8 +45,7 @@ const AdminPlaceEdit = () => {
   }
 
   return (
-    // <AdminPlaceForm initValues={place} isEdit={true} onSubmit={handleEdit} />
-    <AdminPlaceForm2 initValues={place} isEdit={true} onSubmit={handleEdit} />
+    <AdminPlaceForm initValues={place} isEdit={true} onSubmit={handleEdit} />
   );
 };
 

@@ -1,32 +1,26 @@
 import AdminEditItem from "./AdminEditItem";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { deletePlaces, getAllPlaces } from "../../apis/place";
-import { useNavigate } from "react-router-dom";
+import { deletePlaces, getAllPlaces, getCountPlaces } from "../../apis/place";
 import * as S from "../../styles/AdminEdit.Styled";
-import { CATEGORY_MAP } from "../../constants/categoryMap";
 
 const AdminEdit = () => {
   const [places, setPlaces] = useState([]);
   const [selectedItems, setSelectedItems] = useState([]);
-  const [selectCategory, setSelectCategory] = useState(null);
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [count, setCount] = useState(null);
   const loadMoreRef = useRef(null);
 
-  const navigate = useNavigate();
-  const handleCategoryClick = (category) => {
-    setSelectCategory(category);
-
-    setPage(0);
-    setHasMore(true);
-    setPlaces([]);
-
-    if (category) {
-      navigate(`?category=${category}`);
-    } else {
-      navigate();
-    }
+  const fetchCountPlaces = async () => {
+    const response = await getCountPlaces();
+    console.log("response count = ", response.data.data);
+    const countPlaces = response.data.data;
+    setCount(countPlaces);
   };
+
+  useEffect(() => {
+    fetchCountPlaces();
+  }, []);
 
   const handleCheckboxChange = (id) => {
     setSelectedItems((prev) =>
@@ -39,7 +33,9 @@ const AdminEdit = () => {
       return;
     }
 
-    const isConfirmed = window.confirm(`${selectedItems.length}개의 장소를 삭제 하시겠습니까?`);
+    const isConfirmed = window.confirm(
+      `${selectedItems.length}개의 장소를 삭제 하시겠습니까?`
+    );
 
     if (isConfirmed) {
       fetchDeletePlaces(selectedItems);
@@ -52,10 +48,10 @@ const AdminEdit = () => {
     (entries) => {
       const firstEntity = entries[0];
       if (firstEntity.isIntersecting && hasMore) {
-        fetchMorePlaces(page, selectCategory);
+        fetchMorePlaces(page);
       }
     },
-    [hasMore, page, selectCategory]
+    [hasMore, page]
   );
 
   useEffect(() => {
@@ -76,7 +72,7 @@ const AdminEdit = () => {
 
   const fetchDeletePlaces = async (ids) => {
     try {
-      await deletePlaces({ids: ids});
+      await deletePlaces(ids);
     } catch (error) {
       console.error("fetchDeletePalces error = ", error);
     }
@@ -85,16 +81,15 @@ const AdminEdit = () => {
     setSelectedItems([]);
   };
 
-  const fetchMorePlaces = async (page, category) => {
+  const fetchMorePlaces = async (page) => {
     try {
-      const categoryId = CATEGORY_MAP[category] ?? 0;
-      const response = await getAllPlaces({ page: page, categoryId: categoryId });
-      const apiResponse = response.data;
-      const slice = apiResponse.data;
+      const response = await getAllPlaces({ page: page });
+      console.log("response = ", response);
+      const { content, sliceInfo } = response.data.data;
 
-      setPlaces((prev) => [...prev, ...slice.content]);
+      setPlaces((prev) => [...prev, ...content]);
 
-      if (slice.last) {
+      if (sliceInfo.last) {
         setHasMore(false);
       } else {
         setPage((prev) => prev + 1);
@@ -108,17 +103,9 @@ const AdminEdit = () => {
     <>
       <S.StyledEditBox>
         <S.StyledEdit>
-          <S.StyledCategoryBox>
-            <S.StyledCategoryButton $isActive={selectCategory === null} onClick={() => handleCategoryClick(null)}>
-              전체
-            </S.StyledCategoryButton>
-            <S.StyledCategoryButton $isActive={selectCategory === "camp"} onClick={() => handleCategoryClick("camp")}>
-              캠핑
-            </S.StyledCategoryButton>
-            <S.StyledCategoryButton $isActive={selectCategory === "park"} onClick={() => handleCategoryClick("park")}>
-              공원
-            </S.StyledCategoryButton>
-          </S.StyledCategoryBox>
+          <S.StyledTitleAndCountBox>
+            <S.StyledTitleAndCount>등록된 장소 {count}건</S.StyledTitleAndCount>
+          </S.StyledTitleAndCountBox>
           <S.StyledItemList>
             {places.map((place) => (
               <AdminEditItem

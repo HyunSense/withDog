@@ -5,7 +5,6 @@ import { FILTER_OPTIONS } from "../../constants/filters";
 import FilterSection from "../searchFilter/FilterSection";
 import FilterItem from "../searchFilter/FilterItem";
 import * as S from "../../styles/SearchFilter.Styled";
-import { getSearchFilter } from "../../apis/place";
 import { useNavigate } from "react-router-dom";
 
 const SearchModal = ({ onClose }) => {

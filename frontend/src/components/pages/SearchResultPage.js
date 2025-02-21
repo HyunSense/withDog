@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { getSearchPlaces } from "../../apis/place";
-import PlaceItems from "./PlaceItems";
+import { getSearchCountPlaces, getSearchPlaces } from "../../apis/place";
+import PlaceItems from "../place/PlaceItems";
 import * as StyledPlaceList from "../../styles/PlaceList.Styled";
 import styled from "styled-components";
 import PrevButton from "../common/PrevButton";
 import { useSearchParams } from "react-router-dom";
-import SearchModal from "../pages/SearchModal";
+import SearchModal from "./SearchModal";
 
 const StyledSearchHeader = styled.header`
   position: sticky;
@@ -79,11 +79,11 @@ const StyledSearchResultInputText = styled.p`
   color: #4e5354;
 `;
 
-const StyledSearchResultInputInfo = styled.p`
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: #4e5354;
-`;
+// const StyledSearchResultInputInfo = styled.p`
+//   font-size: 1.2rem;
+//   font-weight: 500;
+//   color: #4e5354;
+// `;
 
 const StyledSearchResultText = styled.p`
   font-size: 1.4rem;
@@ -97,14 +97,28 @@ const StyledPlaceListBox = styled.div`
   padding: 0 16px 25px 16px;
 `;
 
-const SearchResult = () => {
+const SearchResultPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [places, setPlaces] = useState([]);
   const [page, setPage] = useState(0); // page는 0부터 시작
   const [hasMore, setHasMore] = useState(true);
   const loadMoreRef = useRef(null);
+  const [count, setCount] = useState(null);
   const [searchParams] = useSearchParams();
   const searchParamsRef = useRef(searchParams);
+
+  useEffect(() => {
+    const fetchSearchCountPlaces = async () => {
+      const params = {
+        ...Object.fromEntries(searchParams.entries()),
+      };
+      const response = await getSearchCountPlaces(params);
+      const countPlaces = response.data.data;
+      setCount(countPlaces);
+    };
+
+    fetchSearchCountPlaces();
+  }, [searchParams]);
 
   useEffect(() => {
     setPlaces([]);
@@ -199,7 +213,7 @@ const SearchResult = () => {
           </StyledSearchResultInputTextBox>
         </StyledSearchResultInput>
       </StyledSearchResultInputBox>
-      <StyledSearchResultText>검색결과 0건</StyledSearchResultText>
+      <StyledSearchResultText>검색결과 {count}건</StyledSearchResultText>
       <StyledPlaceListBox>
         <StyledPlaceList.StyledPlaceItemList>
           {places.map((place) => (
@@ -217,4 +231,4 @@ const SearchResult = () => {
   );
 };
 
-export default SearchResult;
+export default SearchResultPage;

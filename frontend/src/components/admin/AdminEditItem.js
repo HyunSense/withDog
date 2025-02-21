@@ -12,7 +12,7 @@ const AdminEditItem = ({ item: place, checked, onChange }) => {
 
   return (
     <S.StyledItem>
-      <S.StyledItemInfo to={`/places/${place.category}/${place.id}`}>
+      <S.StyledItemInfo to={`/places/${place.id}`}>
         <S.StyledItemThumbnailBox>
           <S.StyledItemThumbnail src={place.thumbnailUrl} alt="이미지" />
         </S.StyledItemThumbnailBox>

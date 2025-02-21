@@ -40,7 +40,6 @@ const BookmarkMain = () => {
 
   const fetchBookmarkDelete = async (ids) => {
     try {
-      // const data = {bookmarkPlaceIds : ids};
       await deleteSelectedBookmarks(ids);
 
       fetchBookmarks();

@@ -15,11 +15,9 @@ import AdminEdit from "./components/admin/AdminEdit";
 import NoLoginRedirect from "./components/auth/NoLoginRedirect";
 import AdminPlaceEdit from "./components/admin/AdminPlaceEdit";
 import AdminPlaceSave from "./components/admin/AdminPlaceSave";
-import SearchPage from "./components/pages/SearchPage";
 import SocialLoginPage from "./components/pages/user/SocialLoginPage";
-import SearchModalPage from "./components/pages/SearchModalPage";
 import useViewportHeight from "./hooks/useViewportHeight";
-import SearchResult from "./components/place/SearchResult";
+import SearchResult from "./components/pages/SearchResultPage";
 
 function App() {
   useViewportHeight();
@@ -34,8 +32,6 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/places" element={<HomePage />} />
             <Route path="/search/result" element={<SearchResult />} />
-            <Route path="/search" element={<SearchPage />} />
-            <Route path="/search/modal" element={<SearchModalPage />} />
             <Route path="/login-success" element={<SocialLoginPage />} />
 
             <Route element={<NoLoginRedirect />}>
@@ -54,10 +50,7 @@ function App() {
                 <Route path="edit/:id" element={<AdminPlaceEdit />} />
               </Route>
             </Route>
-            <Route
-              path="/places/:category/:id"
-              element={<DetailPage />}
-            />
+            <Route path="/places/:id" element={<DetailPage />} />
           </Routes>
         </AuthProvider>
       </Container>
