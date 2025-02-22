@@ -13,7 +13,6 @@ const AdminPlaceEdit = () => {
   const fetchPlaceDetail = async (id) => {
     try {
       const response = await getAdminPlace(id);
-      console.log("response = ", response);
       setPlace(response.data.data);
     } catch (error) {
       console.error("Failed to fetch place details: ", error);
