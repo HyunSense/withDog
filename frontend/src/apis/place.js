@@ -53,9 +53,6 @@ export const getSearchPlaces = (params) =>
 export const getSearchCountPlaces = (params) =>
   api.get("/places/search/result/count", { params: params });
 
-export const getPlacesByType = (params) =>
-  api.get("/places/type", { params: params });
-
 // GET RecentPlaces
 export const getRecentPlaces = (params) =>
   api.get("/places/recent", { params: params });
