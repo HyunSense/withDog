@@ -71,13 +71,14 @@ const AdminEdit = () => {
 
   const fetchDeletePlaces = async (ids) => {
     try {
-      await deletePlaces(ids);
+      const params = {ids: ids.join(",")};
+      await deletePlaces(params);
+      setPlaces((prev) => prev.filter((place) => !ids.includes(place.id))); 
+      setSelectedItems([]);
     } catch (error) {
       console.error("fetchDeletePalces error = ", error);
     }
 
-    setPlaces((prev) => prev.filter((place) => !ids.includes(place.id)));
-    setSelectedItems([]);
   };
 
   const fetchMorePlaces = async (page) => {
