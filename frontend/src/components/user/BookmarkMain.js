@@ -40,7 +40,8 @@ const BookmarkMain = () => {
 
   const fetchBookmarkDelete = async (ids) => {
     try {
-      await deleteSelectedBookmarks(ids);
+      const params = {ids: ids.join(",")};
+      await deleteSelectedBookmarks(params);
 
       fetchBookmarks();
     } catch (error) {
