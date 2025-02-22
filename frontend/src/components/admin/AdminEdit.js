@@ -38,8 +38,7 @@ const AdminEdit = () => {
 
     if (isConfirmed) {
       fetchDeletePlaces(selectedItems);
-    } else {
-      console.log("삭제취소");
+      setCount((prev) => prev - selectedItems.length);
     }
   };
 
