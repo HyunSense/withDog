@@ -45,10 +45,6 @@ export const deleteSelectedBookmarks = (params) =>
 export const getTop3Places = (params) =>
   api.get("/places/top3", { params: params });
 
-// GET PlacesSearch
-export const getSearch = (params) =>
-  api.get("/places/search", { params: params });
-
 // GET SearchPlaces
 export const getSearchPlaces = (params) =>
   api.get("/places/search/result", { params: params });
