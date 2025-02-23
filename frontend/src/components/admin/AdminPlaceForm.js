@@ -41,7 +41,11 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
     }
 
     const formData = new FormData();
-    formData.append("filters", JSON.stringify(selectedFilters));
+    for (const key in selectedFilters) {
+      selectedFilters[key].forEach(value => {
+        formData.append(`filters[${key}]`, value);
+      });
+    }
     formData.append("name", values.name);
     formData.append("phone", values.phone);
     formData.append("addressPart1", values.addressPart1);
