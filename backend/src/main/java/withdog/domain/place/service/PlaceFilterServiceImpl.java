@@ -31,13 +31,11 @@ public class PlaceFilterServiceImpl implements PlaceFilterService {
     private final Map<String, Integer> filterOptionCache = new ConcurrentHashMap<>();
     private final PlaceFilterRepository placeFilterRepository;
     private final FilterOptionRepository filterOptionRepository;
-    private final ObjectMapper objectMapper;
 
     @Autowired
-    public PlaceFilterServiceImpl(FilterOptionRepository filterOptionRepository,  PlaceFilterRepository placeFilterRepository, ObjectMapper objectMapper) {
+    public PlaceFilterServiceImpl(FilterOptionRepository filterOptionRepository,  PlaceFilterRepository placeFilterRepository) {
         this.filterOptionRepository = filterOptionRepository;
         this.placeFilterRepository = placeFilterRepository;
-        this.objectMapper = objectMapper;
     }
 
     @PostConstruct
