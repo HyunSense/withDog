@@ -9,7 +9,6 @@ import AdminPage from "./components/pages/admin/AdminPage";
 import { AuthProvider } from "./components/auth/AuthContextProvider";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import LoginRedirect from "./components/auth/LoginRedirect";
-import { GlobalStyle, StyledBackground } from "./styles/GlobalStyle";
 import React from "react";
 import AdminEdit from "./components/admin/AdminEdit";
 import NoLoginRedirect from "./components/auth/NoLoginRedirect";
@@ -24,8 +23,7 @@ function App() {
 
   return (
     <>
-      <GlobalStyle />
-      <StyledBackground />
+      <div className="app-background" />
       <Container>
         <AuthProvider>
           <Routes>
