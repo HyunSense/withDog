@@ -20,7 +20,6 @@ import SearchResult from "./components/pages/SearchResultPage";
 
 function App() {
   useViewportHeight();
-
   return (
     <>
       <div className="app-background" />
