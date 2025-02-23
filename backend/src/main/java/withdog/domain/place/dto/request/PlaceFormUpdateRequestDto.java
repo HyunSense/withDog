@@ -14,13 +14,14 @@ import withdog.domain.place.dto.PlaceUpdateImagesDto;
 import withdog.domain.place.entity.Place;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
 @ToString
 public class PlaceFormUpdateRequestDto {
 
-    private String filters;
+    private Map<String, List<String>> filters;
 
     @NotBlank(message = "Not Blank Name")
     private String name;

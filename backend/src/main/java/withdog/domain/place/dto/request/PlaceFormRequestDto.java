@@ -9,6 +9,7 @@ import withdog.domain.place.dto.PlaceNewImageDto;
 import withdog.domain.place.entity.Place;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -16,7 +17,7 @@ import java.util.List;
 @ToString
 public class PlaceFormRequestDto {
 
-    private String filters;
+    private Map<String, List<String>> filters;
 
     @NotBlank(message = "Not Blank Name")
     private String name;

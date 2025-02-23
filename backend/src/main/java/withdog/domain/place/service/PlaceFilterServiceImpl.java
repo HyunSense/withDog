@@ -71,36 +71,27 @@ public class PlaceFilterServiceImpl implements PlaceFilterService {
     }
 
     @Override
-    public Set<PlaceFilter> getPlaceFilters(String filterJson, Place place) {
+    public Set<PlaceFilter> getPlaceFilters(Map<String, List<String>> filters, Place place) {
 
         List<Integer> filterOptionIds = new ArrayList<>();
 
-        try {
-            Map<String, List<String>> filterMap = objectMapper.readValue(filterJson, new TypeReference<Map<String, List<String>>>() {
-            });
+        filters.forEach((key, values) -> {
+            List<Integer> optionIdsByType =
+                    values.stream().map(value -> getFilterOptionId(key, value))
+                            .filter(id -> id != -1)
+                            .collect(Collectors.toList());
 
-            filterMap.forEach((key, values) -> {
-                List<Integer> optionIdsByType =
-                        values.stream().map(value -> getFilterOptionId(key, value))
-                                .filter(id -> id != -1 )
-                                .collect(Collectors.toList());
-
-                if (optionIdsByType.size() < values.size()) {
-                    log.warn("일부 필터 값이 유효하지 않음 - Category: {}", key);
-                }
-                filterOptionIds.addAll(optionIdsByType);
-            });
-        } catch (JsonProcessingException e) {
-            throw new CustomException(ApiResponseCode.SERVER_ERROR, "필터 파싱 실패");
-        }
+            if (optionIdsByType.size() < values.size()) {
+                log.warn("일부 필터 값이 유효하지 않음 - Category: {}", key);
+            }
+            filterOptionIds.addAll(optionIdsByType);
+        });
 
         if (filterOptionIds.isEmpty()) {
             throw new CustomException(ApiResponseCode.SERVER_ERROR, "유효한 필터가 없습니다.");
         }
 
         List<FilterOption> filterOptions = getFilterOptions(filterOptionIds);
-//        List<PlaceFilter> placeFilters =
-//                filterOptions.stream().map(fo -> new PlaceFilter(place, fo)).collect(Collectors.toList());
         Set<PlaceFilter> placeFilters =
                 filterOptions.stream().map(fo -> new PlaceFilter(place, fo)).collect(Collectors.toSet());
 

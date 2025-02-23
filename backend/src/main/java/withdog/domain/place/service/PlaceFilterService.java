@@ -5,6 +5,7 @@ import withdog.domain.place.entity.filter.FilterOption;
 import withdog.domain.place.entity.filter.PlaceFilter;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface PlaceFilterService {
@@ -17,5 +18,5 @@ public interface PlaceFilterService {
 
     List<FilterOption> getFilterOptions(List<Integer> filterOptionIds);
 
-    Set<PlaceFilter> getPlaceFilters(String filterJson, Place place);
+    Set<PlaceFilter> getPlaceFilters(Map<String, List<String>> filters, Place place);
 }
