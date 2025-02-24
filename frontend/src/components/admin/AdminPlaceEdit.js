@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getPlace, updatePlaces } from "../../apis/place";
+import { getAdminPlace, updatePlaces } from "../../apis/place";
 import AdminPlaceForm from "./AdminPlaceForm";
 import { useNavigate, useParams } from "react-router-dom";
 import Loading from "../common/Loading";
@@ -9,11 +9,10 @@ const AdminPlaceEdit = () => {
   const { id } = useParams();
   const [place, setPlace] = useState(null);
   const [loading, setLoading] = useState(true);
-  // const navigate = useNavigate();
 
   const fetchPlaceDetail = async (id) => {
     try {
-      const response = await getPlace(id);
+      const response = await getAdminPlace(id);
       setPlace(response.data.data);
     } catch (error) {
       console.error("Failed to fetch place details: ", error);

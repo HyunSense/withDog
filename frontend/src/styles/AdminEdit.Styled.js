@@ -11,7 +11,6 @@ export const StyledEditBox = styled.div`
 export const StyledEdit = styled.div`
   height: 100%;
   flex: 1 0 0px;
-  /* overflow: scroll; */
   overflow-y: auto;
   ::-webkit-scrollbar {
     display: none;
@@ -19,14 +18,10 @@ export const StyledEdit = styled.div`
   scrollbar-width: none;
 `;
 
-export const StyledCategoryBox = styled.div`
-  /* position: sticky; */
-  /* top: 48px; */
-  /* z-index: 1000; */
+export const StyledTitleAndCountBox = styled.div`
   display: flex;
   align-items: center;
-  padding: 15px 16px 15px 16px;
-  /* padding: 20px 10px 20px 10px; */
+  padding: 10px 16px 10px 16px;
   margin-bottom: 10px;
   gap: 0 1px;
   background-color: #ffffff;
@@ -34,16 +29,11 @@ export const StyledCategoryBox = styled.div`
   border-bottom: 1px solid #eff2f2;
 `;
 
-export const StyledCategoryButton = styled.button`
-  cursor: pointer;
+export const StyledTitleAndCount = styled.p`
   border: none;
   background: none;
   font-size: 1.4rem;
   font-weight: 500;
-  border-radius: 8px;
-  color: ${({$isActive}) => ($isActive ? "#ffffff" : "#000000")};
-  background-color: ${({$isActive}) => ($isActive && "#022733")};
-  padding: 1px 7px;
 `;
 
 export const StyledItemList = styled.div`

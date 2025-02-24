@@ -8,7 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Getter
 @Table(name = "place_images")
 public class PlaceImage {
@@ -53,12 +53,4 @@ public class PlaceImage {
     public void updatePosition(int imagePosition) {
         this.imagePosition = imagePosition;
     }
-
-//    public static PlaceImageDto toPlaceImageDto(PlaceImage placeImage) {
-//
-//        return PlaceImageDto.builder()
-//                .imagePosition(placeImage.getImagePosition())
-//                .imageUrl(placeImage.getImageUrl())
-//                .build();
-//    }
 }

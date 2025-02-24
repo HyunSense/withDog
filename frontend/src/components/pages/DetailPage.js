@@ -7,7 +7,7 @@ import Loading from "../common/Loading";
 import { getPlace } from "../../apis/place";
 
 const StyledDetailPageContainer = styled.div`
-  padding-bottom: 80px;
+  padding-bottom: 40px;
 `;
 
 function DetailPage() {

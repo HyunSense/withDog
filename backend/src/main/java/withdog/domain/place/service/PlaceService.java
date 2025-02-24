@@ -1,33 +1,40 @@
 package withdog.domain.place.service;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import withdog.common.dto.response.DataResponseDto;
 import withdog.common.dto.response.ResponseDto;
-import withdog.domain.bookmark.dto.request.DeleteBookmarksRequestDto;
-import withdog.domain.place.dto.request.PlaceDeleteRequestDto;
+import withdog.common.dto.response.SliceResponseDto;
 import withdog.domain.place.dto.request.PlaceFormRequestDto;
 import withdog.domain.place.dto.request.PlaceFormUpdateRequestDto;
-import withdog.domain.place.dto.response.BookmarkedPlaceResponseDto;
+import withdog.domain.place.dto.request.PlaceSearchRequestDto;
 import withdog.domain.place.dto.response.PlaceDetailResponseDto;
 import withdog.domain.place.dto.response.PlaceResponseDto;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface PlaceService {
 
-    DataResponseDto<Slice<PlaceResponseDto>> findAllPlace(int categoryId, Pageable pageable);
+    DataResponseDto<SliceResponseDto<PlaceResponseDto>> findAllPlace(Pageable pageable);
 
     DataResponseDto<PlaceDetailResponseDto> findPlace(Long id);
+
+    DataResponseDto<PlaceDetailResponseDto> findPlaceForUpdate(Long id);
 
     ResponseDto save(PlaceFormRequestDto dto);
 
     ResponseDto update(Long id, PlaceFormUpdateRequestDto dto);
 
-    ResponseDto delete(Long memberId, PlaceDeleteRequestDto dto);
+    ResponseDto delete(List<Long> ids);
 
-    ResponseDto getTop3(int categoryId);
+    DataResponseDto<List<PlaceResponseDto>> getTop3();
 
-    DataResponseDto<Slice<PlaceResponseDto>> searchPlace(String type, String keyword, Pageable pageable);
+    DataResponseDto<SliceResponseDto<PlaceResponseDto>> searchFilterPlace(PlaceSearchRequestDto dto, Pageable pageable);
+
+    DataResponseDto<Long> searchFilterCountPlaces(PlaceSearchRequestDto dto);
+
+    DataResponseDto<List<PlaceResponseDto>> recentPlaces(int limit);
+
+    DataResponseDto<List<PlaceResponseDto>> randomPlaces(int limit);
+
+    DataResponseDto<Long> countPlaces();
 }

@@ -82,7 +82,7 @@ const RegisterImageUpload = ({ images, onChange }) => {
       <S.StyledImageControlBox>
         <S.StyledFileInput
           type="file"
-          accept=".jpg, .png"
+          accept=".jpg, .png, .jpeg"
           ref={fileRef}
           onChange={handleAddImage}
         />

@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import withDogLogoUpdate from "../../assets/images/withdog-logo-update.png";
+import withDogLogoUpdate from "../../assets/images/withdog-logo-300x80.png";
 import { AuthContext } from "../auth/AuthContextProvider";
 import * as S from "../../styles/Header.Styled";
 // import Loading from "./Loading";

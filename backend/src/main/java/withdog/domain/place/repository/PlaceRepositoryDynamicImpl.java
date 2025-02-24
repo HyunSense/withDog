@@ -5,6 +5,7 @@ import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import withdog.domain.place.entity.Place;
+import withdog.domain.place.repository.filter.DynamicQueryFilterBuilder;
 
 import java.util.List;
 
@@ -13,61 +14,60 @@ public class PlaceRepositoryDynamicImpl implements PlaceRepositoryDynamic {
 
     private final EntityManager em;
 
-    public Page<Place> findAllPlacesByTypeAndKeyword(String type, String keyword, Pageable pageable) {
+    @Override
+    public Slice<Place> searchPlacesWithMultiFilters(String keyword, List<String> city, List<String> types,
+                                                    List<String> petAccessTypes, List<String> petSizes,
+                                                    List<String> services, Pageable pageable) {
 
-        String jpql = "select p from Place p join fetch p.category where 1=1";
-        String countJpql = "select count(p) from Place p where 1=1";
+        // 1. 쿼리 빌더 생성
+        DynamicQueryFilterBuilder queryBuilder = new DynamicQueryFilterBuilder();
+        queryBuilder
+                .baseQuery()
+                .withKeyword(keyword)
+                .withOrFilter("city", city)
+                .withOrFilter("types", types)
+                .withOrFilter("petAccessTypes", petAccessTypes)
+                .withAndFilter("petSizes", petSizes)
+                .withAndFilter("services", services);
 
-        if (type.equals("name")) {
-            jpql += " and p.name like :keyword";
-            countJpql += " and p.name like :keyword";
-        }
+        // 2. 쿼리 실행
+        TypedQuery<Place> query = em.createQuery(queryBuilder.getJpql(), Place.class);
+        queryBuilder.getParams().forEach((key, value) -> query.setParameter(key, value));
 
-        if (type.equals("area")) {
-            jpql += " and p.addressPart1 like :keyword";
-            countJpql += " and p.addressPart1 like :keyword";
-        }
+        int offset = (int) pageable.getOffset();
+        int size = pageable.getPageSize();
 
-        // 데이터 쿼리
-        TypedQuery<Place> query = em.createQuery(jpql, Place.class);
-        query.setParameter("keyword", "%" + keyword + "%");
-        query.setFirstResult((int) pageable.getOffset());
-        query.setMaxResults(pageable.getPageSize());
+        query.setFirstResult(offset);
+        query.setMaxResults(size + 1);
         List<Place> resultList = query.getResultList();
+        boolean hasNext = resultList.size() > size;
+        if (hasNext) {
+            resultList = resultList.subList(0, size);
+        }
 
-        // Count 쿼리
-        TypedQuery<Long> countQuery = em.createQuery(countJpql, Long.class);
-        countQuery.setParameter("keyword", "%" + keyword + "%");
-        Long totalCount = countQuery.getSingleResult();
-
-        return new PageImpl<>(resultList, pageable, totalCount);
+        return new SliceImpl<>(resultList, pageable, hasNext);
     }
 
-//    public Slice<Place> findAllPlacesByTypeAndKeyword(String type, String keyword, Pageable pageable) {
-//
-//        String jpql = "select p from Place p join fetch p.category where 1=1";
-//
-//        if (type.equals("name")) {
-//            jpql += " and p.name like :keyword";
-//        }
-//
-//        if (type.equals("area")) {
-//            jpql += " and p.addressPart1 like :keyword";
-//        }
-//
-//        TypedQuery<Place> query = em.createQuery(jpql, Place.class);
-//        query.setParameter("keyword", "%" + keyword + "%");
-//        query.setFirstResult((int) pageable.getOffset());
-//        query.setMaxResults(pageable.getPageSize() + 1); // 다음 페이지 여부 확인
-//
-//        List<Place> resultList = query.getResultList();
-//
-//        boolean hasNext = resultList.size() > pageable.getPageSize();
-//        if (hasNext) {
-//            resultList.remove(resultList.size() - 1);
-//        }
-//
-//        return new SliceImpl<>(resultList, pageable, hasNext);
-//    }
+    @Override
+    public Long getSearchPlacesTotalCount(String keyword, List<String> city, List<String> types,
+                                          List<String> petAccessTypes, List<String> petSizes,
+                                          List<String> services) {
 
+        // 1. 쿼리 빌더 생성
+        DynamicQueryFilterBuilder queryBuilder = new DynamicQueryFilterBuilder();
+        queryBuilder
+                .baseCountQuery()
+                .withKeyword(keyword)
+                .withOrFilter("city", city)
+                .withOrFilter("types", types)
+                .withOrFilter("petAccessTypes", petAccessTypes)
+                .withAndFilter("petSizes", petSizes)
+                .withAndFilter("services", services);
+
+        // 2. 쿼리 실행
+        TypedQuery<Long> query = em.createQuery(queryBuilder.getJpql(), Long.class);
+        queryBuilder.getParams().forEach((key, value) -> query.setParameter(key, value));
+
+        return query.getSingleResult();
+    }
 }

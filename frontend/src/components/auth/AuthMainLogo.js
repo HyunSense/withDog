@@ -1,6 +1,5 @@
 import styled from "styled-components";
-import withDogLogoUpdate from "../../assets/images/withdog-logo-update2.png";
-// import withDogLogo from "../../assets/images/withDog-logo-192x192.png";
+import withDogLogoUpdate from "../../assets/images/withdog-logo-950x250.png";
 import { Link } from "react-router-dom";
 
 const StyledAuthLogoBox = styled(Link)`

@@ -4,8 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import withdog.domain.member.entity.Member;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @ToString

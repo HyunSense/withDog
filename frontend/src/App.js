@@ -9,26 +9,26 @@ import AdminPage from "./components/pages/admin/AdminPage";
 import { AuthProvider } from "./components/auth/AuthContextProvider";
 import PrivateRoute from "./components/auth/PrivateRoute";
 import LoginRedirect from "./components/auth/LoginRedirect";
-import { GlobalStyle, StyledBackground } from "./styles/GlobalStyle";
 import React from "react";
 import AdminEdit from "./components/admin/AdminEdit";
 import NoLoginRedirect from "./components/auth/NoLoginRedirect";
 import AdminPlaceEdit from "./components/admin/AdminPlaceEdit";
 import AdminPlaceSave from "./components/admin/AdminPlaceSave";
-import SearchPage from "./components/pages/SearchPage";
 import SocialLoginPage from "./components/pages/user/SocialLoginPage";
+import useViewportHeight from "./hooks/useViewportHeight";
+import SearchResult from "./components/pages/SearchResultPage";
 
 function App() {
+  useViewportHeight();
   return (
     <>
-      <GlobalStyle />
-      <StyledBackground />
+      <div className="app-background" />
       <Container>
         <AuthProvider>
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/places" element={<HomePage />} />
-            <Route path="/search" element={<SearchPage />} />
+            <Route path="/search/result" element={<SearchResult />} />
             <Route path="/login-success" element={<SocialLoginPage />} />
 
             <Route element={<NoLoginRedirect />}>
@@ -47,10 +47,7 @@ function App() {
                 <Route path="edit/:id" element={<AdminPlaceEdit />} />
               </Route>
             </Route>
-            <Route
-              path="/places/:category/:name/:id"
-              element={<DetailPage />}
-            />
+            <Route path="/places/:id" element={<DetailPage />} />
           </Routes>
         </AuthProvider>
       </Container>

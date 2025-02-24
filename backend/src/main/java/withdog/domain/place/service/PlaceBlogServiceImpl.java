@@ -8,6 +8,7 @@ import withdog.common.util.BlogMetaDataExtractor;
 import withdog.domain.place.dto.BlogExtractDto;
 import withdog.domain.place.entity.Place;
 import withdog.domain.place.entity.PlaceBlog;
+import withdog.domain.place.repository.PlaceBlogRepository;
 
 import java.util.List;
 
@@ -16,6 +17,14 @@ import java.util.List;
 @Transactional
 @Service
 public class PlaceBlogServiceImpl implements PlaceBlogService{
+
+    private final PlaceBlogRepository placeBlogRepository;
+
+    @Override
+    public List<PlaceBlog> findBlogs(Long placeId) {
+
+        return placeBlogRepository.findByPlaceId(placeId);
+    }
 
     @Override
     public void save(Place place, List<String> blogUrls) {
