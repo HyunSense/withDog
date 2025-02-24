@@ -70,6 +70,7 @@ export const FILTER_OPTIONS = [
         { label: '전용 놀이터', value: 'playground' },
         { label: '주차장', value: 'parking' },
         { label: '야외 시설 보유', value: 'outdoorFacilities' },
+        { label: '개별 울타리', value: 'individualFence' },
       ],
       multiSelect: true,
       adminMultiSelect: true,

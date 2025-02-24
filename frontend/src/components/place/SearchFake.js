@@ -2,7 +2,7 @@ import * as S from "../../styles/Search.Styled";
 
 const SearchFake = ({ onOpen }) => {
   return (
-    <S.StyledSearch>
+    <S.StyledSearchFake>
       <S.StyledSearchFakeInput onClick={onOpen}>
         <S.StyledSearchIconBox>
           <svg
@@ -22,7 +22,7 @@ const SearchFake = ({ onOpen }) => {
         </S.StyledSearchIconBox>
         <S.StyledFakeInputText>어디로 떠날까요?</S.StyledFakeInputText>
       </S.StyledSearchFakeInput>
-    </S.StyledSearch>
+    </S.StyledSearchFake>
   );
 };
 

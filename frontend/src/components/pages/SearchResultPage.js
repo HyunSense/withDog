@@ -220,7 +220,7 @@ const SearchResultPage = () => {
             <PlaceItems
               item={place}
               key={place.id}
-              to={`/places/${place.category}/${place.id}`}
+              to={`/places/${place.id}`}
             />
           ))}
         </StyledPlaceList.StyledPlaceItemList>

@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
-export const StyledSearch = styled.div`
-  margin: 0 0 30px 0;
+export const StyledSearchFake = styled.div`
+  margin: 0 0 15px 0;
   padding: 0 16px;
 `;
 

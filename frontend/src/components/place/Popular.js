@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import * as S from "../../styles/Popular.Styled";
-import trendingIcon from "../../assets/images/trending-icon.png";
 import PopularItems from "./PopularItems";
 import { getTop3Places } from "../../apis/place";
 
@@ -28,16 +27,13 @@ const Popular = () => {
     <S.StyeldPopular>
       <S.StyledPopularTitleBox>
         <S.StyledPopularTitleText>{popularTitle}</S.StyledPopularTitleText>
-        {/* <S.StyledPopularTitleIconBox>
-          <S.StyledPopularTitleIcon src={trendingIcon} />
-        </S.StyledPopularTitleIconBox> */}
       </S.StyledPopularTitleBox>
       <S.StyledPopularItemList>
         {top3Places.map((place) => (
           <PopularItems
             item={place}
             key={place.id}
-            to={`/places/${place.category}/${place.id}`}
+            to={`/places/${place.id}`}
           />
         ))}
       </S.StyledPopularItemList>
