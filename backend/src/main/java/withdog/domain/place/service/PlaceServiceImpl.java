@@ -98,6 +98,8 @@ public class PlaceServiceImpl implements PlaceService {
 
         place.addFilters(placeFilters);
 
+        placeRepository.save(place); // 이미지 업로드 방지 사전 save
+
         List<PlaceNewImageDto> newImageDtos = dto.getImages();
 
         if (newImageDtos != null && !newImageDtos.isEmpty()) {
@@ -109,7 +111,6 @@ public class PlaceServiceImpl implements PlaceService {
             placeBlogService.save(place, blogUrls);
         }
 
-        placeRepository.save(place);
         return ResponseDto.success();
     }
 

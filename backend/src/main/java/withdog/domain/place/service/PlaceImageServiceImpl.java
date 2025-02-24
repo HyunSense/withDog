@@ -27,7 +27,7 @@ public class PlaceImageServiceImpl implements PlaceImageService {
     @Override
     public List<PlaceImage> findImages(Long placeId) {
 
-        return placeImageRepository.findByPlaceId(placeId);
+        return placeImageRepository.findByPlaceIdOrderByImagePositionAsc(placeId);
     }
 
     @Override

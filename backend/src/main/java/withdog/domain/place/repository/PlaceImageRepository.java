@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface PlaceImageRepository extends JpaRepository<PlaceImage, Long> {
 
-    List<PlaceImage> findByPlaceId(Long placeId);
+    List<PlaceImage> findByPlaceIdOrderByImagePositionAsc(Long placeId);
 }
