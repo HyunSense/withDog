@@ -27,6 +27,6 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
     @Query("delete from Bookmark b where b.member = :member and b.place in :places")
     void deleteAllByMemberAndPlaces(Member member, List<Place> places);
 
-    @Query("select b.place from Bookmark b join fetch b.place.category where b.member = :member")
+    @Query("select b.place from Bookmark b where b.member = :member")
     List<Place> findAllBookmarkedPlacesByMember(Member member);
 }

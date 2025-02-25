@@ -7,7 +7,6 @@ const usePlaceForm = (initValues) => {
     blogUrls.push("");
   }
 
-  const [selected, setSelected] = useState(initValues.category || "camp");
   const [values, setValues] = useState({
     name: initValues.name || "",
     phone: initValues.phone || "",
@@ -51,8 +50,6 @@ const usePlaceForm = (initValues) => {
   };
 
   return {
-    selected,
-    setSelected,
     values,
     setValues,
     images,

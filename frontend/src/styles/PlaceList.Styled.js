@@ -7,9 +7,7 @@ export const StyledTitleText = styled.p`
 `;
 
 export const StyledPlaceList = styled.section`
-  /* padding: 0 10px 0 30px; */
-  padding: 0 15px;
-  margin-bottom: 20px;
+  padding: 0 15px 30px 15px;
 `;
 
 export const StyledPlaceListTitleBox = styled.div`

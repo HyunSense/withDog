@@ -11,5 +11,5 @@ public interface PlaceWeeklyStatsService {
     void increaseBookmarkCount(Place place);
     void decreaseBookmarkCount(Place place);
     void increaseHitCount(Place place);
-    List<PlaceWeeklyStats> getTop3PlaceWeeklyStats(int categoryId, Pageable pageable);
+    List<PlaceWeeklyStats> getTop3PlaceWeeklyStats(Pageable pageable);
 }

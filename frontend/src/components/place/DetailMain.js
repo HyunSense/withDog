@@ -43,9 +43,11 @@ const DetailMain = ({ place }) => {
         </S.StyledDetailInfo>
         <S.StyledDetailInfo>
           <S.StyledText>{place.phone}</S.StyledText>
-          <S.StyledDetailTextLink href={`tel:${place.phone}`}>
-            <S.StyledActionText>전화하기</S.StyledActionText>
-          </S.StyledDetailTextLink>
+          {place.phone && (
+            <S.StyledDetailTextLink href={`tel:${place.phone}`}>
+              <S.StyledActionText>전화하기</S.StyledActionText>
+            </S.StyledDetailTextLink>
+          )}
         </S.StyledDetailInfo>
         <S.StyledDetailInfo>
           <S.StyledPriceText>
@@ -53,13 +55,15 @@ const DetailMain = ({ place }) => {
           </S.StyledPriceText>
         </S.StyledDetailInfo>
       </S.StyledDetailInfoBox>
-      <S.StyledDetailReservationLink
-        href={place.reservationUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <S.StyledActionText>예약하기</S.StyledActionText>
-      </S.StyledDetailReservationLink>
+      {place.reservationUrl && (
+        <S.StyledDetailReservationLink
+          href={place.reservationUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <S.StyledActionText>예약하기</S.StyledActionText>
+        </S.StyledDetailReservationLink>
+      )}
       <S.StyledDetailInfoBlogBox>
         <S.StyledText>관련 블로그</S.StyledText>
         <S.StyledDetailInfoBlogList>
@@ -72,7 +76,7 @@ const DetailMain = ({ place }) => {
             >
               <S.StyledDetailInfoBlogImgBox>
                 <S.StyledDetailInfoBlogImg
-                  referrerPolicy="same-origin"
+                  referrerPolicy="no-referrer"
                   src={blog.imageUrl}
                 />
                 <S.StyledDetailInfoBlogImgTextBox>

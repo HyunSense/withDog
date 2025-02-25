@@ -12,18 +12,15 @@ export const postPlaces = (data) =>
     headers: { "Content-Type": "multipart/form-data" },
   });
 
+// PUT Places
 export const updatePlaces = (placeId, data) =>
   api.put(`/places/${placeId}`, data, {
     headers: { "Content-Type": "multipart/form-data" },
   });
 
-export const deletePlaces = (
-  data // post와달리 delete 두번째 인자는 config, delete(url, config)
-) =>
-  api.delete("/places", {
-    // data를 담으려면 config에 data 속성 추가
-    data: data,
-  });
+// DELETE Places
+export const deletePlaces = (params) =>
+  api.delete("/places", { params: params });
 
 // GET BookmarkStatus
 export const getBookmarkStatus = (placeId) =>
@@ -41,13 +38,31 @@ export const deleteBookmark = (placeId) =>
   api.delete(`/places/${placeId}/bookmarks`);
 
 // DELETE DeleteSelectedBookmarks
-export const deleteSelectedBookmarks = (ids) =>
-  api.delete("/places/bookmarks", { data: { bookmarkPlaceIds: ids } });
+export const deleteSelectedBookmarks = (params) =>
+  api.delete("/places/bookmarks", { params: params });
 
 // GET Top3Places
 export const getTop3Places = (params) =>
   api.get("/places/top3", { params: params });
 
-// GET PlacesSearch
-export const getSearch = (params) =>
-  api.get("/places/search", {params: params});
+// GET SearchPlaces
+export const getSearchPlaces = (params) =>
+  api.get("/places/search/result", { params: params });
+
+// GET SearchCountPlaces
+export const getSearchCountPlaces = (params) =>
+  api.get("/places/search/result/count", { params: params });
+
+// GET RecentPlaces
+export const getRecentPlaces = (params) =>
+  api.get("/places/recent", { params: params });
+
+// GET RandomPlaces
+export const getRandomPlaces = (params) =>
+  api.get("/places/random", { params: params });
+
+// GET AdminPlace
+export const getAdminPlace = (id) => api.get(`/admin/places/${id}`);
+
+// GET CountPlaces
+export const getCountPlaces = () => api.get("/places/count");

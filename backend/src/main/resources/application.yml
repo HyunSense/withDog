@@ -49,6 +49,7 @@ spring:
         format_sql: true
         highlight_sql: true
         default_batch_fetch_size: 100
+    open-in-view: false
 
 server:
   address: 0.0.0.0 #외부접속허용

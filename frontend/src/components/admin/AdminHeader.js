@@ -12,7 +12,7 @@ const AdminHeader = () => {
   return (
     <S.StyledAdminHeader>
       <S.StyledPrevButtonBox>
-        <PrevButton to="/" />
+        <PrevButton />
       </S.StyledPrevButtonBox>
       <S.StyledTitleText>{titleText}</S.StyledTitleText>
       <S.StyledBalanceDummy></S.StyledBalanceDummy>

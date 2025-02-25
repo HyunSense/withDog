@@ -6,7 +6,7 @@ function PlaceItems({ item, to }) {
   return (
     <S.StyledPlaceItemBox to={to}>
       <S.StyledPlaceItemImgBox>
-        <S.StyledPlaceItemImg src={item.thumbnailUrl} alt="이미지" />
+        <S.StyledPlaceItemImg src={item.thumbnailUrl} alt="장소 썸네일" />
       </S.StyledPlaceItemImgBox>
       <S.StyledNameText>{item.name}</S.StyledNameText>
       <S.StyledAddressText>{item.address}</S.StyledAddressText>

@@ -13,21 +13,16 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @ToString
-//@AllArgsConstructor
-//@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaceResponseDto {
 
-    private String category;
     private Long id;
     private String name;
     private String address;
     private int price;
     private String thumbnailUrl;
 
-//    @Builder
     public PlaceResponseDto (Place place) {
 
-        this.category = place.getCategory().getName();
         this.id = place.getId();
         this.name = place.getName();
         this.address = StringFilter.addressSpecialWord(place.getAddressPart1());
@@ -43,7 +38,12 @@ public class PlaceResponseDto {
         return places.map(p -> new PlaceResponseDto(p));
     }
 
-    public static List<PlaceResponseDto> fromEntityList(List<PlaceWeeklyStats> placeWeeklyStatsList) {
+    public static List<PlaceResponseDto> fromEntityPlaceWeeklyStatsList(List<PlaceWeeklyStats> placeWeeklyStatsList) {
         return placeWeeklyStatsList.stream().map(p -> new PlaceResponseDto(p.getPlace())).collect(Collectors.toList());
+    }
+
+    public static List<PlaceResponseDto> fromEntityList(List<Place> places) {
+
+        return places.stream().map(p -> new PlaceResponseDto(p)).collect(Collectors.toList());
     }
 }

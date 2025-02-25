@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Table(name = "place_blogs")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class PlaceBlog {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)

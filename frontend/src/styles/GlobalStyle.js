@@ -59,24 +59,18 @@ export const GlobalStyle = createGlobalStyle`
   a {
     outline: none;
     text-decoration: none;
-    color: black;
+    color: inherit;
 
-    &:visited {
-      color: black;
-    }
-
-    &:link {
-      color: black;
-    }
-
-    &:active {
-      color: black;
-    }
   }
 
   input, button, textarea, select {
     font-family: 'Spoqa Han Sans Neo', 'sans-serif'; // 명시적으로 폰트 지정
     font-size: inherit; // 폰트 크기를 상속받게 설정
+  }
+
+  #modal-root {
+    position: relative;
+    z-index: 1000;
   }
 `;
 

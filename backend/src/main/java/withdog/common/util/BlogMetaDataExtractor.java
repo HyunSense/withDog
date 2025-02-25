@@ -9,6 +9,7 @@ import withdog.common.exception.CustomException;
 import withdog.domain.place.dto.BlogExtractDto;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 @Slf4j
 public class BlogMetaDataExtractor {
@@ -45,6 +46,9 @@ public class BlogMetaDataExtractor {
                     .description(description)
                     .imageUrl(imageUrl)
                     .build();
+
+        } catch (UnknownHostException e) {
+            throw new CustomException(ApiResponseCode.SERVER_ERROR, "유효하지 않은 URL : " + e.getMessage());
 
         } catch (Exception e) {
             throw new CustomException(ApiResponseCode.SERVER_ERROR, e.getMessage());

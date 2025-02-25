@@ -3,10 +3,12 @@ import * as S from "../../styles/AdminSave.Styled";
 import SaveImageUpload from "./SaveImageUpload";
 import Postcode from "./Postcode";
 import usePlaceForm from "../../hooks/usePlaceForm";
-import { CATEGORY_MAP } from "../../constants/categoryMap";
+import FilterContainer from "../searchFilter/FilterContainer";
+import { FILTER_OPTIONS } from "../../constants/filters";
 
 const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
-  const [selectedCategory, setSelectedCategory] = useState(initValues.category || "camp");
+  const [selectedFilters, setSelectedFilters] = useState(initValues.filters || {});
+
   const {
     values,
     images,
@@ -17,13 +19,33 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
     removedImages,
   } = usePlaceForm(initValues);
 
-  //backend 서버단 image transaction 처리 생각
-  // 별도의 ResponseDto 필요? blog, image
+  const validateRequiredFilters = (filters) => {
+    const requiredFilters = FILTER_OPTIONS.filter(f => f.isRequired);
+    const missingFilters = requiredFilters.filter(f => !filters[f.id] || filters[f.id].length === 0);
+
+    if (missingFilters.length > 0) {
+      const missingTitle = missingFilters.map(f => f.title).join(", ");
+      alert(`다음 필터는 필수입니다.\n${missingTitle}`);
+      return false;
+    }
+
+    return true;
+  }
+
+  //backend 서버단 image transaction 처리 필요
   const handleOnSubmit = (e) => {
     e.preventDefault();
-    const categoryId = CATEGORY_MAP[selectedCategory];
+
+    if (!validateRequiredFilters(selectedFilters)) {
+      return; // 필터 유효성 검사
+    }
+
     const formData = new FormData();
-    formData.append("categoryId", categoryId);
+    for (const key in selectedFilters) {
+      selectedFilters[key].forEach(value => {
+        formData.append(`filters[${key}]`, value);
+      });
+    }
     formData.append("name", values.name);
     formData.append("phone", values.phone);
     formData.append("addressPart1", values.addressPart1);
@@ -74,35 +96,13 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
         formData.append(`images[${index}].name`, image.name);
       });
     }
-
     onSubmit(formData);
   };
 
   return (
     <S.StyledAdminSave>
       <S.StyledSaveForm onSubmit={handleOnSubmit}>
-        <S.StyledCategoryBox>
-          <S.StyledText>종류</S.StyledText>
-          <S.StyledCategoryButtonBox>
-            <S.StyledCategoryButton
-              type="button"
-              $borderRadius="5px 0px 0px 5px"
-              $isSelected={selectedCategory === "camp"}
-              onClick={() => setSelectedCategory("camp")}
-            >
-              <S.StyledText>캠핑</S.StyledText>
-            </S.StyledCategoryButton>
-            <S.StyledCategoryButton
-              type="button"
-              $borderRadius="0px 5px 5px 0px"
-              $borderLeft="none"
-              $isSelected={selectedCategory === "park"}
-              onClick={() => setSelectedCategory("park")}
-            >
-              <S.StyledText>공원</S.StyledText>
-            </S.StyledCategoryButton>
-          </S.StyledCategoryButtonBox>
-        </S.StyledCategoryBox>
+        <FilterContainer mode="admin" selectedFilters={selectedFilters} setSelectedFilters={setSelectedFilters}/>
         <S.StyledImageUploadBox>
           <S.StyledText>이미지등록(최대 5개)</S.StyledText>
           <SaveImageUpload images={images} onChange={handleImageChange} />

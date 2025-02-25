@@ -11,6 +11,7 @@ import withdog.domain.place.dto.PlaceNewImageDto;
 import withdog.domain.place.dto.PlaceUpdateImagesDto;
 import withdog.domain.place.entity.Place;
 import withdog.domain.place.entity.PlaceImage;
+import withdog.domain.place.repository.PlaceImageRepository;
 
 import java.util.List;
 
@@ -21,6 +22,13 @@ import java.util.List;
 public class PlaceImageServiceImpl implements PlaceImageService {
 
     private final AwsFileService awsFileService;
+    private final PlaceImageRepository placeImageRepository;
+
+    @Override
+    public List<PlaceImage> findImages(Long placeId) {
+
+        return placeImageRepository.findByPlaceIdOrderByImagePositionAsc(placeId);
+    }
 
     @Override
     public void save(Place place, List<PlaceNewImageDto> newImages) {

@@ -10,8 +10,8 @@ export const StyledAdminHeader = styled.header`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 13px 0 13px;
-  margin-bottom: 20px;
+  padding: 20px 13px;
+  /* margin-bottom: 10px; */
   background-color: #ffffff;
 `;
 
