@@ -63,7 +63,8 @@ export const StyledDetailInfoBlogImgTextBox = styled.div`
   padding: 5px 5px 3px 5px; // 상 우 하 좌
   bottom: 0;
   left: 0;
-  background-color: rgba(217, 217, 217, 0.5);
+  /* background-color: rgba(217, 217, 217, 0.5); */
+  background-color: #f1f1f1;
   border-radius: 0 0 8px 8px;
   /* opacity: 50%; */
 `;
@@ -75,7 +76,7 @@ export const StyledDetailInfoBlogImg = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 10px;
 `;
 
 export const StyledDetailTextLink = styled.a`
@@ -97,6 +98,7 @@ export const StyledBlogDescriptionText = styled.p`
   font-size: 1.2rem;
   color: #425354;
   height: 3.5rem;
+  padding-top: 3px;
   overflow: hidden;
 `;
 
