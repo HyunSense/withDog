@@ -75,11 +75,11 @@
 **GitHub Actions<br> + CodeDeploy** | CI/CD 자동화 배포 (⚡ 5분 -> 1분으로 개선)
 
 ## Architecture
-![architecture](https://github.com/user-attachments/assets/756d7e6d-0ea3-4357-8b01-dc94c5b4c455)
+![architecture](https://github.com/user-attachments/assets/a682e2e3-2abf-4676-a88f-2e45baf3bb9c)
 
 ## ERD
 ### 🔗 [ERD 상세보기](https://www.erdcloud.com/d/J8ax78zWsn5kLZ5Fj)
-![withdog-erd](https://github.com/user-attachments/assets/e550e315-3286-49aa-9abb-ba1d2c0720d7)
+![withdog-erd](https://github.com/user-attachments/assets/9755ecaf-8695-4765-b66d-f2d5c189f810)
 
 
 ## 📈 핵심 기능
