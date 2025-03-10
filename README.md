@@ -77,6 +77,54 @@
 ## Architecture
 ![architecture](https://github.com/user-attachments/assets/a682e2e3-2abf-4676-a88f-2e45baf3bb9c)
 
+## 로그인 인증 시퀀스
+```mermaid
+---
+config:
+  theme: default
+---
+sequenceDiagram
+    participant C as 클라이언트
+    participant I as API 인터셉터
+    participant L as 로컬 스토리지
+    participant K as 쿠키
+    participant S as 서버
+
+    %% 로그인 과정
+    C->>I: 1. 로그인 요청 (POST /login)
+    I->>S: 2. 로그인 요청 전달
+    S->>S: 3. 사용자 인증 및 토큰 생성
+    S-->>I: 4. Access Token (헤더)<br>Refresh Token (Set-Cookie)
+    I-->>C: 5. 로그인 응답 전달
+    C->>L: 6. Access Token 저장
+
+    %% 일반 API 요청
+    C->>I: 8. API 요청
+    I->>L: 9. Access Token 조회
+    L-->>I: 10. Access Token 반환
+    I->>S: 11. API 요청<br>(Authorization: Bearer <Access Token>)
+    alt Access Token 유효
+        S-->>I: 12. 200 OK (API 응답)
+        I-->>C: 13. 응답 전달
+    else Access Token 만료
+        S-->>I: 14. 401 Unauthorized (code: "TE" && status:401)
+        I->>S: 15. /refresh-token 요청
+        S->>K: 16. Refresh Token 요청
+        K-->>S: 17. Refresh Token 반환
+        alt Refresh Token 유효
+            S->>S: 18. Refresh Token 검증
+            S-->>I: 19. 새로운 Access Token 반환
+            I->>L: 20. 새로운 Access Token 저장
+            I->>S: 21. 원래 API 요청 재시도
+            S-->>I: 22. 200 OK (API 응답)
+            I-->>C: 23. 응답 전달
+        else Refresh Token 만료
+            S-->>I: 24. 에러 응답
+            I-->>C: 25. 로그인 페이지로 리다이렉트
+        end
+    end
+```
+
 ## ERD
 ### 🔗 [ERD 상세보기](https://www.erdcloud.com/d/J8ax78zWsn5kLZ5Fj)
 ![withdog-erd](https://github.com/user-attachments/assets/9755ecaf-8695-4765-b66d-f2d5c189f810)
@@ -122,7 +170,7 @@
     - JWT 기반 자동 토큰 갱신
     - Redis를 활용한 보안 강화 (추후 지원 예정)
 
-## 🎯 성과 및 배운 점
+## 🎯 성과
 - **도메인 구매 및 서비스 운영**:
   - `www.withdog.store`와 `api.withdog.store`를 분리해 실 서비스 환경 구현
   - Nginx를 활용한 서브도메인 설정으로 안정적인 요청 처리와 사용자 접근성 향상.
@@ -142,3 +190,12 @@
 - **검색 필터 구현**
     - 사용자가 선택한 필터 조건(지역, 장소 유형, 반려견 크기 등)에 따라 동적으로 JPQL을 생성해 쿼리를 실행
     - Builder 패턴을 활용해 복잡한 동적 쿼리의 가독성과 유지보수성을 개선
+
+## 🌱회고
+1. **React 입문과 CSR/SPA 방식 익히기**
+    - React 입문을 시작한 이유는, 기존에 ViewTemplate + jQuery 로 SSR방식만 사용해보았습니다.  CSR과 SPA인 React를 사용하여 프론트엔드와 백엔드가 명확히 분리돼서 데이터 통신이 어떻게 되는지 경험하고, CSR/SPA 방식이 뭔지 몸으로 느껴보고 싶었습니다. 물론 실무와는 차이가 크겠지만, 신입으로서 기본 개념을 잡는 데 의미가 있었다고 생각합니다.
+2. **Refresh Token 보안 문제**
+    - JWT 인증과정에서 Refresh Token 재사용을 막는 보안이 필요하다고 생각하였습니다. Redis를 이용하여 토큰의 유효성과 만료시간을 관리하면 좋을것 같지만  아직 Redis에 대한 경험이 부족해 적용하지 못했습니다. 현재는 서명과 만료시간으로 유효성을 확인하고있습니다. 관계형 DB로도 구현이 가능하지만, 앞으로 Redis에 대한 학습을 하여 더 효율적이고 안전한 인증 시스템을 만들 계획입니다.
+3. **성능테스트를 못해서 아쉬움**
+    - 로컬의 Docker에서 k6, promethus, grafana 를 통해 성능 테스트를 해봤지만, 프로젝트의 규모가 작아 성능 변화가 크지 않았습니다. 분석 방법도 익숙치 않아 아쉬웠고, 도구 설정과 실행에 비해 얻은 인사이트가 적었습니다. 기회가 된다면 성능 테스트 방법과 분석스킬을 더 공부해 실무에서 활용해 보고 싶습니다.
+
