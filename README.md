@@ -2,6 +2,7 @@
 # WithDog - 반려견과 함께, 어디든지! 🐾
 **반려견과 함께하는 특별한 순간을 위한 서비스**
 
+## 📖 프로젝트 상세 설명 및 문제 해결: [WithDog Notion link](https://hyunsense.notion.site/WithDog-16f05c7d6d4280609643d17696da6b89?pvs=4)
 ## 👉 현재 운영 중인 배포 링크: [🚀 WithDog 바로가기](https://www.withdog.store)
 
 ## 📌 프로젝트 개요
