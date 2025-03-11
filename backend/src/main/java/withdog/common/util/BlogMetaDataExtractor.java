@@ -24,7 +24,6 @@ public class BlogMetaDataExtractor {
             if (url.contains("naver")) {
 
                 String src = doc.select("iframe#mainFrame").attr("src");
-                System.out.println("src = " + src); //TODO: 변경 필요
                 String naverUrl = "https://blog.naver.com" + src;
                 doc = Jsoup.connect(naverUrl).get();
             }
