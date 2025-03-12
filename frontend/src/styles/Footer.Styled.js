@@ -10,6 +10,7 @@ export const StyledText = styled.p`
   font-size: 1.2rem;
   color: #4e5354;
   font-weight: ${({ $fontWeight }) => $fontWeight};
+  text-decoration: ${({$textDecoration}) => $textDecoration};
 `;
 
 export const StyledTextBox = styled.div`
@@ -19,6 +20,12 @@ export const StyledTextBox = styled.div`
   border-top: 1px solid #dfdfdf;
   /* border-bottom: 1px solid #dfdfdf; */
   padding: 5px 0;
+`;
+
+export const StyledCopyRightBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 2px 0;
 `;
 
 export const StyledIconBox = styled.div`

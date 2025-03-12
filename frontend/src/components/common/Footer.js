@@ -51,6 +51,18 @@ const Footer = () => {
         <S.StyledText $fontWeight="600">
           본 사이트는 개인 포트폴리오 웹 페이지 입니다.
         </S.StyledText>
+        <S.StyledCopyRightBox>
+          <S.StyledText $textDecoration="underline">
+            사이트 내 이미지 및 정보는 출처에서 제공된 자료를 기반으로 하며,
+            상업적 목적이 아닌 개인 프로젝트 용도로 사용되었습니다.
+          </S.StyledText>
+          <S.StyledText>이미지 출처:</S.StyledText>
+          <S.StyledText>- 네이버 지도(map.naver.com)</S.StyledText>
+          <S.StyledText>- 캠핏(camfit.co.kr)</S.StyledText>
+          <S.StyledText>
+            저작권 관련 문의가 있을 경우, 연락 주시면 즉시 조치하겠습니다.
+          </S.StyledText>
+        </S.StyledCopyRightBox>
       </S.StyledTextBox>
     </S.StyledFooter>
   );

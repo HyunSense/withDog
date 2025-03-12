@@ -48,6 +48,7 @@ function App() {
               </Route>
             </Route>
             <Route path="/places/:id" element={<DetailPage />} />
+            <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </AuthProvider>
       </Container>

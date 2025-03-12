@@ -26,8 +26,8 @@ public class CustomExceptionHandler {
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ResponseDto> handleNoHandlerFoundException(Exception e) {
-        log.error(e.getMessage(), e);
-        return ResponseEntity.status(ApiResponseCode.SERVER_ERROR.getStatus()).body(ResponseDto.failure(ApiResponseCode.NOT_FOUND.getCode(), ApiResponseCode.NOT_FOUND.getMessage()));
+        log.error(e.getMessage());
+        return ResponseEntity.status(ApiResponseCode.NOT_FOUND.getStatus()).body(ResponseDto.failure(ApiResponseCode.NOT_FOUND.getCode(), ApiResponseCode.NOT_FOUND.getMessage()));
     }
 
     @ExceptionHandler(CustomException.class)

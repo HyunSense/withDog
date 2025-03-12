@@ -19,7 +19,7 @@ const DetailMain = ({ place }) => {
     <S.StyledDetailMain>
       <DetailSlider imgs={place.placeImages} />
       <S.StyledDetailInfoBox>
-        <S.StyledDetailInfo $margin="0 0 10px 0">
+        <S.StyledDetailInfo $margin="0 0 5px 0">
           <S.StyledNameText>{place.name}</S.StyledNameText>
         </S.StyledDetailInfo>
         <S.StyledDetailInfo>
