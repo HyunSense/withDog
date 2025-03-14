@@ -16,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.server.authentication.RedirectServerAuthenticationEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
@@ -77,15 +78,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/admin/places/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET,
                                 "/api/v1/places/bookmarks",
-                                "/api/v1/places/{id}/bookmarks",
-                                "api/v1/places/{id}/bookmarks/status").authenticated()
+                                "/api/v1/places/{id}/bookmarks/status").authenticated()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/v1/places/{id}/bookmarks").authenticated()
                         .requestMatchers(HttpMethod.DELETE,
                                 "/api/v1/places/{id}/bookmarks",
                                 "/api/v1/places/bookmarks").authenticated()
                         .anyRequest().permitAll())
                 .addFilter(corsFilter)
                 .addFilterAt(new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider, objectMapper), JwtAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider, objectMapper), AuthorizationFilter.class)
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(accessDeniedHandler())
                         .authenticationEntryPoint(unAuthorizedEntryPoint())
@@ -110,6 +112,7 @@ public class SecurityConfig {
     public AuthenticationEntryPoint unAuthorizedEntryPoint() {
 
         return (request, response, authException) -> {
+            log.info("unAuthorizedEntryPoint called for URI: {}, Exception: {}", request.getRequestURI(), authException.getMessage());
             response.setStatus(ApiResponseCode.AUTHORIZATION_FAILED.getStatus());
             response.setContentType("application/json");
             objectMapper.writeValue(response.getWriter(), ResponseDto.failure(ApiResponseCode.AUTHORIZATION_FAILED.getCode(), ApiResponseCode.AUTHORIZATION_FAILED.getMessage()));

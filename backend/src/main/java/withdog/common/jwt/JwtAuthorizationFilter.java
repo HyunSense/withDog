@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 import withdog.common.constant.ApiResponseCode;
 import withdog.common.constant.TokenType;
@@ -30,12 +31,18 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final ObjectMapper objectMapper;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return new AntPathRequestMatcher("/api/v1/login", "POST").matches(request);
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("JwtAuthorizationFilter doFilterInternal");
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-            //TODO 응답 수정필요
+            log.info("authorization is null");
+            SecurityContextHolder.clearContext();
             filterChain.doFilter(request, response);
             return;
         }
