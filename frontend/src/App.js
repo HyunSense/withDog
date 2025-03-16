@@ -14,7 +14,7 @@ import AdminEdit from "./components/admin/AdminEdit";
 import NoLoginRedirect from "./components/auth/NoLoginRedirect";
 import AdminPlaceEdit from "./components/admin/AdminPlaceEdit";
 import AdminPlaceSave from "./components/admin/AdminPlaceSave";
-import SocialLoginPage from "./components/pages/user/SocialLoginPage";
+import Oauth2Redirect from "./components/auth/Oauth2Redirect";
 import useViewportHeight from "./hooks/useViewportHeight";
 import SearchResult from "./components/pages/SearchResultPage";
 
@@ -29,7 +29,7 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/places" element={<HomePage />} />
             <Route path="/search/result" element={<SearchResult />} />
-            <Route path="/login-success" element={<SocialLoginPage />} />
+            <Route path="/oauth2/redirect" element={<Oauth2Redirect />} />
 
             <Route element={<NoLoginRedirect />}>
               <Route path="/myPage/bookmark" element={<BookmarkPage />} />
