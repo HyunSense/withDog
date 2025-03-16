@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -42,11 +43,12 @@ public class Oauth2AuthenticationSuccessHandler implements AuthenticationSuccess
         response.addHeader("Authorization", "Bearer " + accessToken);
         response.addCookie(createCookie(TokenType.REFRESH.name(), refreshToken));
 
+        //TODO: Oauth2 리다이렉트 주소 FrontEnd Server로 위임 필요
 //        String domain = "http://localhost:3000";
         String domain = "https://www.withdog.store";
         String redirectUrl = UriComponentsBuilder
                 .fromHttpUrl(domain)
-                .path("login-success")
+                .path("/oauth2/redirect")
                 .queryParam("accessToken", accessToken)
                 .queryParam("username", username)
                 .queryParam("role", role)
