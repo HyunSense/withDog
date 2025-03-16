@@ -24,6 +24,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import withdog.common.config.auth.CustomOauth2UserService;
+import withdog.common.config.auth.Oauth2AuthenticationFailureHandler;
 import withdog.common.config.auth.Oauth2AuthenticationSuccessHandler;
 import withdog.common.constant.ApiResponseCode;
 import withdog.common.dto.response.ResponseDto;
@@ -44,6 +45,7 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final CustomOauth2UserService customOauth2UserService;
     private final Oauth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
+    private final Oauth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler;
     private final ObjectMapper objectMapper;
 
     @Bean
@@ -59,6 +61,7 @@ public class SecurityConfig {
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userinfo -> userinfo.userService(customOauth2UserService)) // 생략가능
                         .successHandler(oauth2AuthenticationSuccessHandler)
+                        .failureHandler(oauth2AuthenticationFailureHandler)
                 )
                 .logout(logout -> logout
                         .logoutUrl("/api/v1/logout")
