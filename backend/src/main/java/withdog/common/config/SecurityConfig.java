@@ -7,32 +7,24 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.server.authentication.RedirectServerAuthenticationEntryPoint;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import withdog.common.config.auth.CustomOauth2UserService;
 import withdog.common.config.auth.Oauth2AuthenticationFailureHandler;
 import withdog.common.config.auth.Oauth2AuthenticationSuccessHandler;
 import withdog.common.constant.ApiResponseCode;
 import withdog.common.dto.response.ResponseDto;
-import withdog.common.jwt.JwtAuthenticationFilter;
-import withdog.common.jwt.JwtAuthorizationFilter;
+import withdog.common.jwt.JwtLoginProcessingFilter;
+import withdog.common.jwt.JwtAuthenticationContextFilter;
 import withdog.common.jwt.JwtTokenProvider;
-
-import java.util.List;
 
 @Slf4j
 @Configuration
@@ -89,8 +81,8 @@ public class SecurityConfig {
                                 "/api/v1/places/bookmarks").authenticated()
                         .anyRequest().permitAll())
                 .addFilter(corsFilter)
-                .addFilterAt(new JwtAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthorizationFilter(jwtTokenProvider, objectMapper), AuthorizationFilter.class)
+                .addFilterAt(new JwtLoginProcessingFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationContextFilter(jwtTokenProvider, objectMapper), AuthorizationFilter.class)
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(accessDeniedHandler())
                         .authenticationEntryPoint(unAuthorizedEntryPoint())
