@@ -79,6 +79,7 @@
 ![architecture](https://github.com/user-attachments/assets/a682e2e3-2abf-4676-a88f-2e45baf3bb9c)
 
 ## 로그인 인증 시퀀스
+### Frontend Server
 ```mermaid
 ---
 config:
@@ -125,6 +126,11 @@ sequenceDiagram
         end
     end
 ```
+
+### Backend Server (Spring Security)
+**JWT 일반 로그인 flow** | **Oauth2 로그인 flow**
+---|---|
+ ![spring-security-jwt일반로그인-flow](https://github.com/user-attachments/assets/130a9b86-47de-4c3d-9606-0398e9f1348e) | ![spring-security-oauth2-flow](https://github.com/user-attachments/assets/b571820e-8e70-405b-a4c3-7e3e3a704812)
 
 ## ERD
 ### 🔗 [ERD 상세보기](https://www.erdcloud.com/d/J8ax78zWsn5kLZ5Fj)
