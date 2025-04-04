@@ -1,4 +1,4 @@
-package withdog.common.jwt;
+package withdog.common.filter.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

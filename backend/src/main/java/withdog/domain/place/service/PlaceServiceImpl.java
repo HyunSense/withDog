@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import withdog.common.constant.ApiResponseCode;
@@ -29,6 +30,7 @@ import withdog.domain.place.repository.PlaceRepository;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
 import withdog.domain.stats.service.PlaceWeeklyStatsService;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -43,6 +45,8 @@ public class PlaceServiceImpl implements PlaceService {
     private final PlaceImageService placeImageService;
     private final PlaceBlogService placeBlogService;
     private final PlaceFilterService placeFilterService;
+
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     @Transactional(readOnly = true)
     @Override
@@ -185,6 +189,13 @@ public class PlaceServiceImpl implements PlaceService {
         Slice<Place> slicePlaces = placeRepository.searchPlacesWithMultiFilters(
                 dto.getKeyword(), dto.getCity(), dto.getTypes(),
                 dto.getPetAccessTypes(), dto.getPetSizes(), dto.getServices(), pageable);
+
+        // Kafka logic start
+        String event = String.format("{\"query\": \"%s\", \"timestamp\": \"%s\"}", dto.getCity(), Instant.now());
+        kafkaTemplate.send("place-searched", "search", event);
+
+        // end
+
 
         List<PlaceResponseDto> placeResponseDto = PlaceResponseDto.fromEntityList(slicePlaces.getContent());
         SliceResponseDto<PlaceResponseDto> responseDtos = toSliceResponse(slicePlaces, placeResponseDto);

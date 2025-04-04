@@ -15,7 +15,7 @@ import withdog.common.dto.response.ResponseDto;
 import withdog.domain.member.dto.response.ResponseMemberInfoDto;
 import withdog.domain.member.entity.Member;
 import withdog.common.exception.CustomException;
-import withdog.common.jwt.JwtTokenProvider;
+import withdog.common.filter.jwt.JwtTokenProvider;
 import withdog.domain.member.repository.MemberRepository;
 
 import static withdog.common.constant.ApiResponseCode.*;

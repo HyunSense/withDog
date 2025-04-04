@@ -1,4 +1,4 @@
-package withdog.common.jwt;
+package withdog.common.filter.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;

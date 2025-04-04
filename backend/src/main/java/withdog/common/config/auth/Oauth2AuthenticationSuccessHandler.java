@@ -8,12 +8,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 import withdog.common.constant.TokenType;
-import withdog.common.jwt.JwtTokenProvider;
+import withdog.common.filter.jwt.JwtTokenProvider;
 
 import java.io.IOException;
 import java.util.Collection;

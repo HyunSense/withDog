@@ -22,9 +22,10 @@ import withdog.common.config.auth.Oauth2AuthenticationFailureHandler;
 import withdog.common.config.auth.Oauth2AuthenticationSuccessHandler;
 import withdog.common.constant.ApiResponseCode;
 import withdog.common.dto.response.ResponseDto;
-import withdog.common.jwt.JwtLoginProcessingFilter;
-import withdog.common.jwt.JwtAuthenticationContextFilter;
-import withdog.common.jwt.JwtTokenProvider;
+import withdog.common.filter.SessionIdFilter;
+import withdog.common.filter.jwt.JwtLoginProcessingFilter;
+import withdog.common.filter.jwt.JwtAuthenticationContextFilter;
+import withdog.common.filter.jwt.JwtTokenProvider;
 
 @Slf4j
 @Configuration
@@ -32,6 +33,7 @@ import withdog.common.jwt.JwtTokenProvider;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    //TODO: Filter 의존성 문제 해결 필요 new 연산자 X
     private final CorsFilter corsFilter;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtTokenProvider jwtTokenProvider;
@@ -83,6 +85,7 @@ public class SecurityConfig {
                 .addFilter(corsFilter)
                 .addFilterAt(new JwtLoginProcessingFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtAuthenticationContextFilter(jwtTokenProvider, objectMapper), AuthorizationFilter.class)
+                .addFilterBefore(new SessionIdFilter(), JwtAuthenticationContextFilter.class)
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(accessDeniedHandler())
                         .authenticationEntryPoint(unAuthorizedEntryPoint())

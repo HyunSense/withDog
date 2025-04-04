@@ -1,4 +1,4 @@
-package withdog.common.jwt;
+package withdog.common.filter.jwt;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
