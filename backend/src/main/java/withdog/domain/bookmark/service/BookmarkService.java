@@ -11,7 +11,7 @@ public interface BookmarkService {
 
     DataResponseDto<BookmarkStatusDto> checkBookmark(Long memberId, Long placeId);
     DataResponseDto<List<BookmarkedPlaceResponseDto>> findAllBookmarkedPlace(Long memberId);
-    ResponseDto addBookmark(Long memberId, Long placeId);
+    ResponseDto addBookmark(Long memberId, String sessionId, Long placeId);
     ResponseDto deleteBookmark(Long memberId, Long placeId);
     ResponseDto deleteAllBookmarks(List<Long> placeIds, Long memberId);
 

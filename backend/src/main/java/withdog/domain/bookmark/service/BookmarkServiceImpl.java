@@ -17,6 +17,9 @@ import withdog.domain.place.dto.response.BookmarkedPlaceResponseDto;
 import withdog.domain.place.entity.Place;
 import withdog.domain.place.repository.PlaceRepository;
 import withdog.domain.stats.service.PlaceWeeklyStatsService;
+import withdog.event.model.place.PlaceBookmarkEvent;
+import withdog.event.model.place.PlaceDetailViewEvent;
+import withdog.event.publisher.UserEventPublisher;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +34,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     private final MemberRepository memberRepository;
     private final PlaceRepository placeRepository;
     private final PlaceWeeklyStatsService placeWeeklyStatsService;
+    private final UserEventPublisher userEventPublisher;
 
     @Transactional(readOnly = true)
     @Override
@@ -68,7 +72,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     }
 
     @Override
-    public ResponseDto addBookmark(Long memberId, Long placeId) {
+    public ResponseDto addBookmark(Long memberId, String sessionId, Long placeId) {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_MEMBER));
@@ -80,8 +84,15 @@ public class BookmarkServiceImpl implements BookmarkService {
         bookmarkRepository.save(bookmark);
 
         placeWeeklyStatsService.increaseBookmarkCount(place);
-
         log.info("Bookmark added for memberId: {}, placeId: {}", memberId, placeId);
+
+        PlaceBookmarkEvent userEvent = PlaceBookmarkEvent.builder()
+                .placeId(placeId)
+                .sessionId(sessionId)
+                .memberId(memberId)
+                .build();
+        userEventPublisher.publish("place-bookmarks", sessionId, userEvent);
+
         return ResponseDto.success();
     }
 

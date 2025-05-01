@@ -13,6 +13,7 @@ import withdog.common.config.auth.CustomUserDetails;
 import withdog.common.dto.response.DataResponseDto;
 import withdog.common.dto.response.ResponseDto;
 import withdog.common.dto.response.SliceResponseDto;
+import withdog.common.resolver.annotation.SessionId;
 import withdog.domain.bookmark.dto.response.BookmarkStatusDto;
 import withdog.domain.bookmark.service.BookmarkService;
 import withdog.domain.place.dto.request.PlaceFormRequestDto;
@@ -36,6 +37,7 @@ public class PlaceController {
 
     //TODO: 변경필요, Image Resizing 필요
     //TODO: @RequestPart 추후 변경 고려
+    //TODO: 모든 메서드 @AuthenticationPrincipal 의 expression 적용 고려
     @PostMapping("/places")
     public ResponseEntity<ResponseDto> savePlace(@Valid @ModelAttribute PlaceFormRequestDto dto) {
 
@@ -56,9 +58,9 @@ public class PlaceController {
 
 
     @GetMapping("/places/{id}")
-    public ResponseEntity<ResponseDto> getPlace(@PathVariable Long id) {
+    public ResponseEntity<ResponseDto> getPlace(@PathVariable Long id, @AuthenticationPrincipal(expression = "id") Long memberId, @SessionId String sessionId) {
 
-        DataResponseDto<PlaceDetailResponseDto> responseBody = placeService.findPlace(id);
+        DataResponseDto<PlaceDetailResponseDto> responseBody = placeService.findPlace(id, sessionId, memberId);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
@@ -103,9 +105,9 @@ public class PlaceController {
     }
 
     @PostMapping("/places/{id}/bookmarks")
-    public ResponseEntity<ResponseDto> addBookmark(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long id) {
+    public ResponseEntity<ResponseDto> addBookmark(@AuthenticationPrincipal(expression = "id") Long memberId, @SessionId String sessionId, @PathVariable Long id) {
 
-        ResponseDto responseBody = bookmarkService.addBookmark(customUserDetails.getId(), id);
+        ResponseDto responseBody = bookmarkService.addBookmark(memberId, sessionId, id);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
@@ -148,12 +150,12 @@ public class PlaceController {
 
 
     @GetMapping("/places/search/result")
-    public ResponseEntity<ResponseDto> getSearchFilter(@ModelAttribute PlaceSearchRequestDto dto, @PageableDefault(page = 0, size = 10) Pageable pageable) {
+    public ResponseEntity<ResponseDto> getSearchFilter(@ModelAttribute PlaceSearchRequestDto dto, @PageableDefault(page = 0, size = 10) Pageable pageable,
+                                                       @AuthenticationPrincipal(expression = "id") Long memberId, @SessionId String sessionId) {
 
-        log.info("placeSearchRequestDto: {}", dto.toString());
         log.info("pageable [OFFSET: {}] [SIZE: {}]", pageable.getOffset(), pageable.getPageSize());
 
-        DataResponseDto<SliceResponseDto<PlaceResponseDto>> responseBody = placeService.searchFilterPlace(dto, pageable);
+        DataResponseDto<SliceResponseDto<PlaceResponseDto>> responseBody = placeService.searchFilterPlace(dto, pageable, sessionId, memberId);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 

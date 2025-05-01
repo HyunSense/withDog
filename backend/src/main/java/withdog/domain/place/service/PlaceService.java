@@ -16,7 +16,7 @@ public interface PlaceService {
 
     DataResponseDto<SliceResponseDto<PlaceResponseDto>> findAllPlace(Pageable pageable);
 
-    DataResponseDto<PlaceDetailResponseDto> findPlace(Long id);
+    DataResponseDto<PlaceDetailResponseDto> findPlace(Long id, String sessionId, Long memberId);
 
     DataResponseDto<PlaceDetailResponseDto> findPlaceForUpdate(Long id);
 
@@ -28,7 +28,7 @@ public interface PlaceService {
 
     DataResponseDto<List<PlaceResponseDto>> getTop3();
 
-    DataResponseDto<SliceResponseDto<PlaceResponseDto>> searchFilterPlace(PlaceSearchRequestDto dto, Pageable pageable);
+    DataResponseDto<SliceResponseDto<PlaceResponseDto>> searchFilterPlace(PlaceSearchRequestDto dto, Pageable pageable, String sessionId, Long memberId);
 
     DataResponseDto<Long> searchFilterCountPlaces(PlaceSearchRequestDto dto);
 

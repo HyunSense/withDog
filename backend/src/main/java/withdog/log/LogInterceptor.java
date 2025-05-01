@@ -21,20 +21,20 @@ public class LogInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
-        String requestURI = request.getRequestURI();
-        String sessionId = Arrays.stream(request.getCookies() != null ? request.getCookies() : new Cookie[0])
-                .filter(cookie -> cookie.getName().equals("sessionId"))
-                .map(cookie -> cookie.getValue())
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("Cookie not found"));
-
-        request.setAttribute(LOG_ID, sessionId);
-        if (handler instanceof HandlerMethod) {
-
-            HandlerMethod hm = (HandlerMethod) handler; // 호출할 컨트롤러, 정적리소스 메서드의 모든정보가 포함
-
-        }
-
-        log.info("REQUEST [{}] [{}] [{}]", sessionId, requestURI, handler);
+//        String requestURI = request.getRequestURI();
+//        String sessionId = Arrays.stream(request.getCookies() != null ? request.getCookies() : new Cookie[0])
+//                .filter(cookie -> cookie.getName().equals("sessionId"))
+//                .map(cookie -> cookie.getValue())
+//                .findFirst().orElseThrow(() -> new IllegalArgumentException("Cookie not found"));
+//
+//        request.setAttribute(LOG_ID, sessionId);
+//        if (handler instanceof HandlerMethod) {
+//
+//            HandlerMethod hm = (HandlerMethod) handler; // 호출할 컨트롤러, 정적리소스 메서드의 모든정보가 포함
+//
+//        }
+//
+//        log.info("REQUEST [{}] [{}] [{}]", sessionId, requestURI, handler);
 
         return true;
     }

@@ -36,6 +36,7 @@ public class SessionIdFilter extends OncePerRequestFilter {
             cookie.setPath("/");
             cookie.setMaxAge(24 * 60 * 60);
             response.addCookie(cookie);
+            request.setAttribute("sessionId", sessionId);
         }
 
         log.info("sessionId: {}", sessionId);
