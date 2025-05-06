@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+
+  redis-ui:
+    image: redis/redisinsight:latest
+    ports:
+      - "5000:5540"
+    networks:
+      - withdog-network
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - withdog-network
+#    volumes:
+#      - redis_data:/data
+
+  zookeeper:
+#    image: zookeeper:3.9.3
+    image: zookeeper:latest
+    ports:
+      - "2181:2181"
+    networks:
+      - withdog-network
+    environment:
+      - ZOO_MY_ID=1
+      - ZOO_PORT=2181
+      - ZOO_TICK_TIME=2000
+
+  kafka:
+#    image: confluentinc/cp-kafka:7.9.0
+    image: confluentinc/cp-kafka:latest
+    ports:
+      - "9092:9092"
+      - "9094:9094"
+      - "9999:9999"
+    networks:
+      - withdog-network
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_BROKER_ID=0
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:9094
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9094
+      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_DEFAULT_REPLICATION_FACTOR=1 # 여기서부터 추가 설정
+      - KAFKA_NUM_PARTITIONS=1
+      - KAFKA_JMX_PORT=9999
+      - KAFKA_JMX_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=kafka"
+
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "8082:8080"
+    networks:
+      - withdog-network
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local-cluster  # 클러스터 이름 (원하는 대로 설정)
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092  # Kafka 브로커 주소
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181  # Zookeeper 주소
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - --web.enable-remote-write-receiver
+      - --enable-feature=native-histograms
+      - --config.file=/etc/prometheus/prometheus.yml
+    networks:
+      - withdog-network
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "4000:3000"
+    #    volumes:
+    #      - ./grafana/provisioning:/etc/grafana/provisioning
+    #      - ./grafana/dashboard:/dashboard
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "admin" # Grafana의 관리자계정 비밀번호
+    #      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      - withdog-network
+
+  k6:
+    image: grafana/k6
+    ports:
+      - "6565:6565"
+    volumes:
+      - ./k6/scripts:/scripts
+    command: run -o experimental-prometheus-rw /scripts/kafka_producer.js
+#        command: run -o experimental-prometheus-rw /scripts/setting_scripts.js # k6 스크립트 파일경로 이 스크립트를 기반으로 k6 부하테스트 실행(run)
+#        command: run -o experimental-prometheus-rw /scripts/search_test.js # k6 스크립트 파일경로 이 스크립트를 기반으로 k6 부하테스트 실행(run)
+    environment:
+      - K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write
+      - K6_PROMETHEUS_RW_TREND_AS_NATIVE_HISTOGRAM=true
+    networks:
+      - withdog-network
+    depends_on:
+      - prometheus
+
+#volumes:
+#  redis_data:
+
+networks:
+  withdog-network:
+    driver: bridge

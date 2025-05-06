@@ -1,0 +1,45 @@
+spring:
+  profiles:
+    include: redis, kafka
+  datasource:
+    url: jdbc:mysql://localhost:3307/withdog
+    username: root
+    password: 1234
+  jpa:
+    show-sql: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+        highlight_sql: true
+        default_batch_fetch_size: 100
+    open-in-view: false
+
+logging:
+  level:
+    org:
+      hibernate:
+        orm:
+          jdbc:
+            bind: trace
+        SQL: debug
+        type:
+          descriptor:
+            sql: trace
+
+server:
+  address: 0.0.0.0
+  port: 8081
+  tomcat:
+    connection-timeout: 15000
+
+withdog:
+  place:
+    filters:
+      names: petAccessType,petSizes,city,services,types
+    popular-places:
+      page-size: 10
+  scheduling:
+    popular-places-cron: 0 0 0 * * 1
+    daily-stats-backup-cron: 0 0 0 * * *
