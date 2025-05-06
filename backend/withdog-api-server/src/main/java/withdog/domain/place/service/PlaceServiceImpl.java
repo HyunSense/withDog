@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import withdog.common.constant.ApiResponseCode;
@@ -28,8 +27,8 @@ import withdog.domain.place.entity.filter.PlaceFilter;
 import withdog.domain.place.repository.PlaceRepository;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
 import withdog.domain.stats.service.PlaceWeeklyStatsService;
-import withdog.event.model.place.PlaceDetailViewEvent;
-import withdog.event.model.place.UserSearchEvent;
+import withdog.event.model.place.PlaceActionEvent;
+import withdog.event.model.place.PlaceFilterEvent;
 import withdog.event.publisher.UserEventPublisher;
 
 import java.util.List;
@@ -76,7 +75,8 @@ public class PlaceServiceImpl implements PlaceService {
         placeWeeklyStatsService.increaseHitCount(place);
         PlaceDetailResponseDto dto = PlaceDetailResponseDto.fromEntity(place, images, blogs, filters);
 
-        PlaceDetailViewEvent userEvent = PlaceDetailViewEvent.builder()
+        PlaceActionEvent userEvent = PlaceActionEvent.builder()
+                .eventType("views")
                 .placeId(id)
                 .sessionId(sessionId)
                 .memberId(memberId)
@@ -206,7 +206,7 @@ public class PlaceServiceImpl implements PlaceService {
         Map<String, List<String>> filters =
                 Map.of("types", dto.getTypes(), "city", dto.getCity(), "petAccessTypes", dto.getPetAccessTypes(), "petSizes", dto.getPetSizes(), "services", dto.getServices());
 
-        UserSearchEvent userEvent = UserSearchEvent.builder()
+        PlaceFilterEvent userEvent = PlaceFilterEvent.builder()
                 .sessionId(sessionId)
                 .memberId(memberId)
                 .keyword(dto.getKeyword())

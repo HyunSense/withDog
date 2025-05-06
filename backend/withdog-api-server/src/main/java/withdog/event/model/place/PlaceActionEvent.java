@@ -7,13 +7,13 @@ import withdog.event.model.UserEvent;
 
 @Getter
 @NoArgsConstructor
-public class PlaceBookmarkEvent extends UserEvent {
+public class PlaceActionEvent extends UserEvent {
 
     private Long placeId;
 
     @Builder
-    public PlaceBookmarkEvent(String sessionId, Long memberId, Long placeId) {
-        super("bookmarks", sessionId, memberId, System.currentTimeMillis());
+    public PlaceActionEvent(String eventType, String sessionId, Long memberId, Long placeId) {
+        super(eventType, sessionId, memberId, System.currentTimeMillis());
         this.placeId = placeId;
     }
 }

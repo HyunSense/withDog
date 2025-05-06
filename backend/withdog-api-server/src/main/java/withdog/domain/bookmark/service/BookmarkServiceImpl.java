@@ -17,8 +17,7 @@ import withdog.domain.place.dto.response.BookmarkedPlaceResponseDto;
 import withdog.domain.place.entity.Place;
 import withdog.domain.place.repository.PlaceRepository;
 import withdog.domain.stats.service.PlaceWeeklyStatsService;
-import withdog.event.model.place.PlaceBookmarkEvent;
-import withdog.event.model.place.PlaceDetailViewEvent;
+import withdog.event.model.place.PlaceActionEvent;
 import withdog.event.publisher.UserEventPublisher;
 
 import java.util.List;
@@ -86,7 +85,8 @@ public class BookmarkServiceImpl implements BookmarkService {
         placeWeeklyStatsService.increaseBookmarkCount(place);
         log.info("Bookmark added for memberId: {}, placeId: {}", memberId, placeId);
 
-        PlaceBookmarkEvent userEvent = PlaceBookmarkEvent.builder()
+        PlaceActionEvent userEvent = PlaceActionEvent.builder()
+                .eventType("bookmarks")
                 .placeId(placeId)
                 .sessionId(sessionId)
                 .memberId(memberId)
