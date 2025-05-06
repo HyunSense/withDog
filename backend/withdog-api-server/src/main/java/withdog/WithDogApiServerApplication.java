@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class WithDogApplication {
+public class WithDogApiServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(WithDogApplication.class, args);
+        SpringApplication.run(WithDogApiServerApplication.class, args);
     }
 
 }
