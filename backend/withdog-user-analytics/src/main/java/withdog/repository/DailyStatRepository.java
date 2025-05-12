@@ -13,37 +13,24 @@ import java.util.Set;
 
 @Repository
 public interface DailyStatRepository extends JpaRepository<DailyStat, Long> {
-
-//    List<DailyStat> findByDateAndEventType(String date, String eventType);
-
-
     //TODO: Method 복잡, 쿼리 개선 필요 count X, Native Query 사용 여부 체크 (Exists)
 //    boolean existsByEventTypeAndDateAndMetricKeyAndMetricValue(String eventType, String date, String metricKey, String metricValue);
     boolean existsByEventTypeAndDateAndMetricKeyAndMetricValue(String eventType, LocalDate date, String metricKey, String metricValue);
 
-
-//    @Query("select s.metricValue from DailyStat s " +
-//            "where s.eventType in ('views', 'bookmarks') " +
-//            "and s.date between :startDate and :endDate " +
-//            "group by s.metricValue " +
-//            "order by sum(" +
-//            "case " +
-//            "when s.eventType = 'views' then s.count " +
-//            "when s.eventType = 'bookmarks' then s.count * 2 " +
-//            "end) desc")
-//    List<Long> findPopularPlaces(LocalDate startDate, LocalDate endDate, Pageable pageable);
-
-    @Query("select new withdog.stats.dto.PopularPlaceDto(s.metricValue, sum(" +
+    @Query("select new withdog.stats.dto.PopularPlaceDto(s.metricValue," +
+            "sum(case when s.eventType = 'views' then s.count else 0 end)," +
+            "sum(case when s.eventType = 'bookmarks' then s.count else 0 end)," +
+            "sum(" +
             "case " +
             "when s.eventType = 'views' then s.count " +
             "when s.eventType = 'bookmarks' then s.count * 2 " +
-            "end)) " +
-            "from DailyStat s " +
+            "else 0 " +
+            "end)" +
+            ") from DailyStat s " +
             "where s.eventType in ('views', 'bookmarks') " +
             "and s.date between :startDate and :endDate " +
             "group by s.metricValue")
-//    List<PopularPlaceDto> findPopularPlaces(LocalDate startDate, LocalDate endDate);
-    List<PopularPlaceDto> findPopularPlaces(LocalDate startDate, LocalDate endDate, Pageable pageable);
+    List<PopularPlaceDto> findPopularPlaces(LocalDate startDate, LocalDate endDate);
 }
 
 

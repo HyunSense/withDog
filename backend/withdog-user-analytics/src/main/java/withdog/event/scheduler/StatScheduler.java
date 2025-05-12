@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import withdog.event.producer.UserEventProducer;
 import withdog.event.service.UserEventProcessingService;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 public class StatScheduler {
 
     private final UserEventProcessingService userEventProcessingService;
+    private final UserEventProducer userEventProducer;
 
     @Value("${withdog.place.filters.names}")
     private List<String> filterNames;
@@ -24,9 +26,14 @@ public class StatScheduler {
     private final static String EVENT_TYPE_BOOKMARKS = "bookmarks";
 
 
+//    @Scheduled(cron = "${withdog.scheduling.popular-places-cron}")
+//    public void calculatePopularPlaces() {
+//        userEventProcessingService.calculatePopularPlaces();
+//    }
+
     @Scheduled(cron = "${withdog.scheduling.popular-places-cron}")
-    public void calculatePopularPlaces() {
-        userEventProcessingService.calculatePopularPlaces();
+    public void publishPopularPlaces() {
+        userEventProducer.publishPlaceStat();
     }
 
     @Scheduled(cron = "${withdog.scheduling.daily-stats-backup-cron}")

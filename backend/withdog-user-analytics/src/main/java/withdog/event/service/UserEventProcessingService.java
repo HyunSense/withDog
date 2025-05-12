@@ -90,11 +90,11 @@ public class UserEventProcessingService {
         LocalDate startDate = LocalDate.now().minusDays(7);
         LocalDate endDate = LocalDate.now().minusDays(1);
 
-        List<PopularPlaceDto> popularPlaces = dailyStatRepository.findPopularPlaces(startDate, endDate, PageRequest.of(0, popularPlacesSize));
+//        List<PopularPlaceDto> popularPlaces = dailyStatRepository.findPopularPlaces(startDate, endDate, PageRequest.of(0, popularPlacesSize));
 
-        for (PopularPlaceDto popularPlace : popularPlaces) {
-            redisTemplate.opsForZSet().add("popular_places", Integer.valueOf(popularPlace.getPlaceId()), popularPlace.getPopularScore());
-        }
+//        for (PopularPlaceDto popularPlace : popularPlaces) {
+//            redisTemplate.opsForZSet().add("popular_places", Integer.valueOf(popularPlace.getPlaceId()), popularPlace.getPopularScore());
+//        }
 
     }
 
