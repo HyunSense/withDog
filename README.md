@@ -2,6 +2,258 @@
 # WithDog - 반려견과 함께, 어디든지! 🐾
 **반려견과 함께하는 특별한 순간을 위한 서비스**
 
+## 🔧 진행중인 개선사항: MSA 아키텍처 전환 (개발중)
+### 🔄 MSA 전환 구성도
+```mermaid
+graph TD
+Client[클라이언트] --> API[API Gateway]
+    API --> PlaceService[장소 서비스]  
+    UserAnalyticsService[사용자 분석 서비스]
+
+    UserAnalyticsService -- 인기 장소 점수 저장/갱신 --> Redis[(Redis - 공유 저장소)]
+
+    PlaceService -- CRUD --> PlaceDB[(MySQL - 장소 DB)]
+    PlaceService -- 장소 조회 캐시 & 인기 점수 조회 --> Redis
+
+    PlaceService -- 이벤트 발행 --> Kafka[Kafka]
+    UserAnalyticsService -- 이벤트 구독 --> Kafka
+
+    UserAnalyticsService -- 통계 데이터 저장 --> DailyStatDB[(MySQL - 일일 집계/통계 DB)]
+```
+### 🛠️ 현재 개발 중인 기술 스택
+
+| 기술 | 목적 | 구현 상태 |
+|------|------|-----------|
+| **Docker** | 각 서비스 컨테이너화 및 로컬 개발 환경 구성 | ✅ 로컬 환경 구성 완료 |
+| **Kafka-Zookeeper** | - 이벤트 기반 통신을 통한 서비스 간 느슨한 결합 구현 <br> - 고가용성 이벤트 브로커 구성(3노드 클러스터)| 🔄 기본 설정 및 연결 구현 중 |
+| **Redis** | 캐싱 및 실시간 데이터 처리 | 🔄 인기 장소 랭킹 시스템 구현 중 |
+
+### 📋 MSA 전환 진행 상황
+1. 현재 구현중인 기능
+- 사용자 분석 서비스 분리 
+    - Redis Sorted Set, Hash를 활용한 장소 조회수, 북마크, 필터검색 수 수집 및 분석
+    - 사용자 활동 데이터를 분석하여 일별 통계(Daily_Stat 테이블)로 집계
+    - 스케쥴링 처리 내역은 Audit_Log 테이블에 기록하여 실행 이력 추적 및 오류 분석 가능
+- 장소 검색 서비스 개선
+    - Redis의 인기도 점수를 활용한 인기순 정렬
+
+2. Docker 기반 로컬 개발 환경
+```
+# docker-compose.yml
+services:
+
+ place-service:
+   image: withdog-place-service:latest
+#    image: hyunsense1022@gmail.com/withdog-place-service:latest
+   ports:
+     - "8080:8080"
+   networks:
+     - withdog-net
+   environment:
+     - DB_URL=${DB_URL}
+     - DB_USERNAME=${DB_USERNAME}
+     - DB_PASSWORD=${DB_PASSWORD}
+     - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+     - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+     - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+     - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+     - KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
+     - KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}
+     - JWT_SECRET=${JWT_SECRET}
+     - KAFKA_BOOTSTRAP_SERVERS=kafka1:9092,kafka2:9093,kafka3:9094
+   depends_on:
+     - redis
+     - kafka1
+     - kafka2
+     - kafka3
+
+ user-analytics-service:
+   image: withdog-user-analytics-service:latest
+#    image: hyunsense1022@gmail.com/withdog-user-analytics-service:latest
+   networks:
+     - withdog-net
+   environment:
+     - DB_URL=${DB_URL}
+     - DB_USERNAME=${DB_USERNAME}
+     - DB_PASSWORD=${DB_PASSWORD}
+     - KAFKA_BOOTSTRAP_SERVERS=kafka1:9092,kafka2:9093,kafka3:9094
+     - REDIS_HOST=redis
+     - REDIS_PORT=6379
+   depends_on:
+     - redis
+     - kafka1
+     - kafka2
+     - kafka3
+
+  redis-ui:
+    image: redis/redisinsight:latest
+    ports:
+      - "5000:5540"
+    networks:
+      - withdog-net
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "8888:8080"
+    networks:
+      - withdog-net
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local-cluster
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka1:9092,kafka2:9093,kafka3:9094
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper1:2181,zookeeper2:2182,zookeeper3:2183
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - withdog-net
+    volumes:
+      - redis-data:/data
+
+zookeeper3:2183
+
+  zookeeper1:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper1:2888:3888;zookeeper2:2889:3889;zookeeper3:2890:3890
+    ports:
+      - "2181:2181"
+    networks:
+      - withdog-net
+    volumes:
+      - zookeeper1-data:/var/lib/zookeeper
+
+  zookeeper2:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_SERVER_ID: 2
+      ZOOKEEPER_CLIENT_PORT: 2182
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper1:2888:3888;zookeeper2:2889:3889;zookeeper3:2890:3890
+    ports:
+      - "2182:2182"
+    networks:
+      - withdog-net
+    volumes:
+      - zookeeper2-data:/var/lib/zookeeper
+
+  zookeeper3:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_SERVER_ID: 3
+      ZOOKEEPER_CLIENT_PORT: 2183
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper1:2888:3888;zookeeper2:2889:3889;zookeeper3:2890:3890
+    ports:
+      - "2183:2183"
+    networks:
+      - withdog-net
+    volumes:
+      - zookeeper3-data:/var/lib/zookeeper
+
+  kafka1:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181,zookeeper2:2182,zookeeper3:2183
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_NUM_PARTITIONS: 4
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    networks:
+      - withdog-net
+    volumes:
+      - kafka1-data:/var/lib/kafka
+
+  kafka2:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181,zookeeper2:2182,zookeeper3:2183
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:29093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9093,PLAINTEXT_HOST://localhost:29093
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_NUM_PARTITIONS: 4
+    ports:
+      - "9093:9093"
+      - "29093:29093"
+    networks:
+      - withdog-net
+    volumes:
+      - kafka2-data:/var/lib/kafka
+
+  kafka3:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - zookeeper1
+      - zookeeper2
+      - zookeeper3
+    environment:
+      KAFKA_BROKER_ID: 3
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181,zookeeper2:2182,zookeeper3:2183
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9094,PLAINTEXT_HOST://0.0.0.0:29094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9094,PLAINTEXT_HOST://localhost:29094
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
+      KAFKA_NUM_PARTITIONS: 4
+    ports:
+      - "9094:9094"
+      - "29094:29094"
+    networks:
+      - withdog-net
+    volumes:
+      - kafka3-data:/var/lib/kafka
+
+networks:
+  withdog-net:
+    driver: bridge
+
+volumes:
+  redis-data:
+  zookeeper1-data:
+  zookeeper2-data:
+  zookeeper3-data:
+  kafka1-data:
+  kafka2-data:
+  kafka3-data:
+```
+
+
 ## 📖 프로젝트 상세 설명 및 문제 해결: [WithDog Notion link](https://hyunsense.notion.site/WithDog-16f05c7d6d4280609643d17696da6b89?pvs=4)
 ## 👉 현재 운영 중인 배포 링크: [🚀 WithDog 바로가기](https://www.withdog.store)
 
