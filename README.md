@@ -2,7 +2,7 @@
 # WithDog - 반려견과 함께, 어디든지! 🐾
 **반려견과 함께하는 특별한 순간을 위한 서비스**
 
-## 🔧 진행중인 개선사항: MSA 아키텍처 전환 (개발중)
+## 🔧 진행중인 개선사항: MSA 아키텍처 전환 (개발중) [kafka barnch](https://github.com/HyunSense/withDog/tree/kafka)
 ### ☁️ 인프라 전환 아키텍처: Kafka-Zookeeper 클러스터
 ![infra](https://github.com/user-attachments/assets/98eec257-87e4-45e3-bd05-19aefa31c842)
 
