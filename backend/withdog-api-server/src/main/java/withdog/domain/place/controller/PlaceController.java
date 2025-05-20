@@ -125,6 +125,7 @@ public class PlaceController {
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
+    //TODO: 유형별 top3 변경 필요
     @GetMapping("/places/top3")
     public ResponseEntity<ResponseDto> getTop3Places() {
 

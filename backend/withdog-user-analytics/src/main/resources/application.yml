@@ -37,9 +37,4 @@ server:
 withdog:
   place:
     filters:
-      names: petAccessType,petSizes,city,services,types
-    popular-places:
-      page-size: 10
-  scheduling:
-    popular-places-cron: 0 0 0 * * 1
-    daily-stats-backup-cron: 0 0 0 * * *
+      names: types,city,petAccessTypes,petSizes,services

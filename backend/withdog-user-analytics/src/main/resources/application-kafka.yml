@@ -1,9 +1,6 @@
 spring:
   kafka:
     bootstrap-servers: ${BOOTSTRAP_SERVERS}
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
@@ -11,13 +8,3 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
         spring.json.use.type.headers: true
-
-
-#logging:
-#  level:
-#    org.springframework.kafka: DEBUG
-#    withdog.event.consumer: DEBUG
-#logging:
-#  level:
-#    org.apache.kafka: DEBUG
-#    org.springframework.kafka: DEBUG

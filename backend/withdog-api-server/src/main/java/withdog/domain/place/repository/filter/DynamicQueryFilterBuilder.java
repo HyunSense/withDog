@@ -12,6 +12,15 @@ public class DynamicQueryFilterBuilder {
 
     public DynamicQueryFilterBuilder baseQuery() {
         jpql.append("select p from Place p ");
+
+        return this;
+    }
+
+    public DynamicQueryFilterBuilder baseQuery(boolean joinPlaceStat) {
+        jpql.append("select p from Place p ");
+        if (joinPlaceStat) {
+            jpql.append("join PlaceStat ps on ps.place = p ");
+        }
         return this;
     }
 
@@ -84,6 +93,22 @@ public class DynamicQueryFilterBuilder {
 
     public DynamicQueryFilterBuilder orderBy(String field) {
         jpql.append(" order by p.").append(field);
+        return this;
+    }
+
+    public DynamicQueryFilterBuilder orderByRecent() {
+        jpql.append(" order by p.createdAt desc");
+        return this;
+    }
+
+    public DynamicQueryFilterBuilder withSorting(String sortField) {
+
+        if ("popular".equals(sortField)) {
+            jpql.append(" order by ps.popularityScore desc");
+        } else {
+            jpql.append(" order by p.id desc");
+        }
+
         return this;
     }
 

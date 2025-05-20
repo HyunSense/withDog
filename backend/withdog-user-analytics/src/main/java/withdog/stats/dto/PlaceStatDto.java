@@ -9,11 +9,11 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class PopularPlaceDto {
+public class PlaceStatDto {
 
     private String placeId;
     private Long viewCount;
     private Long bookmarkCount;
-    private Long popularScore;
+    private Long popularityScore;
 
 }

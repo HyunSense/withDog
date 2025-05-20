@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import withdog.common.constant.ApiResponseCode;
@@ -27,13 +28,11 @@ import withdog.domain.place.entity.filter.PlaceFilter;
 import withdog.domain.place.repository.PlaceRepository;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
 import withdog.domain.stats.service.PlaceWeeklyStatsService;
-import withdog.event.model.place.PlaceActionEvent;
-import withdog.event.model.place.PlaceFilterEvent;
-import withdog.event.publisher.UserEventPublisher;
+import withdog.messaging.model.place.PlaceActionMessage;
+import withdog.messaging.model.place.PlaceFilterMessage;
+import withdog.messaging.producer.UserEventProducer;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -46,9 +45,11 @@ public class PlaceServiceImpl implements PlaceService {
     private final PlaceImageService placeImageService;
     private final PlaceBlogService placeBlogService;
     private final PlaceFilterService placeFilterService;
-    private final UserEventPublisher userEventPublisher;
+    private final UserEventProducer userEventPublisher;
 
-//    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
+
+    //    private final KafkaTemplate<String, String> kafkaTemplate;
     @Transactional(readOnly = true)
     @Override
     public DataResponseDto<SliceResponseDto<PlaceResponseDto>> findAllPlace(Pageable pageable) {
@@ -75,14 +76,14 @@ public class PlaceServiceImpl implements PlaceService {
         placeWeeklyStatsService.increaseHitCount(place);
         PlaceDetailResponseDto dto = PlaceDetailResponseDto.fromEntity(place, images, blogs, filters);
 
-        PlaceActionEvent userEvent = PlaceActionEvent.builder()
+        PlaceActionMessage userEvent = PlaceActionMessage.builder()
                 .eventType("views")
                 .placeId(id)
                 .sessionId(sessionId)
                 .memberId(memberId)
                 .build();
 
-        userEventPublisher.publish("place-views", sessionId, userEvent);
+        userEventPublisher.send("place-views", sessionId, userEvent);
 
 
         return DataResponseDto.success(dto);
@@ -199,26 +200,51 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public DataResponseDto<SliceResponseDto<PlaceResponseDto>> searchFilterPlace(PlaceSearchRequestDto dto, Pageable pageable, String sessionId, Long memberId) {
 
-        Slice<Place> slicePlaces = placeRepository.searchPlacesWithMultiFilters(
+        SliceResponseDto<PlaceResponseDto> slicePlaces = placeRepository.searchPlacesWithMultiFilters(
                 dto.getKeyword(), dto.getCity(), dto.getTypes(),
                 dto.getPetAccessTypes(), dto.getPetSizes(), dto.getServices(), pageable);
 
-        Map<String, List<String>> filters =
-                Map.of("types", dto.getTypes(), "city", dto.getCity(), "petAccessTypes", dto.getPetAccessTypes(), "petSizes", dto.getPetSizes(), "services", dto.getServices());
+//        Map<String, List<String>> filters =
+//                Map.of("types", dto.getTypes(), "city", dto.getCity(), "petAccessTypes", dto.getPetAccessTypes(), "petSizes", dto.getPetSizes(), "services", dto.getServices());
 
-        PlaceFilterEvent userEvent = PlaceFilterEvent.builder()
+        Map<String, List<String>> filters = new HashMap<>();
+        filters.put("types", dto.getTypes());
+        filters.put("city", dto.getCity());
+        filters.put("petAccessTypes", dto.getPetAccessTypes());
+        filters.put("petSizes", dto.getPetSizes());
+        filters.put("services", dto.getServices());
+
+        PlaceFilterMessage userEvent = PlaceFilterMessage.builder()
                 .sessionId(sessionId)
                 .memberId(memberId)
                 .keyword(dto.getKeyword())
                 .filters(filters)
                 .build();
 
-        userEventPublisher.publish("place-filters", sessionId, userEvent);
+        userEventPublisher.send("place-filters", sessionId, userEvent);
 
-        List<PlaceResponseDto> placeResponseDto = PlaceResponseDto.fromEntityList(slicePlaces.getContent());
-        SliceResponseDto<PlaceResponseDto> responseDtos = toSliceResponse(slicePlaces, placeResponseDto);
+        //TODO: 캐싱 필요
+        // 인기순 정렬
+        if (dto.getSort() != null && dto.getSort().equals("popular")) {
+            Map<Long, Double> popularityScores = new HashMap<>();
+            List<PlaceResponseDto> placeResponseDtos = slicePlaces.getContent();
 
-        return DataResponseDto.success(responseDtos);
+            for (PlaceResponseDto place : placeResponseDtos) {
+                Double score = redisTemplate.opsForZSet().score("popular_places", place.getId().toString());
+                popularityScores.put(place.getId(), score != null ? score : 0.0);
+            }
+
+            placeResponseDtos.sort((p1, p2) -> {
+                Double score1 = popularityScores.getOrDefault(p1.getId(), 0.0);
+                Double score2 = popularityScores.getOrDefault(p2.getId(), 0.0);
+
+                return Double.compare(score2, score1); // 내림차순
+            });
+
+            slicePlaces = new SliceResponseDto<>(slicePlaces.getSliceInfo(), placeResponseDtos);
+        }
+
+        return DataResponseDto.success(slicePlaces);
     }
 
     @Override

@@ -4,6 +4,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import withdog.common.dto.SliceInfo;
+import withdog.common.dto.response.SliceResponseDto;
+import withdog.domain.place.dto.response.PlaceResponseDto;
 import withdog.domain.place.entity.Place;
 import withdog.domain.place.repository.filter.DynamicQueryFilterBuilder;
 
@@ -15,9 +18,9 @@ public class PlaceRepositoryDynamicImpl implements PlaceRepositoryDynamic {
     private final EntityManager em;
 
     @Override
-    public Slice<Place> searchPlacesWithMultiFilters(String keyword, List<String> city, List<String> types,
-                                                    List<String> petAccessTypes, List<String> petSizes,
-                                                    List<String> services, Pageable pageable) {
+    public SliceResponseDto<PlaceResponseDto> searchPlacesWithMultiFilters(String keyword, List<String> city, List<String> types,
+                                                                List<String> petAccessTypes, List<String> petSizes,
+                                                                List<String> services, Pageable pageable) {
 
         // 1. 쿼리 빌더 생성
         DynamicQueryFilterBuilder queryBuilder = new DynamicQueryFilterBuilder();
@@ -28,7 +31,8 @@ public class PlaceRepositoryDynamicImpl implements PlaceRepositoryDynamic {
                 .withOrFilter("types", types)
                 .withOrFilter("petAccessTypes", petAccessTypes)
                 .withAndFilter("petSizes", petSizes)
-                .withAndFilter("services", services);
+                .withAndFilter("services", services)
+                .orderByRecent();
 
         // 2. 쿼리 실행
         TypedQuery<Place> query = em.createQuery(queryBuilder.getJpql(), Place.class);
@@ -39,13 +43,15 @@ public class PlaceRepositoryDynamicImpl implements PlaceRepositoryDynamic {
 
         query.setFirstResult(offset);
         query.setMaxResults(size + 1);
-        List<Place> resultList = query.getResultList();
-        boolean hasNext = resultList.size() > size;
+        List<Place> places = query.getResultList();
+        boolean hasNext = places.size() > size;
         if (hasNext) {
-            resultList = resultList.subList(0, size);
+            places = places.subList(0, size);
         }
 
-        return new SliceImpl<>(resultList, pageable, hasNext);
+
+        SliceInfo sliceInfo = new SliceInfo(pageable.getPageNumber(), pageable.getPageSize(), pageable.getPageNumber() == 0, !hasNext, hasNext);
+        return new SliceResponseDto<>(sliceInfo, PlaceResponseDto.fromEntityList(places));
     }
 
     @Override

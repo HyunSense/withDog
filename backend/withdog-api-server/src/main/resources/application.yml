@@ -36,12 +36,12 @@ spring:
       # 정적 리소스 매핑 끄기
       add-mappings: false
   profiles:
-    include: aws, jwt, db, kafka
+    include: aws, jwt, db, kafka, redis
   output:
     ansi:
       enabled: always
   jpa:
-    show-sql: false
+    show-sql: true
     hibernate:
       ddl-auto: none
     properties:

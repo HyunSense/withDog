@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import withdog.stats.dto.PopularPlaceDto;
+import withdog.stats.dto.PlaceStatDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,7 +24,7 @@ class DailyStatRepositoryTest {
         LocalDate endDate = LocalDate.of(2025, 5, 7);
 
         //when
-        List<PopularPlaceDto> popularPlaces = dailyStatRepository.findPopularPlaces(startDate, endDate);
+        List<PlaceStatDto> popularPlaces = dailyStatRepository.findPopularPlaces(startDate, endDate);
 
         //then
         System.out.println("popularPlaces = " + popularPlaces);

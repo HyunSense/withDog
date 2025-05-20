@@ -1,17 +1,17 @@
-package withdog.event.service;
+package withdog.messaging.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import withdog.event.model.place.PlaceActionEvent;
-import withdog.event.model.place.PlaceFilterEvent;
+import withdog.messaging.model.place.PlaceActionMessage;
+import withdog.messaging.model.place.PlaceFilterMessage;
+import withdog.messaging.util.constant.KafkaTopics;
 import withdog.repository.AuditLogRepository;
 import withdog.repository.DailyStatRepository;
-import withdog.stats.dto.PopularPlaceDto;
+import withdog.stats.dto.PlaceStatDto;
 import withdog.stats.entity.AuditLog;
 import withdog.stats.entity.DailyStat;
 
@@ -21,25 +21,22 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserEventProcessingService {
+public class UserMessageProcessingService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Value("${withdog.place.filters.names}")
     private final List<String> allowedFilters;
-
-    @Value("${withdog.place.popular-places.page-size}")
-    private int popularPlacesSize;
-
     private final DailyStatRepository dailyStatRepository;
     private final AuditLogRepository auditLogRepository;
 
     @Transactional
-    public void processFilterEvent(PlaceFilterEvent event) {
+    public void processFilterEvent(PlaceFilterMessage event) {
 
         LocalDate date = parseDate(event.getTimestamp());
         event.getFilters().forEach((filterName, values) -> {
@@ -47,22 +44,44 @@ public class UserEventProcessingService {
             String redisKey = buildRedisKey(event.getEventType(), date, filterName);
             values.forEach(value ->
                     redisTemplate.opsForHash().increment(redisKey, value, 1));
+            redisTemplate.expire(redisKey, 24, TimeUnit.HOURS);
         });
+
     }
 
     @Transactional
-    public void processActionEvent(PlaceActionEvent event) {
+    public void processActionEvent(PlaceActionMessage event) {
 
         LocalDate date = parseDate(event.getTimestamp());
         String redisKey = buildRedisKey(event.getEventType(), date);
 
-        redisTemplate.opsForHash().increment(redisKey, event.getPlaceId(), 1);
+        redisTemplate.opsForHash().increment(redisKey, event.getPlaceId().toString(), 1);
+        redisTemplate.expire(redisKey, 24, TimeUnit.HOURS);
+    }
+
+    @Transactional
+    public void processPlaceStat() {
+
+        LocalDate startDate = LocalDate.now().minusDays(7);
+        LocalDate endDate = LocalDate.now().minusDays(1);
+
+        // 테스트용
+//        LocalDate endDate = LocalDate.now();
+
+        List<PlaceStatDto> placeStatDtos = dailyStatRepository.findPopularPlaces(startDate, endDate);
+
+        for (PlaceStatDto placeStat : placeStatDtos) {
+            redisTemplate.opsForZSet().add("popular_places", placeStat.getPlaceId(), placeStat.getPopularityScore());
+        }
+        redisTemplate.expire("popular_places", 24, TimeUnit.HOURS);
     }
 
     @Transactional
     public void migrateDailyStatsFromRedisToDb(String eventType, String metricKey) {
 
         LocalDate date = LocalDate.now().minusDays(1);
+        // 테스트용
+//        LocalDate date = LocalDate.now();
         log.info("Starting backup for date: {}, eventType: {}, metricKey: {}", date, eventType, metricKey);
         String taskName = eventType + "_backup";
 
@@ -84,20 +103,6 @@ public class UserEventProcessingService {
             handleBackupFailure(taskName, date, e);
         }
     }
-
-    public void calculatePopularPlaces() {
-
-        LocalDate startDate = LocalDate.now().minusDays(7);
-        LocalDate endDate = LocalDate.now().minusDays(1);
-
-//        List<PopularPlaceDto> popularPlaces = dailyStatRepository.findPopularPlaces(startDate, endDate, PageRequest.of(0, popularPlacesSize));
-
-//        for (PopularPlaceDto popularPlace : popularPlaces) {
-//            redisTemplate.opsForZSet().add("popular_places", Integer.valueOf(popularPlace.getPlaceId()), popularPlace.getPopularScore());
-//        }
-
-    }
-
 
     private List<DailyStat> convertRedisToDailyStats(String redisKey, String eventType, String metricKey, LocalDate date) {
 
@@ -148,8 +153,6 @@ public class UserEventProcessingService {
                 .toLocalDate();
     }
 
-
-    //TODO: NPE 체크
     private String buildRedisKey(String eventType, LocalDate date) {
         return String.format("%s:%s", eventType, date.format(DateTimeFormatter.BASIC_ISO_DATE));
     }

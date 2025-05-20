@@ -17,8 +17,8 @@ import withdog.domain.place.dto.response.BookmarkedPlaceResponseDto;
 import withdog.domain.place.entity.Place;
 import withdog.domain.place.repository.PlaceRepository;
 import withdog.domain.stats.service.PlaceWeeklyStatsService;
-import withdog.event.model.place.PlaceActionEvent;
-import withdog.event.publisher.UserEventPublisher;
+import withdog.messaging.model.place.PlaceActionMessage;
+import withdog.messaging.producer.UserEventProducer;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +33,7 @@ public class BookmarkServiceImpl implements BookmarkService {
     private final MemberRepository memberRepository;
     private final PlaceRepository placeRepository;
     private final PlaceWeeklyStatsService placeWeeklyStatsService;
-    private final UserEventPublisher userEventPublisher;
+    private final UserEventProducer userEventPublisher;
 
     @Transactional(readOnly = true)
     @Override
@@ -85,13 +85,13 @@ public class BookmarkServiceImpl implements BookmarkService {
         placeWeeklyStatsService.increaseBookmarkCount(place);
         log.info("Bookmark added for memberId: {}, placeId: {}", memberId, placeId);
 
-        PlaceActionEvent userEvent = PlaceActionEvent.builder()
+        PlaceActionMessage userEvent = PlaceActionMessage.builder()
                 .eventType("bookmarks")
                 .placeId(placeId)
                 .sessionId(sessionId)
                 .memberId(memberId)
                 .build();
-        userEventPublisher.publish("place-bookmarks", sessionId, userEvent);
+        userEventPublisher.send("place-bookmarks", sessionId, userEvent);
 
         return ResponseDto.success();
     }

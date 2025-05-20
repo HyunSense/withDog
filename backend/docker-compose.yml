@@ -5,9 +5,13 @@ services:
 #    image: hyunsense1022@gmail.com/withdog-api-server:latest
     ports:
       - "8080:8080"
+#    deploy:
+#      replicas: 3
+#      restart_policy:
+#        condition: on-failure
     networks:
       - withdog-net
-    environment:
+    environment:  
       - DB_URL=${DB_URL}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -18,7 +22,9 @@ services:
       - KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
       - KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}
       - JWT_SECRET=${JWT_SECRET}
-      - KAFKA_BOOTSTRAP_SERVERS=kafka1:9092,kafka2:9093,kafka3:9094
+      - BOOTSTRAP_SERVERS=kafka1:9092,kafka2:9093,kafka3:9094
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       - redis
       - kafka1
@@ -34,7 +40,7 @@ services:
       - DB_URL=${DB_URL}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
-      - KAFKA_BOOTSTRAP_SERVERS=kafka1:9092,kafka2:9093,kafka3:9094
+      - BOOTSTRAP_SERVERS=kafka1:9092,kafka2:9093,kafka3:9094
       - REDIS_HOST=redis
       - REDIS_PORT=6379
     depends_on:
@@ -213,6 +219,7 @@ services:
 networks:
   withdog-net:
     driver: bridge
+#    external: true
 
 volumes:
   redis-data:

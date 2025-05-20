@@ -1,4 +1,4 @@
-package withdog.config;
+package withdog.common.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -17,4 +18,5 @@ public class PlaceSearchRequestDto {
     private List<String> petAccessTypes;
     private List<String> petSizes;
     private List<String> services;
+    private String sort;
 }
