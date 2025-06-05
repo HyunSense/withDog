@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @ToString
 public class PlaceResponseDto {
 

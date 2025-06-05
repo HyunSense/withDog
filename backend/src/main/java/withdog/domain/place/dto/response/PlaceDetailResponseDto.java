@@ -1,8 +1,6 @@
 package withdog.domain.place.dto.response;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import withdog.domain.place.dto.PlaceBlogDto;
 import withdog.domain.place.dto.PlaceImageDto;
 import withdog.domain.place.entity.Place;
@@ -17,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class PlaceDetailResponseDto {
 
