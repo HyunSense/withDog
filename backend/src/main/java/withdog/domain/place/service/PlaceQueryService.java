@@ -77,6 +77,12 @@ public class PlaceQueryService {
         return PlaceResponseDto.fromEntityList(places);
     }
 
+    @Cacheable(value = "placeCounts", key="'total'")
+    @Transactional(readOnly = true)
+    public Long countPlacesCached() {
+        return placeRepository.count();
+    }
+
 //    @Cacheable(value = "placeSearch", key = "#dto.keyword + #dto.city + #dto.types + #dto.petAccessTypes + #dto.petSizes + #dto.services" )
 //    @Transactional(readOnly = true)
 //    public SliceResponseDto<PlaceResponseDto> searchFilterPlaceCached(PlaceSearchRequestDto dto, Pageable pageable) {

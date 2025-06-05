@@ -97,6 +97,10 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     // 유저 인증, 권한 Spring Security 위임
+    @Caching(evict = {
+            @CacheEvict(value = "place", allEntries = true),
+            @CacheEvict(value = "placeCounts", key = "'total'")
+    })
     @Override
     public ResponseDto save(PlaceFormRequestDto dto) {
 
@@ -125,7 +129,7 @@ public class PlaceServiceImpl implements PlaceService {
     // 유저 인증, 권한 Spring Security 위임
     @Caching(evict = {
         @CacheEvict(value = "place", allEntries = true),
-        @CacheEvict(value = "placeDetail", key = "#id")
+        @CacheEvict(value = "placeDetail", key = "#id"),
     })
     @Override
     public ResponseDto update(Long id, PlaceFormUpdateRequestDto dto) {
@@ -168,7 +172,10 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     // 유저 인증, 권한 Spring Security 위임
-    @CacheEvict(value = "place", allEntries = true)
+    @Caching(evict = {
+        @CacheEvict(value = "place", allEntries = true),
+        @CacheEvict(value = "placeCounts", key = "'total'")
+    })
     @Override
     public ResponseDto delete(List<Long> ids) {
 
