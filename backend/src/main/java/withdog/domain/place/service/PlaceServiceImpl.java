@@ -232,7 +232,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public DataResponseDto<Long> countPlaces() {
 
-        Long count = placeRepository.countBy();
+        long count = placeRepository.count();
 
         return DataResponseDto.success(count);
     }
