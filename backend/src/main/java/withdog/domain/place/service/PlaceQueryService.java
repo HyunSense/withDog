@@ -79,7 +79,7 @@ public class PlaceQueryService {
 
     @Cacheable(value = "placeCounts", key="'total'")
     @Transactional(readOnly = true)
-    public Long countPlacesCached() {
+    public long countPlacesCached() {
         return placeRepository.count();
     }
 

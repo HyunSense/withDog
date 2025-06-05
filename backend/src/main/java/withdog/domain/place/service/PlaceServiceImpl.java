@@ -239,7 +239,7 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public DataResponseDto<Long> countPlaces() {
 
-        long count = placeRepository.count();
+        long count = placeQueryService.countPlacesCached();
 
         return DataResponseDto.success(count);
     }
