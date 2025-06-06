@@ -104,19 +104,21 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public ResponseDto save(PlaceFormRequestDto dto) {
 
+        // 보상 트랜잭션 패턴 (여러가지 방법 나열)
+        // 트랜잭션(DB 저장) 실패시 이미 성공환 외부 API(S3 이미지 업로드) 되돌리는 작업
+        // 시나리오
+        // 1. PlaceServiceImpl.save() 메서드 내에서 이미지 업로드 후 반환된 이미지 URL 목록을 가지고있는다.
+        // 2. try-catch 블록을 사용하여 예외 발생 시 catch 블록에서 S3 업로드 된 이미지들을 삭제하는 로직을 추가.
+        // 3. 이를 위해 AwsFileService에 파일 삭제 기능 구현, PlaceImageServiceImpl 이나 PlaceServiceImpl 에서 이 기능(delete)을 호출.
+        
         Place place = dto.toEntity();
-
         Set<PlaceFilter> placeFilters = placeFilterService.getPlaceFilters(dto.getFilters(), place);
-
         place.addFilters(placeFilters);
 
         placeRepository.save(place); // 이미지 업로드 방지 사전 save
 
         List<PlaceNewImageDto> newImageDtos = dto.getImages();
-
-        if (newImageDtos != null && !newImageDtos.isEmpty()) {
-            placeImageService.save(place, newImageDtos);
-        }
+        placeImageService.save(place, newImageDtos);
 
         List<String> blogUrls = dto.getBlogUrls();
         if (blogUrls != null && !blogUrls.isEmpty()) {
@@ -164,9 +166,7 @@ public class PlaceServiceImpl implements PlaceService {
         }
 
         List<PlaceNewImageDto> newImageDtos = dto.getNewImages();
-        if (newImageDtos != null && !newImageDtos.isEmpty()) {
-            placeImageService.save(place, newImageDtos);
-        }
+        placeImageService.save(place, newImageDtos);
 
         return ResponseDto.success();
     }

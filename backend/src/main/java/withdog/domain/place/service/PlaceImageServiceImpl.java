@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import withdog.aws.AwsFileService;
+import withdog.aws.AwsS3Service;
 import withdog.common.constant.ApiResponseCode;
 import withdog.common.exception.CustomException;
 import withdog.domain.place.dto.PlaceNewImageDto;
@@ -21,7 +21,7 @@ import java.util.List;
 @Service
 public class PlaceImageServiceImpl implements PlaceImageService {
 
-    private final AwsFileService awsFileService;
+    private final AwsS3Service awsS3Service;
     private final PlaceImageRepository placeImageRepository;
 
     @Override
@@ -33,8 +33,12 @@ public class PlaceImageServiceImpl implements PlaceImageService {
     @Override
     public void save(Place place, List<PlaceNewImageDto> newImages) {
 
+        if (newImages == null || newImages.isEmpty()) {
+            return;
+        }
+
         for (PlaceNewImageDto newImage : newImages) {
-            String imageUrl = awsFileService.upload(newImage.getImage());
+            String imageUrl = awsS3Service.upload(newImage.getImage());
 
             PlaceImage placeImage = PlaceImage.builder()
                     .place(place)
