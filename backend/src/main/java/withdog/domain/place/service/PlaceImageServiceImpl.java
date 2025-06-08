@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import withdog.aws.AwsS3Service;
 import withdog.common.constant.ApiResponseCode;
 import withdog.common.exception.CustomException;
@@ -13,6 +15,7 @@ import withdog.domain.place.entity.Place;
 import withdog.domain.place.entity.PlaceImage;
 import withdog.domain.place.repository.PlaceImageRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -31,23 +34,42 @@ public class PlaceImageServiceImpl implements PlaceImageService {
     }
 
     @Override
-    public void save(Place place, List<PlaceNewImageDto> newImages) {
+    public void save(Place place, List<PlaceNewImageDto> newImageDtos) {
 
-        if (newImages == null || newImages.isEmpty()) {
+        if (newImageDtos == null || newImageDtos.isEmpty()) {
             return;
         }
 
-        for (PlaceNewImageDto newImage : newImages) {
-            String imageUrl = awsS3Service.upload(newImage.getImage());
+        List<String> imageUrlsForRollback = new ArrayList<>();
+
+        for (PlaceNewImageDto imageDto : newImageDtos) {
+
+            String imageUrl = awsS3Service.upload(imageDto.getImage());
+            imageUrlsForRollback.add(imageUrl);
 
             PlaceImage placeImage = PlaceImage.builder()
                     .place(place)
-                    .name(newImage.getName())
-                    .imagePosition(newImage.getPosition())
+                    .name(imageDto.getName())
+                    .imagePosition(imageDto.getPosition())
                     .imageUrl(imageUrl)
                     .build();
             place.addImage(placeImage);
         }
+
+        // 트랜잭션 롤백(후처리)
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCompletion(int status) {
+                if (status == STATUS_ROLLED_BACK) {
+                    for (String imageUrlToDelete : imageUrlsForRollback) {
+                        awsS3Service.delete(imageUrlToDelete);
+                        log.info("Deleted S3 image: {}", imageUrlToDelete);
+                    }
+                } else if (status == STATUS_COMMITTED) {
+                    log.info("Committed S3 images: {}", place.getName());
+                }
+            }
+        });
 
         log.info("Place image saved to {}", place.getName());
     }
@@ -74,15 +96,20 @@ public class PlaceImageServiceImpl implements PlaceImageService {
 
     @Override
     public void delete(Place place, List<Long> removeImageIds) {
+
+        List<String> s3UrlsToDelete = new ArrayList<>();
+
         List<PlaceImage> placeImages = place.getPlaceImages();
 
         for (Long removeImageId : removeImageIds) {
-            PlaceImage placeImage = placeImages.stream().filter(image -> image.getId().equals(removeImageId)).findFirst()
+            PlaceImage placeImage = placeImages.stream().filter(image -> image.getId().equals(removeImageId))
+                    .findFirst()
                     .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_IMAGE));
 
             place.getPlaceImages().remove(placeImage);
+            s3UrlsToDelete.add(placeImage.getImageUrl());
         }
 
-        log.info("Place image deleted to {}", place.getName());
+
     }
 }

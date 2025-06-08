@@ -121,9 +121,7 @@ public class PlaceServiceImpl implements PlaceService {
         placeImageService.save(place, newImageDtos);
 
         List<String> blogUrls = dto.getBlogUrls();
-        if (blogUrls != null && !blogUrls.isEmpty()) {
-            placeBlogService.save(place, blogUrls);
-        }
+        placeBlogService.save(place, blogUrls);
 
         return ResponseDto.success();
     }
@@ -187,6 +185,8 @@ public class PlaceServiceImpl implements PlaceService {
 
         // 내부적으로 select 조회
         placeRepository.deleteAllById(ids);
+
+        //TODO: 삭제된 데이터는 S3에 있는 이미지도 삭제해야 함
 
         return ResponseDto.success();
     }
