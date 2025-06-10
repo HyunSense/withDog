@@ -6,7 +6,7 @@ import withdog.domain.place.entity.PlaceImage;
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaceImageDto {
 
     private Long id;
