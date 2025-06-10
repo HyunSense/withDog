@@ -69,9 +69,10 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
       })
 
       const filteredRemovedImages = removedImages.filter((image) => image.id);
-      filteredRemovedImages.forEach((image, index) =>
-        formData.append(`updateImages.removedId[${index}]`, image.id)
-      );
+      // 잘못된 코드일 가능성 체크
+      // filteredRemovedImages.forEach((image, index) =>
+      //   formData.append(`updateImages.removedId[${index}]`, image.id)
+      // );
 
       filteredRemovedImages.forEach((image, index) => {
         formData.append(`removedImageIds[${index}]`, image.id);
@@ -96,6 +97,10 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
         formData.append(`images[${index}].name`, image.name);
       });
     }
+
+    formData.forEach((value, key) => {
+      console.log(`${key}:`, value);
+    });
     onSubmit(formData);
   };
 
