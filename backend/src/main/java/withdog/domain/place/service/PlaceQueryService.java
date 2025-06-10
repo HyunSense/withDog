@@ -25,9 +25,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class PlaceQueryService {
 
-    private final PlaceImageService placeImageService;
-    private final PlaceBlogService placeBlogService;
-    private final PlaceFilterService placeFilterService;
     private final PlaceWeeklyStatsServiceImpl placeWeeklyStatsService;
     private final PlaceRepository placeRepository;
 
@@ -35,13 +32,11 @@ public class PlaceQueryService {
     @Transactional(readOnly = true)
     public PlaceDetailResponseDto findPlaceCached(Place place) {
 
-        // 기존: Image, Filter fetch join, Blog Lazy loading -> 조회 쿼리 감소, 일관성 X
-        // 변경: Entity 별 조회 -> 조회 쿼리 증가, 일관성 O
-        List<PlaceImage> images = placeImageService.findImages(place.getId());
-        List<PlaceBlog> blogs = placeBlogService.findBlogs(place.getId());
-        Set<PlaceFilter> filters = placeFilterService.findFilters(place.getId());
+        List<PlaceImage> placeImages = place.getPlaceImages();
+        List<PlaceBlog> placeBlogs = place.getPlaceBlogs();
+        Set<PlaceFilter> placeFilters = place.getPlaceFilters();
 
-        return PlaceDetailResponseDto.fromEntity(place, images, blogs, filters);
+        return PlaceDetailResponseDto.fromEntity(place, placeImages, placeBlogs, placeFilters);
     }
 
     @Cacheable(value = "place", key="'top3'")
@@ -83,14 +78,4 @@ public class PlaceQueryService {
         return placeRepository.count();
     }
 
-//    @Cacheable(value = "placeSearch", key = "#dto.keyword + #dto.city + #dto.types + #dto.petAccessTypes + #dto.petSizes + #dto.services" )
-//    @Transactional(readOnly = true)
-//    public SliceResponseDto<PlaceResponseDto> searchFilterPlaceCached(PlaceSearchRequestDto dto, Pageable pageable) {
-//
-//        SliceResponseDto<PlaceResponseDto> slicePlaces = placeRepository.searchPlacesWithMultiFilters(
-//                dto.getKeyword(), dto.getCity(), dto.getTypes(),
-//                dto.getPetAccessTypes(), dto.getPetSizes(), dto.getServices(), pageable);
-//
-//        return slicePlaces;
-//    }
 }
