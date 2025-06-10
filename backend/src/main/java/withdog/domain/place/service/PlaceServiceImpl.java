@@ -35,6 +35,7 @@ import withdog.domain.place.repository.PlaceRepository;
 import withdog.domain.stats.entity.PlaceWeeklyStats;
 import withdog.domain.stats.service.PlaceWeeklyStatsService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -104,13 +105,6 @@ public class PlaceServiceImpl implements PlaceService {
     @Override
     public ResponseDto save(PlaceFormRequestDto dto) {
 
-        // 보상 트랜잭션 패턴 (여러가지 방법 나열)
-        // 트랜잭션(DB 저장) 실패시 이미 성공환 외부 API(S3 이미지 업로드) 되돌리는 작업
-        // 시나리오
-        // 1. PlaceServiceImpl.save() 메서드 내에서 이미지 업로드 후 반환된 이미지 URL 목록을 가지고있는다.
-        // 2. try-catch 블록을 사용하여 예외 발생 시 catch 블록에서 S3 업로드 된 이미지들을 삭제하는 로직을 추가.
-        // 3. 이를 위해 AwsFileService에 파일 삭제 기능 구현, PlaceImageServiceImpl 이나 PlaceServiceImpl 에서 이 기능(delete)을 호출.
-        
         Place place = dto.toEntity();
         Set<PlaceFilter> placeFilters = placeFilterService.getPlaceFilters(dto.getFilters(), place);
         place.addFilters(placeFilters);
@@ -150,18 +144,11 @@ public class PlaceServiceImpl implements PlaceService {
             placeBlogService.save(place, blogUrls);
         }
 
-        // TODO: 테이블상에는 삭제가되었는데 클라우드에서 실제 데이터는 삭제할 것인지?, 삭제한다면 어떻게 할것인지?
-
-        List<PlaceUpdateImagesDto> updateImages = dto.getUpdateImages(); // 수정된 이미지의 id 와 position
-
-        if (updateImages != null && !updateImages.isEmpty()) {
-            placeImageService.update(place, updateImages);
-        }
+        List<PlaceUpdateImagesDto> updateImages = dto.getUpdateImages();
+        placeImageService.update(place, updateImages);
 
         List<Long> removedImageIds = dto.getRemovedImageIds();
-        if (removedImageIds != null && !removedImageIds.isEmpty()) {
-            placeImageService.delete(place, removedImageIds);
-        }
+        placeImageService.delete(place, removedImageIds);
 
         List<PlaceNewImageDto> newImageDtos = dto.getNewImages();
         placeImageService.save(place, newImageDtos);
@@ -178,15 +165,17 @@ public class PlaceServiceImpl implements PlaceService {
     public ResponseDto delete(List<Long> ids) {
 
         Cache placeDetailCache = cacheManager.getCache("placeDetail");
-
         if (placeDetailCache != null) {
             ids.forEach(id -> placeDetailCache.evict(id));
         }
 
-        // 내부적으로 select 조회
-        placeRepository.deleteAllById(ids);
+        List<Place> placesToDelete = placeRepository.findAllById(ids);
+        if (placesToDelete.isEmpty()) {
+            throw new CustomException(ApiResponseCode.NOT_EXIST_PLACE);
+        }
 
-        //TODO: 삭제된 데이터는 S3에 있는 이미지도 삭제해야 함
+        placeImageService.deleteAll(placesToDelete);
+        placeRepository.deleteAll(placesToDelete);
 
         return ResponseDto.success();
     }

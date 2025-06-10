@@ -21,6 +21,7 @@ public enum ApiResponseCode {
     CONTENTS_ERROR("CE", "Contents Error", 400),
     NOT_FOUND_MEMBER("NFM", "Not Found Member", 400),
     NOT_FOUND_TOKEN("NT", "Not Found Token", 400),
+    INVALID_INPUT_VALUE("IV", "Invalid Input Value", 400),
 
     // 401
     LOGIN_FAILED("LF", "Login Failed", 401),

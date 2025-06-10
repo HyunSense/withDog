@@ -15,11 +15,12 @@ import withdog.common.exception.CustomException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class AwsS3Service {
 
@@ -33,7 +34,24 @@ public class AwsS3Service {
 
     private final static String PLACE_IMG_DIR = "images/";
 
+    private static final List<String> ALLOWED_IMAGE_CONTENT_TYPES = List.of("image/jpeg", "image/png", "image/jpg");
+
     public String upload(MultipartFile image) {
+
+        // 1. 파일 존재 여부 체크
+        if (image == null || image.isEmpty()) {
+            log.warn("empty image file");
+            throw new CustomException(ApiResponseCode.INVALID_INPUT_VALUE, "이미지 파일이 비어있습니다.");
+        }
+
+        // 2. 파일 형식(MIME 타입) 체크
+        String contentType = image.getContentType();
+        if (contentType == null || ALLOWED_IMAGE_CONTENT_TYPES.stream().noneMatch(type -> type.equalsIgnoreCase(contentType))) {
+            log.warn("unsupported image type: {}", contentType);
+            throw new CustomException(ApiResponseCode.INVALID_INPUT_VALUE, "지원하지 않는 이미지 형식 입니다.");
+        }
+
+
         String fileName = UUID.randomUUID() + "_" + image.getOriginalFilename();
 
         try {
@@ -79,9 +97,8 @@ public class AwsS3Service {
             s3Client.deleteObject(deleteObjectRequest);
 
         } catch (Exception e) {
+            // 삭제 실패의 경우 로깅만 하고 다음 이미지 삭제 계속 시도
             log.error("Failed to delete file from S3: key: {}, Error: {}", s3Key, e.getMessage(), e);
         }
-
     }
-
 }
