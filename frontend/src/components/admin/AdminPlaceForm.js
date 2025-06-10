@@ -97,10 +97,7 @@ const AdminPlaceForm = ({ initValues, isEdit, onSubmit }) => {
         formData.append(`images[${index}].name`, image.name);
       });
     }
-
-    formData.forEach((value, key) => {
-      console.log(`${key}:`, value);
-    });
+    
     onSubmit(formData);
   };
 
