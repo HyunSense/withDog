@@ -1,6 +1,6 @@
 package withdog.domain.member.service;
 
-import withdog.common.dto.TokenDto;
+import withdog.common.dto.RefreshTokenDto;
 import withdog.domain.member.dto.request.SignUpRequestDto;
 import withdog.common.dto.response.DataResponseDto;
 import withdog.common.dto.response.ResponseDto;
@@ -12,7 +12,6 @@ public interface MemberService {
 
     DataResponseDto<ResponseMemberInfoDto> findMemberByToken(String token);
 
-    //TODO: 수정필요
-    DataResponseDto<TokenDto> refreshAccessToken(String refreshToken);
+    DataResponseDto<RefreshTokenDto> refreshAccessToken(String clientRefreshToken);
 
 }

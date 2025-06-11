@@ -65,10 +65,10 @@ public class JwtAuthenticationContextFilter extends OncePerRequestFilter {
             response.setCharacterEncoding("UTF-8");
             ResponseDto failure;
             if (e instanceof TokenExpiredException) {
-                failure = ResponseDto.failure(ApiResponseCode.TOKEN_EXPIRED.getCode(), ApiResponseCode.TOKEN_EXPIRED.getMessage());
+                failure = ResponseDto.failure(ApiResponseCode.TOKEN_EXPIRED);
 
             } else {
-                failure = ResponseDto.failure(ApiResponseCode.TOKEN_INVALID.getCode(), ApiResponseCode.TOKEN_INVALID.getMessage());
+                failure = ResponseDto.failure(ApiResponseCode.TOKEN_INVALID);
             }
 
             objectMapper.writeValue(response.getWriter(), failure);

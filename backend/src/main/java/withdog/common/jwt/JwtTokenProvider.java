@@ -21,6 +21,16 @@ public class JwtTokenProvider {
     @Value("${spring.bearer.jwt}")
     private String secretKey;
 
+    public Long getIdFromExpiredToken(String expiredToken) {
+        try {
+            DecodedJWT decodedJWT = JWT.decode(expiredToken);
+            return decodedJWT.getClaim("id").asLong();
+        } catch (Exception e) {
+            log.error("getIdFromExpiredToken error : {}", e.getMessage());
+            return null;
+        }
+    }
+
     public Long getId(String token) {
 
         return JWT.require(Algorithm.HMAC256(secretKey))

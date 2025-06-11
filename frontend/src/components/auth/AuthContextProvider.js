@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getLogout, postLogin } from "../../apis/auth";
+import {getLogout, getRefreshToken, postLogin} from "../../apis/auth";
+import {setAccessToken} from "../../apis/api";
 
 export const AuthContext = createContext();
 
@@ -10,25 +11,45 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const loginSetting = () => {
-    const token = localStorage.getItem("access_token");
-    const storedMemberInfo = localStorage.getItem("member_info");
+  useEffect(() => {
 
-    if (token && storedMemberInfo) {
-      const parseMemberInfo = JSON.parse(storedMemberInfo);
-      setIsLogin(true);
-      setMemberInfo(parseMemberInfo);
-    } else {
-      setIsLogin(false);
-      setMemberInfo({});
-      localStorage.removeItem("member_info");
-    }
+    const checkAuthStatus = async () => {
+      const storedMemberInfo = localStorage.getItem("member_info");
+      if (storedMemberInfo) {
+        setMemberInfo(JSON.parse(storedMemberInfo));
+        setIsLogin(true);
+      }
 
-    setLoading(false);
-  };
+      try {
+        const refreshResponse = await getRefreshToken();
+        const newAccessToken = refreshResponse.headers["authorization"]?.replace("Bearer ", "");
+        const latestMemberInfo = refreshResponse.data.data;
 
+        if (!newAccessToken || !latestMemberInfo) {
+          throw new Error("Invalid refresh response");
+        }
+
+        setAccessToken(newAccessToken);
+        setIsLogin(true);
+        setMemberInfo(latestMemberInfo);
+        localStorage.setItem("member_info", JSON.stringify(latestMemberInfo));
+
+      } catch (error) {
+        setIsLogin(false);
+        setMemberInfo({});
+        setAccessToken(null);
+        localStorage.removeItem("member_info");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuthStatus();
+
+  }, []);
+  
   const login = async (username, password) => {
-    localStorage.removeItem("access_token");
+    // localStorage.removeItem("access_token");
     try {
       const response = await postLogin({
         username: username,
@@ -38,20 +59,23 @@ export const AuthProvider = ({ children }) => {
       const authorizationHeader = response.headers["authorization"];
       const loginResponse = response.data.data;
 
-      if (authorizationHeader) {
-        const accessToken = authorizationHeader.replace("Bearer ", "");
+      if (authorizationHeader && loginResponse) {
         const memberInfo = {
           username: loginResponse.username,
           role: loginResponse.role,
         };
-        localStorage.setItem("access_token", accessToken);
+
         localStorage.setItem("member_info", JSON.stringify(memberInfo));
+        setIsLogin(true);
+        setMemberInfo(memberInfo);
+
+        const accessToken = authorizationHeader.replace("Bearer ", "");
+        setAccessToken(accessToken);
+
+        navigate("/");
+
       }
 
-      if (response.status === 200) {
-        loginSetting();
-        navigate("/");
-      }
     } catch (error) {
       console.error("로그인 오류:", error);
       if (error.response.data.code === 'LF') {
@@ -63,8 +87,8 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     setIsLogin(false);
     setMemberInfo({});
-    localStorage.removeItem("access_token");
     localStorage.removeItem("member_info");
+    setAccessToken(null);
 
     try {
       await getLogout();
@@ -75,13 +99,10 @@ export const AuthProvider = ({ children }) => {
     } 
   };
 
-  useEffect(() => {
-    loginSetting();
-  }, []);
 
   return (
     <AuthContext.Provider
-      value={{ isLogin, memberInfo, login, logout, loading, loginSetting, setIsLogin, setMemberInfo }}
+      value={{ isLogin, memberInfo, login, logout, loading, setIsLogin, setMemberInfo }}
     >
       {children}
     </AuthContext.Provider>

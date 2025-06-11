@@ -5,8 +5,11 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class TokenDto {
+public class RefreshTokenDto {
 
+    private Long id;
+    private String username;
+    private String role;
     private String token;
     private long expired;
 
