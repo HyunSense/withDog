@@ -1,5 +1,7 @@
 package withdog.common.jwt;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.stereotype.Component;
-import withdog.common.config.auth.CustomUserDetails;
+import withdog.common.constant.TokenType;
 
 @Slf4j
 @Component
@@ -17,26 +19,40 @@ public class CustomLogoutHandler implements LogoutHandler {
 
     private final RedisTemplate<String, String> redisTemplate;
     private static final String REFRESH_TOKEN_KEY_PREFIX = "refreshToken:";
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 
-        log.info("Execute CustomLogoutHandler logout method.");
+        String clientRefreshToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals(TokenType.REFRESH.name())) {
+                    clientRefreshToken = cookie.getValue();
+                    break;
+                }
+            }
+        }
 
-        if (authentication == null || !(authentication.getPrincipal() instanceof CustomUserDetails)) {
-            log.info("authentication is null or not CustomUserDetails");
+        if (clientRefreshToken == null) {
+            log.warn("Logout request received, Client refresh token cookie is null.");
             return;
         }
 
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        Long memberId = customUserDetails.getId();
-        String redisKey = REFRESH_TOKEN_KEY_PREFIX + memberId;
+        try {
+            Long memberId = jwtTokenProvider.getId(clientRefreshToken);
 
-        if (redisTemplate.hasKey(redisKey)) {
-            redisTemplate.delete(redisKey);
-            log.info("Successfully deleted refresh token for member: {}", memberId);
-        } else {
-            log.warn("Refresh token for member {} not found in Redis.", memberId);
+            String redisKey = REFRESH_TOKEN_KEY_PREFIX + memberId;
+            if (redisTemplate.hasKey(redisKey)) {
+                redisTemplate.delete(redisKey);
+                log.info("Successfully deleted refresh token for member: {}", memberId);
+            } else {
+                log.warn("Refresh token for member {} not found in Redis.", memberId);
+            }
+
+        } catch (JWTVerificationException e) {
+            log.warn("Invalid refresh token during the logout process:{}", e.getMessage());
         }
     }
 }

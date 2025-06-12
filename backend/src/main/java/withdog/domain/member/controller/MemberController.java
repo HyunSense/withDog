@@ -51,7 +51,6 @@ public class MemberController {
 
     @GetMapping("/refresh-token")
     public ResponseEntity<ResponseDto> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
-        log.info("Refresh access token");
 
         String clientRefreshToken = null;
         Cookie[] cookies = request.getCookies();
