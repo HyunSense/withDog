@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -16,12 +17,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.filter.CorsFilter;
 import withdog.common.config.auth.CustomOauth2UserService;
 import withdog.common.config.auth.Oauth2AuthenticationFailureHandler;
 import withdog.common.config.auth.Oauth2AuthenticationSuccessHandler;
 import withdog.common.constant.ApiResponseCode;
 import withdog.common.dto.response.ResponseDto;
+import withdog.common.jwt.CustomLogoutHandler;
 import withdog.common.jwt.JwtLoginProcessingFilter;
 import withdog.common.jwt.JwtAuthenticationContextFilter;
 import withdog.common.jwt.JwtTokenProvider;
@@ -39,6 +42,8 @@ public class SecurityConfig {
     private final Oauth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
     private final Oauth2AuthenticationFailureHandler oauth2AuthenticationFailureHandler;
     private final ObjectMapper objectMapper;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final CustomLogoutHandler customLogoutHandler;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -57,9 +62,10 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/api/v1/logout")
+                        .addLogoutHandler(customLogoutHandler)
                         .logoutSuccessHandler((request, response, authentication) -> {
-                            response.setStatus(200);
-                            response.setContentType("application/json");
+//                            response.setStatus(200);
+//                            response.setContentType("application/json");
                             objectMapper.writeValue(response.getWriter(), ResponseDto.success());
                         })
                         .deleteCookies("REFRESH"))
@@ -81,8 +87,8 @@ public class SecurityConfig {
                                 "/api/v1/places/bookmarks").authenticated()
                         .anyRequest().permitAll())
                 .addFilter(corsFilter)
-                .addFilterAt(new JwtLoginProcessingFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider, objectMapper), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthenticationContextFilter(jwtTokenProvider, objectMapper), AuthorizationFilter.class)
+                .addFilterBefore(new JwtAuthenticationContextFilter(jwtTokenProvider, objectMapper), LogoutFilter.class)
+                .addFilterAt(new JwtLoginProcessingFilter(authenticationManager(authenticationConfiguration), jwtTokenProvider, objectMapper, redisTemplate), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler(accessDeniedHandler())
                         .authenticationEntryPoint(unAuthorizedEntryPoint())

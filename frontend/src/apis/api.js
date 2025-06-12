@@ -1,11 +1,20 @@
 import axios from "axios";
+import {getRefreshToken} from "./auth";
+
+let accessToken = null;
+let refreshQueue = [];
+let isRefreshing = false;
+
+export const setAccessToken = (token) => {
+    accessToken = token;
+};
 
 const api = axios.create({
   // aws EC2 Domain
-  baseURL: "https://api.withdog.store/api/v1",
+  // baseURL: "https://api.withdog.store/api/v1",
 
   // local url
-  // baseURL: "http://localhost:8080/api/v1",
+  baseURL: "http://localhost:8080/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
@@ -14,10 +23,8 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+    if (accessToken) {
+      config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
 
     return config;
@@ -27,43 +34,46 @@ api.interceptors.request.use(
   }
 );
 
-let isRefreshing = false;
-
 api.interceptors.response.use(
   (response) => response, // 정상응답이라면 그대로 리턴
 
   async (error) => {
+    const originalRequest = error.config;
     if (error.response.status === 401 && error.response.data.code === "TE") {
-      localStorage.removeItem("access_token");
+      // 기존에 저장된 AccessToken 초기화
+      accessToken = null;
       if (!isRefreshing) {
         isRefreshing = true;
 
-        const originalRequest = error.config;
-
         try {
-          const refreshResponse = await api.get("/refresh-token");
-
-          const authorizationHeader = refreshResponse.headers["authorization"];
-
-          if (authorizationHeader) {
-            const newAccessToken = authorizationHeader.replace("Bearer ", "");
-            localStorage.setItem("access_token", newAccessToken);
-            originalRequest.headers[
-              "Authorization"
-            ] = `Bearer ${newAccessToken}`;
-          }
-
-          console.log("Access Token 재발급 성공");
+          const refreshResponse = await getRefreshToken();
+          const newAccessToken = refreshResponse.headers[
+            "authorization"
+          ]?.replace("Bearer ", "");
+          accessToken = newAccessToken;
+          refreshQueue.forEach((cb) => cb(newAccessToken)); // PENDING 요청에 새 토큰 전달
           isRefreshing = false;
+          originalRequest.headers["authorization"] = `Bearer ${newAccessToken}`;
+
           return api(originalRequest);
+
         } catch (refreshError) {
           // refresh token이 만료되었거나 문제가 발생한 경우
           alert("세션이 만료되었습니다. 다시 로그인해주세요.");
-          localStorage.clear();
           window.location.href = "/login";
-          return;
-          // 이미 refresh-token 요청이 진행 중일 경우, 에러 리턴 (대기 방식 Promise 큐 사용이 필요?)
+          return Promise.reject(refreshError);
         }
+      } else {
+        return new Promise((resolve, reject) => {
+          refreshQueue.push((newAccessToken) => {
+            if (newAccessToken) {
+               originalRequest.headers["authorization"] = `Bearer ${newAccessToken}`;
+               resolve(api(originalRequest));
+            } else {
+              reject(error);
+            }
+          });
+        });
       }
     }
     // 401 외의 다른 에러는 그대로 리턴

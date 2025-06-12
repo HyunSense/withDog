@@ -26,4 +26,8 @@ public class ResponseDto {
     public static ResponseDto failure(String code, String message) {
         return new ResponseDto(code, message);
     }
+
+    public static ResponseDto failure(ApiResponseCode apiResponseCode) {
+        return new ResponseDto(apiResponseCode.getCode(), apiResponseCode.getMessage());
+    }
 }

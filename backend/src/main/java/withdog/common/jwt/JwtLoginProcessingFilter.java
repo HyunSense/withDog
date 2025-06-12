@@ -7,6 +7,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -27,6 +28,7 @@ import withdog.common.dto.response.ResponseDto;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 public class JwtLoginProcessingFilter extends AbstractAuthenticationProcessingFilter {
@@ -35,17 +37,20 @@ public class JwtLoginProcessingFilter extends AbstractAuthenticationProcessingFi
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
 
+    private final RedisTemplate<String, String> redisTemplate;
+
     private static final String DEFAULT_LOGIN_REQUEST_URL = "/api/v1/login";
     private static final String HTTP_METHOD = "POST";
 
     private final static AntPathRequestMatcher DEFAULT_LOGIN_REQUEST_MATCHER =
             new AntPathRequestMatcher(DEFAULT_LOGIN_REQUEST_URL, HTTP_METHOD);
 
-    public JwtLoginProcessingFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, ObjectMapper objectMapper) {
+    public JwtLoginProcessingFilter(AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, ObjectMapper objectMapper, RedisTemplate<String, String> redisTemplate) {
         super(DEFAULT_LOGIN_REQUEST_MATCHER);
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.objectMapper = objectMapper;
+        this.redisTemplate = redisTemplate;
     }
 
     @Override
@@ -84,6 +89,9 @@ public class JwtLoginProcessingFilter extends AbstractAuthenticationProcessingFi
         String accessToken = jwtTokenProvider.createToken(id, username, role, TokenType.ACCESS);
         String refreshToken = jwtTokenProvider.createToken(id, username, role, TokenType.REFRESH);
         long expired = jwtTokenProvider.getExpired(accessToken);
+
+        // refresh token 저장
+        redisTemplate.opsForValue().set("refreshToken:" + id, refreshToken, TokenType.REFRESH.getExpiration(), TimeUnit.MILLISECONDS);
 
         LoginResponseDto dto = LoginResponseDto.builder()
                 .id(id)
