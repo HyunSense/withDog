@@ -2,6 +2,8 @@ import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {getLogout, getRefreshToken, postLogin} from "../../apis/auth";
 import {setAccessToken} from "../../apis/api";
+import Loading from "../common/Loading";
+import useDelayedLoader from "../../hooks/useDelayedLoader";
 
 export const AuthContext = createContext();
 
@@ -9,18 +11,27 @@ export const AuthProvider = ({ children }) => {
   const [isLogin, setIsLogin] = useState(null);
   const [memberInfo, setMemberInfo] = useState({});
   const [loading, setLoading] = useState(true);
+  const showLoader = useDelayedLoader(loading, 300);
   const navigate = useNavigate();
 
   useEffect(() => {
 
     const checkAuthStatus = async () => {
+
       const storedMemberInfo = localStorage.getItem("member_info");
-      if (storedMemberInfo) {
-        setMemberInfo(JSON.parse(storedMemberInfo));
-        setIsLogin(true);
-      }
 
       try {
+
+        if (!storedMemberInfo) {
+          setIsLogin(false);
+          setMemberInfo({});
+          setAccessToken(null);
+          return;
+        }
+
+        setMemberInfo(JSON.parse(storedMemberInfo));
+        setIsLogin(true);
+
         const refreshResponse = await getRefreshToken();
         const newAccessToken = refreshResponse.headers["authorization"]?.replace("Bearer ", "");
         const latestMemberInfo = refreshResponse.data.data;
@@ -99,6 +110,9 @@ export const AuthProvider = ({ children }) => {
     } 
   };
 
+  if (loading) {
+    return showLoader ? <Loading /> : null;
+  }
 
   return (
     <AuthContext.Provider
