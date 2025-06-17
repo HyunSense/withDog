@@ -39,10 +39,6 @@ out/
 # .yml
 /src/main/resources/application-local.yml
 
-# dockerFile
-Dockerfile
-docker-compose.yml
-
 # dump sql
 /sql/
 /k6/
