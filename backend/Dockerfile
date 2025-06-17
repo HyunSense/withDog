@@ -12,6 +12,7 @@ RUN ./gradlew dependencies
 
 COPY src src
 
+RUN chmod +x gradlew
 RUN ./gradlew -x test clean build
 
 # 실행 환경
