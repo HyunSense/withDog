@@ -11,10 +11,10 @@ export const setAccessToken = (token) => {
 
 const api = axios.create({
   // aws EC2 Domain
-  // baseURL: "https://api.withdog.store/api/v1",
+  baseURL: "https://api.withdog.store/api/v1",
 
   // local url
-  baseURL: "http://localhost:8080/api/v1",
+  // baseURL: "http://localhost:8080/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
