@@ -1,14 +1,12 @@
 package withdog.domain.place.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import withdog.domain.place.entity.PlaceBlog;
 
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaceBlogDto {
 
     private String title;

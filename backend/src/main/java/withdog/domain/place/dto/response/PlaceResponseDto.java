@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
 public class PlaceResponseDto {
 

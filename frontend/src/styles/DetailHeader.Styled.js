@@ -33,12 +33,16 @@ export const StyledDetailIcon = styled.img`
   height: 100%;
 `;
 
-export const StyledHomeLink = styled(Link)`
+export const StyledDetailLink = styled(Link)`
   padding-bottom: 2px;
-`
+`;
 
 export const StyledText = styled.p`
-
   font-size: 2rem;
   font-weight: 600;
+`;
+
+export const StyledEditText = styled.p`
+  font-size: 1.2rem;
+  font-weight: 500;
 `;

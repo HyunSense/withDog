@@ -2,6 +2,8 @@ package withdog.domain.bookmark.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import withdog.common.constant.ApiResponseCode;
@@ -31,8 +33,8 @@ public class BookmarkServiceImpl implements BookmarkService {
     private final MemberRepository memberRepository;
     private final PlaceRepository placeRepository;
     private final PlaceWeeklyStatsService placeWeeklyStatsService;
+    private final BookmarkQueryService bookmarkQueryService;
 
-    @Transactional(readOnly = true)
     @Override
     public DataResponseDto<BookmarkStatusDto> checkBookmark(Long memberId, Long placeId) {
 
@@ -42,31 +44,26 @@ public class BookmarkServiceImpl implements BookmarkService {
         Place place = placeRepository.findById(placeId)
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_PLACE));
 
-        boolean isBookmarked = bookmarkRepository.existsByMemberAndPlace(member, place);
-        BookmarkStatusDto dto = BookmarkStatusDto.builder().bookmarked(isBookmarked).build();
+        BookmarkStatusDto dto = bookmarkQueryService.checkBookmarkCached(member, place);
 
         return DataResponseDto.success(dto);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public DataResponseDto<List<BookmarkedPlaceResponseDto>> findAllBookmarkedPlace(Long memberId) {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_MEMBER));
 
-        List<Place> places = bookmarkRepository.findAllBookmarkedPlacesByMember(member);
-        List<BookmarkedPlaceResponseDto> dtos = places.stream().map((place -> BookmarkedPlaceResponseDto.builder()
-                .id(place.getId())
-                .name(place.getName())
-                .address(place.getAddressPart1())
-                .thumbnailUrl(place.getThumbnailUrl())
-                .build()
-        )).collect(Collectors.toList());
+        List<BookmarkedPlaceResponseDto> dtos = bookmarkQueryService.findAllBookmarkedPlaceCached(member);
 
         return DataResponseDto.success(dtos);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "memberBookmarks", key = "#memberId"),
+            @CacheEvict(value = "bookmarkStatus", key = "#memberId + '::' + #placeId")
+    })
     @Override
     public ResponseDto addBookmark(Long memberId, Long placeId) {
 
@@ -85,6 +82,10 @@ public class BookmarkServiceImpl implements BookmarkService {
         return ResponseDto.success();
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "memberBookmarks", key = "#memberId"),
+            @CacheEvict(value = "bookmarkStatus", key = "#memberId + '::' + #placeId")
+    })
     @Override
     public ResponseDto deleteBookmark(Long memberId, Long placeId) {
 
@@ -102,6 +103,7 @@ public class BookmarkServiceImpl implements BookmarkService {
         return ResponseDto.success();
     }
 
+    @CacheEvict(value = "memberBookmarks", key = "#memberId")
     @Override
     public ResponseDto deleteAllBookmarks(List<Long> ids, Long memberId) {
 

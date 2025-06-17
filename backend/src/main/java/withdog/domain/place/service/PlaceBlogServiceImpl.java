@@ -29,6 +29,10 @@ public class PlaceBlogServiceImpl implements PlaceBlogService{
     @Override
     public void save(Place place, List<String> blogUrls) {
 
+        if (blogUrls == null || blogUrls.isEmpty()) {
+            return;
+        }
+
         for (String blogUrl : blogUrls) {
             BlogExtractDto extractDto = BlogMetaDataExtractor.extract(blogUrl);
             PlaceBlog placeBlog = extractDto.toEntity(place, blogUrl);

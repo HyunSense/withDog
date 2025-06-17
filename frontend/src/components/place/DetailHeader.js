@@ -5,7 +5,11 @@ import bookmarkOn from "../../assets/images/bookmark-on-98px.png";
 import PrevButton from "../common/PrevButton";
 import { AuthContext } from "../auth/AuthContextProvider";
 import * as S from "../../styles/DetailHeader.Styled";
-import { addBookmark, deleteBookmark, getBookmarkStatus } from "../../apis/place";
+import {
+  addBookmark,
+  deleteBookmark,
+  getBookmarkStatus,
+} from "../../apis/place";
 
 const fetchBookmarkStatus = async (placeId, setIsBookmarked) => {
   try {
@@ -30,7 +34,7 @@ const updateBookmark = async (placeId, isBookmarked) => {
 };
 
 const DetailHeader = ({ name, id }) => {
-  const { isLogin } = useContext(AuthContext);
+  const { isLogin, memberInfo } = useContext(AuthContext);
   const [isBookmarked, setIsBookmarked] = useState(false);
 
   useEffect(() => {
@@ -53,16 +57,23 @@ const DetailHeader = ({ name, id }) => {
     <S.StyledDetailHeader>
       <S.StyeldDetailIconWrapper $justifyContent="flex-start">
         <PrevButton />
-        <S.StyledHomeLink to="/">
+        <S.StyledDetailLink to="/">
           <S.StyledDetailIconBox>
             <S.StyledDetailIcon src={homeIcon} />
           </S.StyledDetailIconBox>
-        </S.StyledHomeLink>
+        </S.StyledDetailLink>
       </S.StyeldDetailIconWrapper>
       <S.StyledText fontSize="2rem" fontWeight="700">
         {name}
       </S.StyledText>
       <S.StyeldDetailIconWrapper $justifyContent="flex-end">
+        {memberInfo.role === "ROLE_ADMIN" && (
+          <S.StyledDetailLink to = {`/admin/edit/${id}`}>
+            <S.StyledEditText>
+              수정
+            </S.StyledEditText>
+          </S.StyledDetailLink>
+        )}
         <S.StyledDetailIconBox onClick={toggleBookmark}>
           <S.StyledDetailIcon src={isBookmarked ? bookmarkOn : bookmarkOff} />
         </S.StyledDetailIconBox>

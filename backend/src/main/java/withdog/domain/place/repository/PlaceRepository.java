@@ -34,6 +34,4 @@ public interface PlaceRepository extends JpaRepository<Place, Long>, PlaceReposi
             "left join fetch pf.filterOption fo " +
             "left join fetch fo.filterCategory fc where p.id = :id")
     Optional<Place> findByIdWithPlaceBlogsAndPlaceFilters(Long id);
-
-    Long countBy();
 }

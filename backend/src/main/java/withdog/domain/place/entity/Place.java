@@ -88,7 +88,7 @@ public class Place {
     }
 
     public void updateThumbnail(PlaceImage placeImage) {
-        this.thumbnailUrl = placeImage.getImageUrl();
+        this.thumbnailUrl = (placeImage != null && placeImage.getImagePosition() == 0) ? placeImage.getImageUrl() : null;
     }
 
     @Builder

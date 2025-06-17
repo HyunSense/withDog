@@ -9,8 +9,8 @@ import java.util.List;
 
 public interface PlaceImageService {
 
-    List<PlaceImage> findImages(Long placeId);
     void save(Place place, List<PlaceNewImageDto> newImages);
     void update(Place place, List<PlaceUpdateImagesDto> updateImages);
     void delete(Place place, List<Long> removeImageIds);
+    void deleteAll(List<Place> places);
 }

@@ -6,16 +6,23 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import withdog.common.config.auth.CustomUserDetails;
+import withdog.common.constant.ApiResponseCode;
 import withdog.common.constant.TokenType;
-import withdog.common.dto.TokenDto;
+import withdog.common.dto.RefreshTokenDto;
 import withdog.common.dto.response.DataResponseDto;
 import withdog.common.dto.response.ResponseDto;
 import withdog.domain.member.dto.request.SignUpRequestDto;
 import withdog.domain.member.dto.response.ResponseMemberInfoDto;
 import withdog.domain.member.service.MemberService;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -26,7 +33,6 @@ public class MemberController {
     private final MemberService memberService;
 
     /*[login, logout] SpringSecurity Filter에 위임*/
-
     @PostMapping("/members")
     public ResponseEntity<ResponseDto> signUp(@RequestBody @Valid SignUpRequestDto signUpRequestDto) {
 
@@ -35,11 +41,9 @@ public class MemberController {
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    //TODO: 리펙토링 필요 (프론트에서 사용 X)
     @GetMapping("/members/info")
     public ResponseEntity<ResponseDto> getMemberInfo(@RequestParam String accessToken) {
 
-//        String token = accessToken.substring("Bearer ".length());
         DataResponseDto<ResponseMemberInfoDto> responseBody = memberService.findMemberByToken(accessToken);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
@@ -47,23 +51,21 @@ public class MemberController {
 
     @GetMapping("/refresh-token")
     public ResponseEntity<ResponseDto> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
-        log.info("Refresh access token");
-        // refresh token 비교
-        // 일치하면 access token 발급
+
+        String clientRefreshToken = null;
         Cookie[] cookies = request.getCookies();
-        String refreshToken = null;
         if (cookies != null) {
-            log.info("cookies are not null");
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(TokenType.REFRESH.name())) {
-                    refreshToken = cookie.getValue();
+                    clientRefreshToken = cookie.getValue();
+                    break;
                 }
             }
         }
-        log.info("Refresh token is : {} ", refreshToken);
-        DataResponseDto<TokenDto> dataResponseDto = memberService.refreshAccessToken(refreshToken);
-        log.info("dataResponseDto = {}", dataResponseDto.getData());
-        response.setHeader("Authorization", dataResponseDto.getData().getToken());
+
+        // 모든 검증 통과시, 토큰 재발급
+        DataResponseDto<RefreshTokenDto> dataResponseDto = memberService.refreshAccessToken(clientRefreshToken);
+        response.setHeader("Authorization", "Bearer " + dataResponseDto.getData().getToken());
         return ResponseEntity.status(HttpStatus.OK).body(dataResponseDto);
     }
 

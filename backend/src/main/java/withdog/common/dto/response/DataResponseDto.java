@@ -1,9 +1,13 @@
 package withdog.common.dto.response;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import withdog.common.constant.ApiResponseCode;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DataResponseDto<T> extends ResponseDto{
 
     T data;
