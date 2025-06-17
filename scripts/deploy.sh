@@ -1,5 +1,8 @@
 #!/bin/bash
 
+APP_DIR="/home/ubuntu/app/withdog"
+cd $APP_DIR
+
 # Parameter Store에서 환경변수 가져오기
 echo "Fetching environment variables from Parameter Store..."
 
@@ -16,13 +19,3 @@ export KAKAO_CLIENT_SECRET=$(aws ssm get-parameter --name "/config/env/KAKAO_CLI
 export REDIS_HOST=$(aws ssm get-parameter --name "/config/env/REDIS_HOST" --with-decryption --query "Parameter.Value" --output text)
 export REDIS_PORT=$(aws ssm get-parameter --name "/config/env/REDIS_PORT" --with-decryption --query "Parameter.Value" --output text)
 export REDIS_PASSWORD=$(aws ssm get-parameter --name "/config/env/REDIS_PASSWORD" --with-decryption --query "Parameter.Value" --output text)
-
-# Docker Hub에서 이미지 pull
-echo "Pulling latest image from Docker Hub..."
-docker compose pull withdog-api
-
-echo "Restarting services with docker compose..."
-docker compose up -d --no-deps withdog-api
-
-# 사용하지 않고 태그가 없는 이미지 삭제
-docker image prune -f

@@ -1,6 +1,10 @@
 version: 0.0
 os: linux
 
+files:
+  - source: /docker-compose.yml
+    destination: /home/ubuntu/app/withdog
+
 hooks:
   ApplicationStart:
     - location: scripts/deploy.sh
