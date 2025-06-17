@@ -1,15 +1,7 @@
 version: 0.0
 os: linux
-files:
-  - source: /
-    destination: /home/ubuntu/app/
 
 hooks:
-  AfterInstall:
-    - location: scripts/stop.sh
-      timeout: 300
-      runas: ubuntu
   ApplicationStart:
-    - location: scripts/start.sh
-      timeout: 300
+    - location: scripts/deploy.sh
       runas: ubuntu
