@@ -2,38 +2,18 @@
 # WithDog - 반려견과 함께, 어디든지! 🐾
 **반려견과 함께하는 특별한 순간을 위한 서비스**
 
-## 🔧 진행중인 개선사항: MSA 아키텍처 전환 (개발중) [kafka barnch](https://github.com/HyunSense/withDog/tree/kafka)
-### ☁️ 인프라 전환 아키텍처: Kafka-Zookeeper 클러스터
-![infra](https://github.com/user-attachments/assets/99f968de-f7b9-4514-9cec-05e9c6f7b1c2)
-
-
-
-### 🔄 MSA 전환 아키텍처
-```mermaid
-graph TD
-Client[클라이언트] --> API[API Gateway]
-    API --> PlaceService[장소 서비스]  
-    UserAnalyticsService[사용자 분석 서비스]
-
-    UserAnalyticsService -- 인기 장소 점수 저장/갱신 --> Redis[(Redis - 공유 저장소)]
-
-    PlaceService -- CRUD --> PlaceDB[(MySQL - 장소 DB)]
-    PlaceService -- 장소 조회 캐시 & 인기 점수 조회 --> Redis
-
-    PlaceService -- 이벤트 발행 --> Kafka[Kafka]
-    UserAnalyticsService -- 이벤트 구독 --> Kafka
-
-    UserAnalyticsService -- 통계 데이터 저장 --> DailyStatDB[(MySQL - 일일 집계/통계 DB)]
-```
+<details>
+<summary><h2>🔧 진행중인 개선사항</h2></summary>
+    <div markdown="1">
+        
 ### 🛠️ 현재 개발 중인 기술 스택
-
 | 기술 | 목적 | 구현 상태 |
 |------|------|-----------|
 | **Docker** | 각 서비스 컨테이너화 및 로컬 개발 환경 구성 | ✅ 로컬 환경 구성 완료 |
 | **Kafka-Zookeeper** | - 이벤트 기반 통신을 통한 서비스 간 느슨한 결합 구현 <br> - 고가용성 이벤트 브로커 구성(3노드 클러스터)| 🔄 기본 설정 및 연결 구현 중 |
 | **Redis** | 캐싱 및 실시간 데이터 처리 | 🔄 인기 장소 랭킹 시스템 구현 중 |
 
-### 📋 MSA 전환 진행 상황
+### 🔄 MSA 전환 진행 상황
 1. 현재 구현중인 기능
 - 사용자 분석 서비스 분리 
     - Redis Sorted Set, Hash를 활용한 장소 조회수, 북마크, 필터검색 수 수집 및 분석
@@ -41,236 +21,17 @@ Client[클라이언트] --> API[API Gateway]
     - 스케쥴링 처리 내역은 Audit_Log 테이블에 기록하여 실행 이력 추적 및 오류 분석 가능
 - 장소 검색 서비스 개선
     - Redis의 인기도 점수를 활용한 인기순 정렬
-
-2. Docker 기반 로컬 개발 환경
-```
-# docker-compose.yml
-services:
-
- place-service:
-   image: withdog-place-service:latest
-#    image: hyunsense1022@gmail.com/withdog-place-service:latest
-   ports:
-     - "8080:8080"
-   networks:
-     - withdog-net
-   environment:
-     - DB_URL=${DB_URL}
-     - DB_USERNAME=${DB_USERNAME}
-     - DB_PASSWORD=${DB_PASSWORD}
-     - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
-     - AWS_SECRET_KEY=${AWS_SECRET_KEY}
-     - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-     - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-     - KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
-     - KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}
-     - JWT_SECRET=${JWT_SECRET}
-     - KAFKA_BOOTSTRAP_SERVERS=kafka1:9092,kafka2:9093,kafka3:9094
-   depends_on:
-     - redis
-     - kafka1
-     - kafka2
-     - kafka3
-
- user-analytics-service:
-   image: withdog-user-analytics-service:latest
-#    image: hyunsense1022@gmail.com/withdog-user-analytics-service:latest
-   networks:
-     - withdog-net
-   environment:
-     - DB_URL=${DB_URL}
-     - DB_USERNAME=${DB_USERNAME}
-     - DB_PASSWORD=${DB_PASSWORD}
-     - KAFKA_BOOTSTRAP_SERVERS=kafka1:9092,kafka2:9093,kafka3:9094
-     - REDIS_HOST=redis
-     - REDIS_PORT=6379
-   depends_on:
-     - redis
-     - kafka1
-     - kafka2
-     - kafka3
-
-  redis-ui:
-    image: redis/redisinsight:latest
-    ports:
-      - "5000:5540"
-    networks:
-      - withdog-net
-
-  kafka-ui:
-    image: provectuslabs/kafka-ui:latest
-    ports:
-      - "8888:8080"
-    networks:
-      - withdog-net
-    depends_on:
-      - kafka1
-      - kafka2
-      - kafka3
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-    environment:
-      - KAFKA_CLUSTERS_0_NAME=local-cluster
-      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka1:9092,kafka2:9093,kafka3:9094
-      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper1:2181,zookeeper2:2182,zookeeper3:2183
-
-  redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
-    networks:
-      - withdog-net
-    volumes:
-      - redis-data:/data
-
-zookeeper3:2183
-
-  zookeeper1:
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_SERVER_ID: 1
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_INIT_LIMIT: 5
-      ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: zookeeper1:2888:3888;zookeeper2:2889:3889;zookeeper3:2890:3890
-    ports:
-      - "2181:2181"
-    networks:
-      - withdog-net
-    volumes:
-      - zookeeper1-data:/var/lib/zookeeper
-
-  zookeeper2:
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_SERVER_ID: 2
-      ZOOKEEPER_CLIENT_PORT: 2182
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_INIT_LIMIT: 5
-      ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: zookeeper1:2888:3888;zookeeper2:2889:3889;zookeeper3:2890:3890
-    ports:
-      - "2182:2182"
-    networks:
-      - withdog-net
-    volumes:
-      - zookeeper2-data:/var/lib/zookeeper
-
-  zookeeper3:
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_SERVER_ID: 3
-      ZOOKEEPER_CLIENT_PORT: 2183
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOOKEEPER_INIT_LIMIT: 5
-      ZOOKEEPER_SYNC_LIMIT: 2
-      ZOOKEEPER_SERVERS: zookeeper1:2888:3888;zookeeper2:2889:3889;zookeeper3:2890:3890
-    ports:
-      - "2183:2183"
-    networks:
-      - withdog-net
-    volumes:
-      - zookeeper3-data:/var/lib/zookeeper
-
-  kafka1:
-    image: confluentinc/cp-kafka:latest
-    depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181,zookeeper2:2182,zookeeper3:2183
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://localhost:29092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
-      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
-      KAFKA_NUM_PARTITIONS: 4
-    ports:
-      - "9092:9092"
-      - "29092:29092"
-    networks:
-      - withdog-net
-    volumes:
-      - kafka1-data:/var/lib/kafka
-
-  kafka2:
-    image: confluentinc/cp-kafka:latest
-    depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-    environment:
-      KAFKA_BROKER_ID: 2
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181,zookeeper2:2182,zookeeper3:2183
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9093,PLAINTEXT_HOST://0.0.0.0:29093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka2:9093,PLAINTEXT_HOST://localhost:29093
-      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
-      KAFKA_NUM_PARTITIONS: 4
-    ports:
-      - "9093:9093"
-      - "29093:29093"
-    networks:
-      - withdog-net
-    volumes:
-      - kafka2-data:/var/lib/kafka
-
-  kafka3:
-    image: confluentinc/cp-kafka:latest
-    depends_on:
-      - zookeeper1
-      - zookeeper2
-      - zookeeper3
-    environment:
-      KAFKA_BROKER_ID: 3
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:2181,zookeeper2:2182,zookeeper3:2183
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9094,PLAINTEXT_HOST://0.0.0.0:29094
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:9094,PLAINTEXT_HOST://localhost:29094
-      KAFKA_DEFAULT_REPLICATION_FACTOR: 3
-      KAFKA_NUM_PARTITIONS: 4
-    ports:
-      - "9094:9094"
-      - "29094:29094"
-    networks:
-      - withdog-net
-    volumes:
-      - kafka3-data:/var/lib/kafka
-
-networks:
-  withdog-net:
-    driver: bridge
-
-volumes:
-  redis-data:
-  zookeeper1-data:
-  zookeeper2-data:
-  zookeeper3-data:
-  kafka1-data:
-  kafka2-data:
-  kafka3-data:
-```
-
+    </div>
+</details>
 
 ## 📖 프로젝트 상세 설명 및 문제 해결: [WithDog Notion link](https://hyunsense.notion.site/WithDog-16f05c7d6d4280609643d17696da6b89?pvs=4)
+## 📜 REST API 명세서: [API Documentation](https://hyunsense.notion.site/withDodg-RESTapi-17b05c7d6d42802cae8bccaff7fca8c6?pvs=4)
 ## 👉 현재 운영 중인 배포 링크: [🚀 WithDog 바로가기](https://www.withdog.store)
 
 ## 📌 프로젝트 개요
 ### ❓ 왜 WithDog을 만들었나요?
 반려인 1500만 시대, 반려견과 함께하는 여행 수요가 증가했지만, 반려견 동반 가능 여부, 시설 조건 등에 대한 정보가 분산되어 있어 검색에 시간이 많이 소요되었습니다.  
 이러한 문제를 해결하기 위해, **실제 방문한 반려인들의 리뷰와 사진을 기반으로 신뢰할 수 있는 정보를 제공**하며, **효율적인 필터 검색으로 맞춤형 장소 추천**을 목표로 개발되었습니다.
-
-<!-- ### ✨ 핵심 가치
-✅ **Discover**: 지역/카테고리 기반 맞춤형 장소 추천  
-✅ **Connect**: 반려인 커뮤니티 기반 리뷰 시스템(추가 개발 예정)  
-✅ **Trust**: 관리자 검증을 통한 신뢰할 수 있는 정보 -->
 
 ## 🖥️ 시연 영상
 ![장소목록](https://github.com/user-attachments/assets/bfb39d8b-c5eb-4307-b29b-72ca29a04e31)<br>장소 목록 | ![place-detail](https://github.com/user-attachments/assets/f77e3f5c-dbfe-4987-b937-9912e9744b43)<br>장소 상세정보 | ![place-bookmark](https://github.com/user-attachments/assets/e8348a24-8c03-41f8-9ef4-a462d63068bd)<br>장소 북마크
@@ -279,115 +40,38 @@ volumes:
 ![admin](https://github.com/user-attachments/assets/228f0685-eafe-4750-9855-a95b916608f4)<br>장소 등록 및 수정 | ![search](https://github.com/user-attachments/assets/1fe1b0fc-007e-4a3a-b8cb-a8bc12b7fc7f)<br>장소 검색 | ![login-join](https://github.com/user-attachments/assets/cd1f74e0-ee16-4dbc-85ee-527069911edd)<br>로그인 & 회원가입
 ---|---|---|
 
-## 📜 REST API 명세서: [API Documentation](https://hyunsense.notion.site/withDodg-RESTapi-17b05c7d6d42802cae8bccaff7fca8c6?pvs=4)
-
-
-기능|메서드|URL `/api/v1`
-----|---|----|
-로그인 | POST | `/login`
-로그아웃 | GET | `/logout`
-회원가입 | POST | `/members`
-장소 전체 조회 | GET | `/plaecs`
-장소 상세 조회 | GET | `/places/${id}`
-장소 등록 | POST | `/places`
-장소 수정 | PUT | `/places/${id}`
-장소 삭제 | DELETE | `/places?ids=${ids}`
-북마크 상태 조회 | GET | `/places/${id}/boormarks/status`
-북마크 목록 조회 | GET | `/places/bookmarks`
-북마크 단일 삭제 | DELETE | `/places/${id}/bookmarks`
-북마크 다중 삭제 | DELETE | `/places/bookmarks`
-북마크 등록 | POST | `/places/${id}/bookmarks`
-북마크 삭제 | DELETE | `/places/${id}/bookmarks`
-상위 TOP3 조회 | GET | `/places/top3`
-최근 등록 장소 조회 | GET | `/places/recent?=`
-추천 장소 조회 | GET | `/places/random?=`
-장소 검색 | GET | `/places/search?=`
-장소 검색결과 개수 | GET | `/places/search/result/count?=`
-장소 전체 개수 | GET | `/places/count`
-
 ## 🛠️ 기술 스택
 ### FrontEnd
 기술 스택 | 버전 | 활용 내용 |
 ---|---|---|
 **React** | 18.3 | 함수형 컴포넌트 및 Custom Hooks 기반 SPA 구현
-**React Router** |  6 | 동적 라우팅 적용
-**ContextAPI** | - | 전역 사용자 인증 상태 관리 (JWT 기반)
-**Styled-Components** | - | CSS-in-JS 방식으로 동적 테마 적용 및 스타일 모듈화
+**React Router** |  6 | 선언적 라우팅을 통한 페이지 네비게이션 관리
+**ContextAPI** | - | JWT 기반 사용자 인증 상태 전역 관리
+**Styled-Components** | - | 컴포넌트 기반 스타일링 및 동적 테마 구현
 
 ### Backend
 기술 스택 | 버전 | 활용 내용 |
 ---|---|---|
-**Spring Boot** | 3.3.4 | RESTful API 설계, 비즈니스 로직 구현 및 JPA 연동 
-**Spring Security** |  6.3 | JWT 및 소셜 로그인(OAuth2) 기반 인증 구현
-**Jsoup** | - | 블로그 Open Graph 메타데이터 스크래핑 (네이버, 다음)
+**Spring Boot** | 3.3.4 | RESTful API 서버 구축 및 비즈니스 로직 처리
+**Spring Security** |  6.3 | JWT와 OAuth 2.0을 결합한 인증/인가 시스템 구축
+**Spring Data JPA** | 3.3 | ORM을 활용한 객체-관계 매핑, N+1 문제 해결 등 쿼리 최적화
+**Jsoup** | 1.18 | 외부 블로그 포스트의 Open Graph 메타데이터 크롤링 및 파싱
 **MySQL** |  8.0 | 데이터 저장, JPA Query 최적화
+**Redis** | 7.4 | 조회 빈도가 높은 데이터 캐싱을 통한 DB 부하 감소 및 응답 속도 향상
 
 ### Infrastructure & DevOps
 기술 스택 | 활용 내용 |
 ---|---|
+**Docker** | 다중 컨테이너 환경 구축 및 관리
 **AWS EC2, RDS** | 백엔드 서버 및 데이터베이스 호스팅
-**AWS S3** | - **이미지 파일 저장소**: 반려견 관련 이미지 파일 저장 및 안정적인 제공<br>- **Spring Boot 배포 저장소**: 백엔드 애플리케이션 배포 파일 저장 및 관리<br>- **정적 웹호스팅**: 프론트엔드 정적 파일(HTML, CSS, JS) 호스팅으로 서버리스 환경 구현<br> → 이를 통해 무중단 배포 및 빠른 업데이트가 가능
+**AWS S3** | • **이미지 파일 저장소**: 반려견 관련 이미지 파일 저장 및 안정적인 제공<br>• **Spring Boot 배포 저장소**: 백엔드 애플리케이션 배포 파일 저장 및 관리<br>• **정적 웹호스팅**: 프론트엔드 정적 파일(HTML, CSS, JS) 호스팅으로 서버리스 환경 구현<br> → 이를 통해 무중단 배포 및 빠른 업데이트가 가능
 **AWS SSM Parameter Store** | 환경변수(DB_URL, API 키 등)를 암호화하여 중앙 관리<br> `start.sh` 에서 `aws ssm get-parameter` 을 이용하여 동적으로  주입
-**AWS CloudFront** | - 엣지 서버를 통한 콘텐츠 캐싱 및 배포<br> - **빠른 배포 및 낮은 지연 시간**: 정적 콘텐츠의 빠른 로딩과 응답속도 개선<br> (🚀 이미지 로딩 속도 약 30% 개선)<br> - **캐싱 정책 적용**: 원본(S3) 요청 횟수 대폭 감소 및 안정적 서비스 제공
+**AWS CloudFront** | • 엣지 서버를 통한 콘텐츠 캐싱 및 배포<br> • **빠른 배포 및 낮은 지연 시간**: 정적 콘텐츠의 빠른 로딩과 응답속도 개선<br> (🚀 이미지 로딩 속도 약 30% 개선)<br> • **캐싱 정책 적용**: 원본(S3) 요청 횟수 대폭 감소 및 안정적 서비스 제공
 **Nginx** | 리버스 프록시 및 SSL (Let's Encrypt) 설정으로 HTTPS 환경 제공 <br>`https://api.withdog.store` -> `http://localhost:8080` 요청을 중계
 **GitHub Actions<br> + CodeDeploy** | CI/CD 자동화 배포 (⚡ 5분 -> 1분으로 개선)
 
 ## Architecture
 ![architecture](https://github.com/user-attachments/assets/a682e2e3-2abf-4676-a88f-2e45baf3bb9c)
-
-## 로그인 인증 시퀀스
-### Frontend Server
-```mermaid
----
-config:
-  theme: default
----
-sequenceDiagram
-    participant C as 클라이언트
-    participant I as API 인터셉터
-    participant L as 로컬 스토리지
-    participant K as 쿠키
-    participant S as 서버
-
-    %% 로그인 과정
-    C->>I: 1. 로그인 요청 (POST /login)
-    I->>S: 2. 로그인 요청 전달
-    S->>S: 3. 사용자 인증 및 토큰 생성
-    S-->>I: 4. Access Token (헤더)<br>Refresh Token (Set-Cookie)
-    I-->>C: 5. 로그인 응답 전달
-    C->>L: 6. Access Token 저장
-
-    %% 일반 API 요청
-    C->>I: 8. API 요청
-    I->>L: 9. Access Token 조회
-    L-->>I: 10. Access Token 반환
-    I->>S: 11. API 요청<br>(Authorization: Bearer <Access Token>)
-    alt Access Token 유효
-        S-->>I: 12. 200 OK (API 응답)
-        I-->>C: 13. 응답 전달
-    else Access Token 만료
-        S-->>I: 14. 401 Unauthorized (code: "TE" && status:401)
-        I->>S: 15. /refresh-token 요청
-        S->>K: 16. Refresh Token 요청
-        K-->>S: 17. Refresh Token 반환
-        alt Refresh Token 유효
-            S->>S: 18. Refresh Token 검증
-            S-->>I: 19. 새로운 Access Token 반환
-            I->>L: 20. 새로운 Access Token 저장
-            I->>S: 21. 원래 API 요청 재시도
-            S-->>I: 22. 200 OK (API 응답)
-            I-->>C: 23. 응답 전달
-        else Refresh Token 만료
-            S-->>I: 24. 에러 응답
-            I-->>C: 25. 로그인 페이지로 리다이렉트
-        end
-    end
-```
-
-### Backend Server (Spring Security)
-**JWT 일반 로그인 flow** | **Oauth2 로그인 flow**
----|---|
- ![spring-security-jwt일반로그인-flow](https://github.com/user-attachments/assets/130a9b86-47de-4c3d-9606-0398e9f1348e) | ![spring-security-oauth2-flow](https://github.com/user-attachments/assets/b571820e-8e70-405b-a4c3-7e3e3a704812)
 
 ## ERD
 ### 🔗 [ERD 상세보기](https://www.erdcloud.com/d/J8ax78zWsn5kLZ5Fj)
@@ -454,12 +138,3 @@ sequenceDiagram
 - **검색 필터 구현**
     - 사용자가 선택한 필터 조건(지역, 장소 유형, 반려견 크기 등)에 따라 동적으로 JPQL을 생성해 쿼리를 실행
     - Builder 패턴을 활용해 복잡한 동적 쿼리의 가독성과 유지보수성을 개선
-
-## 🌱회고
-1. **React 입문과 CSR/SPA 방식 익히기**
-    - React 입문을 시작한 이유는, 기존에 ViewTemplate + jQuery 로 SSR + CSR방식만 사용해보았습니다.  CSR과 SPA인 React를 사용하여 프론트엔드와 백엔드가 명확히 분리돼서 데이터 통신이 어떻게 되는지 경험하고, CSR/SPA 방식이 뭔지 몸으로 느껴보고 싶었습니다. 물론 실무와는 차이가 크겠지만, 신입으로서 기본 개념을 잡는 데 의미가 있었다고 생각합니다.
-2. **Refresh Token 보안 문제**
-    - JWT 인증과정에서 Refresh Token 재사용을 막는 보안이 필요하다고 생각하였습니다. Redis를 이용하여 토큰의 유효성과 만료시간을 관리하면 좋을것 같지만  아직 Redis에 대한 경험이 부족해 적용하지 못했습니다. 현재는 서명과 만료시간으로 유효성을 확인하고있습니다. 관계형 DB로도 구현이 가능하지만, 앞으로 Redis에 대한 학습을 하여 더 효율적이고 안전한 인증 시스템을 만들 계획입니다.
-3. **성능테스트를 못해서 아쉬움**
-    - 로컬의 Docker에서 k6, promethus, grafana 를 통해 성능 테스트를 해봤지만, 프로젝트의 규모가 작아 성능 변화가 크지 않았습니다. 분석 방법도 익숙치 않아 아쉬웠고, 도구 설정과 실행에 비해 얻은 인사이트가 적었습니다. 기회가 된다면 성능 테스트 방법과 분석스킬을 더 공부해 실무에서 활용해 보고 싶습니다.
-
