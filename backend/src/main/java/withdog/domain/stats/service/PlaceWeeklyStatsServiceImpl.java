@@ -2,6 +2,7 @@ package withdog.domain.stats.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,11 +51,19 @@ public class PlaceWeeklyStatsServiceImpl implements PlaceWeeklyStatsService {
     private PlaceWeeklyStats getOrCreatePlaceWeeklyStats(Place place) {
 
         LocalDate weekMonday = LocalDate.now().with(DayOfWeek.MONDAY);
-        return placeWeeklyStatsRepository.findByPlaceAndWeekStartDate(place, weekMonday)
+
+        try {
+            return placeWeeklyStatsRepository.findByPlaceAndWeekStartDate(place, weekMonday)
                 .orElseGet(() -> placeWeeklyStatsRepository.save(
                         PlaceWeeklyStats.builder()
                                 .place(place)
                                 .weekStartDate(weekMonday)
                                 .build()));
+        } catch (DataIntegrityViolationException e) { // 동시성 문제 처리를 위한 catch 문
+            // 누군가 이미 저장한 경우 → 재조회
+            log.info("PlaceWeeklyStats already exists.");
+            return placeWeeklyStatsRepository.findByPlaceAndWeekStartDate(place, weekMonday)
+                    .orElseThrow();
+        }
     }
 }
