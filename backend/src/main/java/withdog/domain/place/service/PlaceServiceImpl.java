@@ -39,6 +39,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * 장소 서비스 구현체
+ */
 @Slf4j
 @RequiredArgsConstructor
 @Transactional
@@ -54,6 +57,11 @@ public class PlaceServiceImpl implements PlaceService {
     private final CacheManager cacheManager;
     private final PlaceQueryService placeQueryService;
 
+    /**
+     * 장소 전체 목록 조회 (Slice)
+     * @param pageable 페이징 정보
+     * @return 장소 목록 Slice DTO
+     */
     @Transactional(readOnly = true)
     @Override
     public DataResponseDto<SliceResponseDto<PlaceResponseDto>> findAllPlace(Pageable pageable) {
@@ -66,6 +74,12 @@ public class PlaceServiceImpl implements PlaceService {
         return DataResponseDto.success(responseDtos);
     }
 
+    /**
+     * 장소 상세 조회, 조회수 증가 처리 포함
+     * @param id 장소 ID
+     * @return 장소 상세 정보 DTO
+     * @throws CustomException 장소 미존재 시
+     */
     @Override
     public DataResponseDto<PlaceDetailResponseDto> findPlace(Long id) {
 
@@ -80,6 +94,13 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     //TODO: ADMIN 용 조회 메서드 수정 필요
+
+    /**
+     * 장소 상세 조회 (ADMIN 수정용)
+     * @param id 장소 ID
+     * @return 장소 상세 정보 DTO
+     * @throws CustomException 장소 미존재 시
+     */
     @Transactional(readOnly = true)
     @Override
     public DataResponseDto<PlaceDetailResponseDto> findPlaceForUpdate(Long id) {
@@ -87,17 +108,16 @@ public class PlaceServiceImpl implements PlaceService {
         Place place = placeRepository.findById(id)
                 .orElseThrow(() -> new CustomException(ApiResponseCode.NOT_EXIST_PLACE));
 
-//        List<PlaceImage> images = placeImageService.findImages(id);
-//        List<PlaceBlog> blogs = placeBlogService.findBlogs(id);
-//        Set<PlaceFilter> filters = placeFilterService.findFilters(id);
-//        PlaceDetailResponseDto dto = PlaceDetailResponseDto.fromEntity(place, images, blogs, filters);
-
         PlaceDetailResponseDto dto = placeQueryService.findPlaceCached(place);
 
         return DataResponseDto.success(dto);
     }
 
-    // 유저 인증, 권한 Spring Security 위임
+    /**
+     * 신규 장소 등록 (유저 인증/권한 Spring Security 위임)
+     * @param dto 장소 생성 DTO
+     * @return 성공 응답
+     */
     @Caching(evict = {
             @CacheEvict(value = "place", allEntries = true),
             @CacheEvict(value = "placeCounts", key = "'total'")
@@ -109,7 +129,7 @@ public class PlaceServiceImpl implements PlaceService {
         Set<PlaceFilter> placeFilters = placeFilterService.getPlaceFilters(dto.getFilters(), place);
         place.addFilters(placeFilters);
 
-        placeRepository.save(place); // 이미지 업로드 방지 사전 save
+        placeRepository.save(place);
 
         List<PlaceNewImageDto> newImageDtos = dto.getImages();
         placeImageService.save(place, newImageDtos);
@@ -120,7 +140,13 @@ public class PlaceServiceImpl implements PlaceService {
         return ResponseDto.success();
     }
 
-    // 유저 인증, 권한 Spring Security 위임
+    /**
+     * 장소 정보 수정 (유저 인증/권한 Spring Security 위임)
+     * @param id 수정할 장소 ID
+     * @param dto 장소 수정 DTO
+     * @return 성공 응답
+     * @throws CustomException 장소 미존재 시
+     */
     @Caching(evict = {
         @CacheEvict(value = "place", allEntries = true),
         @CacheEvict(value = "placeDetail", key = "#id"),
@@ -156,7 +182,12 @@ public class PlaceServiceImpl implements PlaceService {
         return ResponseDto.success();
     }
 
-    // 유저 인증, 권한 Spring Security 위임
+    /**
+     * 장소 다중 삭제 (유저 인증/권한 Spring Security 위임)
+     * @param ids 삭제할 장소 ID 목록
+     * @return 성공 응답
+     * @throws CustomException 삭제할 장소가 없는 경우
+     */
     @Caching(evict = {
         @CacheEvict(value = "place", allEntries = true),
         @CacheEvict(value = "placeCounts", key = "'total'")
@@ -180,6 +211,10 @@ public class PlaceServiceImpl implements PlaceService {
         return ResponseDto.success();
     }
 
+    /**
+     * 인기 장소 Top 3 조회
+     * @return 인기 장소 Top 3 목록 DTO
+     */
     @Override
     public DataResponseDto<List<PlaceResponseDto>> getTop3() {
 
@@ -187,11 +222,16 @@ public class PlaceServiceImpl implements PlaceService {
         return DataResponseDto.success(top3);
     }
 
+    /**
+     * 장소 필터 검색 (Slice)
+     * @param dto 검색 조건 DTO
+     * @param pageable 페이징 정보
+     * @return 검색된 장소 목록 Slice DTO
+     */
     @Transactional(readOnly = true)
     @Override
     public DataResponseDto<SliceResponseDto<PlaceResponseDto>> searchFilterPlace(PlaceSearchRequestDto dto, Pageable pageable) {
 
-//        SliceResponseDto<PlaceResponseDto> responseDtos = placeQueryService.searchFilterPlaceCached(dto, pageable);
         SliceResponseDto<PlaceResponseDto> responseDtos = placeRepository.searchPlacesWithMultiFilters(
                 dto.getKeyword(), dto.getCity(), dto.getTypes(),
                 dto.getPetAccessTypes(), dto.getPetSizes(), dto.getServices(), pageable);
@@ -199,6 +239,11 @@ public class PlaceServiceImpl implements PlaceService {
         return DataResponseDto.success(responseDtos);
     }
 
+    /**
+     * 장소 필터 검색 결과 개수
+     * @param dto 검색 조건 DTO
+     * @return 검색된 장소 총 개수
+     */
     @Transactional(readOnly = true)
     @Override
     public DataResponseDto<Long> searchFilterCountPlaces(PlaceSearchRequestDto dto) {
@@ -209,6 +254,11 @@ public class PlaceServiceImpl implements PlaceService {
         return DataResponseDto.success(totalCount);
     }
 
+    /**
+     * 최근 등록 장소 조회
+     * @param limit 조회할 개수
+     * @return 최근 등록 장소 목록 DTO
+     */
     @Override
     public DataResponseDto<List<PlaceResponseDto>> recentPlaces(int limit) {
 
@@ -217,6 +267,11 @@ public class PlaceServiceImpl implements PlaceService {
         return DataResponseDto.success(responseDtos);
     }
 
+    /**
+     * 랜덤 장소 조회
+     * @param limit 조회할 개수
+     * @return 랜덤 장소 목록 DTO
+     */
     @Override
     public DataResponseDto<List<PlaceResponseDto>> randomPlaces(int limit) {
 
@@ -225,6 +280,10 @@ public class PlaceServiceImpl implements PlaceService {
         return DataResponseDto.success(responseDtos);
     }
 
+    /**
+     * 전체 장소 수 조회
+     * @return 전체 장소 개수
+     */
     @Override
     public DataResponseDto<Long> countPlaces() {
 
@@ -233,6 +292,13 @@ public class PlaceServiceImpl implements PlaceService {
         return DataResponseDto.success(count);
     }
 
+    /**
+     * Slice 응답 DTO 변환 (헬퍼 메서드)
+     * @param slice Slice 객체
+     * @param content DTO 리스트
+     * @return SliceResponseDto
+     * @param <T> DTO 타입
+     */
     private <T> SliceResponseDto<T> toSliceResponse(Slice<?> slice, List<T> content) {
         SliceInfo info = new SliceInfo(
                 slice.getNumber(),
