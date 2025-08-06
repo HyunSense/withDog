@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import * as S from "../../styles/LoginForm.Styled";
 import { AuthContext } from "./AuthContextProvider";
 
 const LoginForm = () => {
@@ -14,24 +13,40 @@ const LoginForm = () => {
   };
 
   const handleSocialLogin = async (platfrom) => {
-
     // window.location.href = `http://localhost:8080/oauth2/authorization/${platfrom}`
-    window.location.href = `https://api.withdog.store/oauth2/authorization/${platfrom}`
-  }
+    window.location.href = `https://api.withdog.store/oauth2/authorization/${platfrom}`;
+  };
 
-  return (  
-    <S.StyledLoginForm onSubmit={handleOnSubmit}>
-      <S.StyledLoginInputBox>
-        <S.StyledLoginInputLabel>아이디</S.StyledLoginInputLabel>
-        <S.StyledLoginInput type="text" name="username" />
-      </S.StyledLoginInputBox>
-      <S.StyledLoginInputBox>
-        <S.StyledLoginInputLabel>비밀번호</S.StyledLoginInputLabel>
-        <S.StyledLoginInput type="password" name="password" />
-      </S.StyledLoginInputBox>
-      <S.StyledLoginButtonBox>
-        <S.StyledLoginButton type="submit">로그인</S.StyledLoginButton>
-        <S.StyeldkakaoLoginButton onClick={() => handleSocialLogin("kakao")} type="button">
+  return (
+    <form className="flex flex-col w-full" onSubmit={handleOnSubmit}>
+      <div className="flex flex-col mb-6">
+        <label className="mb-1">아이디</label>
+        <input
+          className="flex items-center text-sm h-12 border border-gray-300 rounded-md px-4 appearance-none focus:outline-none focus:ring-2 focus:ring-sky-500"
+          type="text"
+          name="username"
+        />
+      </div>
+      <div className="flex flex-col mb-6">
+        <label className="mb-1">비밀번호</label>
+        <input
+          className="flex items-center text-sm h-12 border border-gray-300 rounded-md px-4 appearance-none focus:outline-none focus:ring-2 focus:ring-sky-500"
+          type="password"
+          name="password"
+        />
+      </div>
+      <div className="flex flex-col gap-2 my-8">
+        <button
+          className="flex justify-center items-center border border-gray-300 rounded-md h-11 bg-white cursor-pointer"
+          type="submit"
+        >
+          로그인
+        </button>
+        <button
+          className="flex justify-center items-center border-none rounded-md h-11 bg-[#fee500] cursor-pointer"
+          onClick={() => handleSocialLogin("kakao")}
+          type="button"
+        >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="#0E0E0E">
             <path
               fillRule="evenodd"
@@ -40,9 +55,13 @@ const LoginForm = () => {
               d="M12.0001 0.800049C5.37225 0.800049 0 4.95068 0 10.0698C0 13.2535 2.07788 16.0601 5.24205 17.7294L3.91072 22.5928C3.79309 23.0225 4.28457 23.3651 4.66197 23.116L10.4978 19.2644C10.9903 19.3119 11.4908 19.3397 12.0001 19.3397C18.6274 19.3397 24 15.1892 24 10.0698C24 4.95068 18.6274 0.800049 12.0001 0.800049Z"
             ></path>
           </svg>
-          <S.StyledText $marginLeft="8px">카카오로 로그인</S.StyledText>
-        </S.StyeldkakaoLoginButton>
-        <S.StyledLoginButton onClick={() => handleSocialLogin("google")} type="button">
+          <p className="mx-2">카카오로 로그인</p>
+        </button>
+        <button
+          className="flex justify-center items-center border border-gray-300 rounded-md h-11 bg-white cursor-pointer"
+          onClick={() => handleSocialLogin("google")}
+          type="button"
+        >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="#0E0E0E">
             <rect width="24" height="24" fill="white"></rect>
             <path
@@ -70,10 +89,10 @@ const LoginForm = () => {
               fill="#EA4335"
             ></path>
           </svg>
-          <S.StyledText $marginLeft="8px">Google로 로그인</S.StyledText>
-        </S.StyledLoginButton>
-      </S.StyledLoginButtonBox>
-    </S.StyledLoginForm>
+          <p className="mx-2">Google로 로그인</p>
+        </button>
+      </div>
+    </form>
   );
 };
 

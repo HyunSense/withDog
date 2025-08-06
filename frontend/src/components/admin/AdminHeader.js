@@ -1,6 +1,5 @@
 import PrevButton from "../common/PrevButton";
 import { useLocation } from "react-router-dom";
-import * as S from "../../styles/AdminHeader.Styled";
 
 const AdminHeader = () => {
   const location = useLocation();
@@ -10,13 +9,15 @@ const AdminHeader = () => {
     : "수정/삭제";
 
   return (
-    <S.StyledAdminHeader>
-      <S.StyledPrevButtonBox>
+    <header className="sticky top-0 z-50 w-full h-14 flex justify-between items-center px-3 py-5 bg-white">
+      <div className="w-6 h-6 mr-2">
         <PrevButton />
-      </S.StyledPrevButtonBox>
-      <S.StyledTitleText>{titleText}</S.StyledTitleText>
-      <S.StyledBalanceDummy></S.StyledBalanceDummy>
-    </S.StyledAdminHeader>
+      </div>
+      <span className="text-xl font-semibold text-neutral-800">
+        {titleText}
+      </span>
+      <div className="w-6 h-6 ml-2"></div>
+    </header>
   );
 };
 

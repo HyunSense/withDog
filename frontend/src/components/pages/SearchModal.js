@@ -4,19 +4,17 @@ import { useEffect, useState } from "react";
 import { FILTER_OPTIONS } from "../../constants/filters";
 import FilterSection from "../searchFilter/FilterSection";
 import FilterItem from "../searchFilter/FilterItem";
-import * as S from "../../styles/SearchFilter.Styled";
 import { useNavigate } from "react-router-dom";
 
 const SearchModal = ({ onClose }) => {
-
   const [keyword, setKeyword] = useState("");
   const [selectedFilters, setSelectedFilters] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = "";
     };
   }, []);
 
@@ -45,15 +43,13 @@ const SearchModal = ({ onClose }) => {
   };
 
   const handleSearch = async () => {
-
-    const queryObj = {...selectedFilters};
+    const queryObj = { ...selectedFilters };
     if (keyword.trim()) {
       queryObj.keyword = keyword;
     }
     const queryStr = new URLSearchParams(queryObj).toString();
     navigate(`/search/result?${queryStr}`);
     onClose();
-
   };
 
   const handleKeyDown = (e) => {
@@ -63,11 +59,15 @@ const SearchModal = ({ onClose }) => {
   };
 
   return ReactDOM.createPortal(
-    <S.StyledModalOverlay>
-      <S.StyledSearchModal>
-        <S.StyledSearchContainer>
-          <S.StyledSearchFilterHeader>
-            <S.StyledSearchCloseBox onClick={onClose}>
+    // scrollbar-width: none 처리
+    <div className="flex flex-col fixed inset-0 w-full z-40 bg-gray-50 overflow-hidden">
+      <div className="flex flex-col  fixed z-50 left-1/2 -translate-x-1/2 w-full md:w-[720px] mx-auto">
+        <div className="h-[calc(var(--vh,1vh)_*_100)] bg-slate-100 pb-24 overflow-y-auto">
+          <div className="flex justify-between items-center w-full px-3">
+            <div
+              className="flex justify-center items-center cursor-pointer w-12 h-12 text-base font-medium"
+              onClick={onClose}
+            >
               <svg
                 width="20"
                 height="20"
@@ -90,16 +90,16 @@ const SearchModal = ({ onClose }) => {
                   strokeLinejoin="round"
                 />
               </svg>
-            </S.StyledSearchCloseBox>
-            <S.StyledSearchHeaderTitle>검색</S.StyledSearchHeaderTitle>
-            <S.StyledSearchDummyBox></S.StyledSearchDummyBox>
-          </S.StyledSearchFilterHeader>
-          <S.StyledSearchKeywordBox>
-            <S.StyledSearchKeywordText>
+            </div>
+            <span className="text-base font-medium text-neutral-950">검색</span>
+            <div className="w-12 h-12"></div>
+          </div>
+          <div className="flex flex-col gap-4 mt-0.5 mx-4 px-4 py-5 bg-white rounded-lg">
+            <span className="text-sm font-medium text-neutral-950">
               견주님, 어떤 장소를 찾으시나요?
-            </S.StyledSearchKeywordText>
-            <S.StyledSearchKeywordInputBox>
-              <S.StyledSearchKeywordIconBox>
+            </span>
+            <div className="flex w-full gap-2 px-4 py-3 border border-solid border-gray-300 rounded-lg">
+              <div className="flex justify-center items-center cursor-pointer">
                 <svg
                   width="20"
                   height="20"
@@ -114,26 +114,35 @@ const SearchModal = ({ onClose }) => {
                     fill="current"
                   ></path>
                 </svg>
-              </S.StyledSearchKeywordIconBox>
-              <S.StyledSearchKeywordInput
+              </div>
+              <input
+                className="w-full border-none outline-none text-zinc-700 text-sm font-medium"
                 placeholder="장소를 검색하세요."
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyDown={handleKeyDown}
               />
-            </S.StyledSearchKeywordInputBox>
-          </S.StyledSearchKeywordBox>
-          <S.StyledSearchFilterContainer>
-            <S.StyledSearchFilterTextBox>
-              <S.StyledSearchFilterTitle>
-                필터를 선택해 주세요
-              </S.StyledSearchFilterTitle>
-              <S.StyledSearchFilterReset onClick={handleFilterReset}>
+            </div>
+          </div>
+          {/* <div className={`rounded-lg bg-white ` + (mode === "admin" ? "py-5 px-0 my-0 mx-0" : "p-4 my-1 mx-4")}></div> */}
+          <div className="rounded-lg bg-white p-4 my-1 mx-4">
+            <div className="flex justify-between items-center w-full">
+              <span className="text-sm font-medium text-neutral-950">
+                필터를 선택해 주세요.
+              </span>
+              <span
+                className="text-sm font-medium cursor-pointer underline text-zinc-700"
+                onClick={handleFilterReset}
+              >
                 초기화
-              </S.StyledSearchFilterReset>
-            </S.StyledSearchFilterTextBox>
+              </span>
+            </div>
             {FILTER_OPTIONS.map((filter) => (
-              <FilterSection key={filter.id} title={filter.title}>
+              <FilterSection
+                key={filter.id}
+                title={filter.title}
+                multiSelect={filter.multiSelect}
+              >
                 {filter.options.map((option) => (
                   <FilterItem
                     key={option.value}
@@ -153,15 +162,18 @@ const SearchModal = ({ onClose }) => {
                 ))}
               </FilterSection>
             ))}
-          </S.StyledSearchFilterContainer>
-        </S.StyledSearchContainer>
-        <S.StyledSearchButtonBox>
-          <S.StyledSearchButton onClick={handleSearch}>
+          </div>
+        </div>
+        <div className="absolute left-0 bottom-0 w-full p-4 bg-white z-10">
+          <button
+            className="w-full h-12 rounded-lg text-lg font-semibold text-white bg-cyan-950"
+            onClick={handleSearch}
+          >
             검색
-          </S.StyledSearchButton>
-        </S.StyledSearchButtonBox>
-      </S.StyledSearchModal>
-    </S.StyledModalOverlay>,
+          </button>
+        </div>
+      </div>
+    </div>,
     document.getElementById("modal-root")
   );
 };

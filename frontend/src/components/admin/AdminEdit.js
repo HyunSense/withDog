@@ -1,7 +1,6 @@
 import AdminEditItem from "./AdminEditItem";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { deletePlaces, getAllPlaces, getCountPlaces } from "../../apis/place";
-import * as S from "../../styles/AdminEdit.Styled";
 
 const AdminEdit = () => {
   const [places, setPlaces] = useState([]);
@@ -70,14 +69,13 @@ const AdminEdit = () => {
 
   const fetchDeletePlaces = async (ids) => {
     try {
-      const params = {ids: ids.join(",")};
+      const params = { ids: ids.join(",") };
       await deletePlaces(params);
-      setPlaces((prev) => prev.filter((place) => !ids.includes(place.id))); 
+      setPlaces((prev) => prev.filter((place) => !ids.includes(place.id)));
       setSelectedItems([]);
     } catch (error) {
       console.error("fetchDeletePalces error = ", error);
     }
-
   };
 
   const fetchMorePlaces = async (page) => {
@@ -99,12 +97,12 @@ const AdminEdit = () => {
 
   return (
     <>
-      <S.StyledEditBox>
-        <S.StyledEdit>
-          <S.StyledTitleAndCountBox>
-            <S.StyledTitleAndCount>등록된 장소 {count}건</S.StyledTitleAndCount>
-          </S.StyledTitleAndCountBox>
-          <S.StyledItemList>
+      <div className="flex flex-col w-full h-full bg-white">
+        <div className="h-full grow shrink-0 basis-0 overflow-y-auto hide-scrollbar">
+          <div className="flex items-center px-4 py-2 mb-2 gap-x-0.5 bg-white border-t border-b border-gray-100">
+            <span className="text-sm font-medium">등록된 장소 {count}건</span>
+          </div>
+          <div className="flex flex-col px-4 gap-y-6 bg-white">
             {places.map((place) => (
               <AdminEditItem
                 key={place.id}
@@ -113,19 +111,24 @@ const AdminEdit = () => {
                 onChange={() => handleCheckboxChange(place.id)}
               />
             ))}
-          </S.StyledItemList>
+          </div>
           {hasMore && <div ref={loadMoreRef}></div>}
-        </S.StyledEdit>
-      </S.StyledEditBox>
-      <S.StyledRemoveButtonBox>
-        <S.StyledRemoveButton
+        </div>
+      </div>
+      <div className="sticky bottom-0 w-full px-4 pt-3 pb-8 border-t bg-white">
+        <button
+          className={`flex justify-center items-center w-full h-12 rounded-lg font-semibold text-white
+          ${
+            selectedItems.length > 0
+              ? "bg-[#022733] cursor-pointer"
+              : "bg-[#dde2e3] cursor-default"
+          }`}
           onClick={() => handleDelete()}
-          $isActive={selectedItems.length > 0}
           disabled={selectedItems.length === 0}
         >
           장소 삭제
-        </S.StyledRemoveButton>
-      </S.StyledRemoveButtonBox>
+        </button>
+      </div>
     </>
   );
 };

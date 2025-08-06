@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import addIcon from "../../assets/images/add-98px.png";
 import removeIcon from "../../assets/images/remove-98px.png";
 import upDownIcon from "../../assets/images/up-down-98px.png";
-import * as S from "../../styles/SaveImageUpload.Styled";
 
 const RegisterImageUpload = ({ images, onChange }) => {
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -21,7 +20,6 @@ const RegisterImageUpload = ({ images, onChange }) => {
     }
 
     if (image) {
-     
       onChange([...images, image], []);
     }
   };
@@ -47,7 +45,7 @@ const RegisterImageUpload = ({ images, onChange }) => {
         newImages[selectedIndex],
         newImages[selectedIndex - 1],
       ];
-      
+
       onChange(newImages, []);
       setSelectedIndex(selectedIndex - 1);
     }
@@ -60,49 +58,62 @@ const RegisterImageUpload = ({ images, onChange }) => {
         newImages[selectedIndex],
         newImages[selectedIndex + 1],
       ];
-      
+
       onChange(newImages, []);
       setSelectedIndex(selectedIndex + 1);
     }
   };
 
   return (
-    <S.StyledSaveImageUpload>
-      <S.StyledImageBox>
+    <div className="mt-1 mb-5">
+      <div className="flex flex-col h-32 border rounded-md resize-none py-1 px-2 overflow-y-auto">
         {images.map((image, index) => (
-          <S.StyledImage
+          <div
+            className={`text-sm p-0.5 cursor-pointer ${
+              index === selectedIndex ? "bg-gray-200" : ""
+            }`}
             key={index}
             selected={index === selectedIndex}
             onClick={() => handleSelectImage(index)}
           >
             {image.name}
-          </S.StyledImage>
+          </div>
         ))}
-      </S.StyledImageBox>
-      <S.StyledImageControlBox>
-        <S.StyledFileInput
+      </div>
+      <div className="flex justify-end items-center gap-x-2 mt-1">
+        <input
+          className="hidden"
           type="file"
           accept=".jpg, .png, .jpeg"
           ref={fileRef}
           onChange={handleAddImage}
         />
-        <S.StyledImageControlIcon
+        <img
+          className="w-6 h-6 cursor-pointer rotate-180"
+          alt="Move Up"
           src={upDownIcon}
-          rotate="180deg"
           onClick={handleMoveUp}
         />
-        <S.StyledImageControlIcon src={upDownIcon} onClick={handleMoveDown} />
-        <S.StyledImageControlIcon
+        <img
+          className="w-6 h-6 cursor-pointer"
+          alt="Move Down"
+          src={upDownIcon}
+          onClick={handleMoveDown}
+        />
+        <img
+          className="w-6 h-6 cursor-pointer"
+          alt="Add"
           src={addIcon}
-          rotate="180deg"
           onClick={handleAddClick}
         />
-        <S.StyledImageControlIcon
+        <img
+          className="w-6 h-6 cursor-pointer"
+          alt="Remove"
           src={removeIcon}
           onClick={handleRemoveImage}
         />
-      </S.StyledImageControlBox>
-    </S.StyledSaveImageUpload>
+      </div>
+    </div>
   );
 };
 

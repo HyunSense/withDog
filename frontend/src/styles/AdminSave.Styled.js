@@ -62,7 +62,7 @@ export const StyledInput = styled.input`
     background-color: none !important;
     -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
   }
-
+  
   &:-moz-autofill {
     background-color: none !important;
     box-shadow: 0 0 0px 1000px #fff inset !important;

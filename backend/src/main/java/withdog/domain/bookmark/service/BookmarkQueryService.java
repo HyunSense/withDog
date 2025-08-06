@@ -20,7 +20,7 @@ public class BookmarkQueryService {
 
     private final BookmarkRepository bookmarkRepository;
 
-    @Cacheable(value = "bookmarkStatus", key = "#member.id + '::' + #place.id")
+//    @Cacheable(value = "bookmarkStatus", key = "#member.id + '::' + #place.id")
     @Transactional(readOnly = true)
     public BookmarkStatusDto checkBookmarkCached(Member member, Place place) {
 
@@ -29,7 +29,7 @@ public class BookmarkQueryService {
         return BookmarkStatusDto.builder().bookmarked(isBookmarked).build();
     }
 
-    @Cacheable(value = "memberBookmarks", key = "#member.id")
+//    @Cacheable(value = "memberBookmarks", key = "#member.id")
     @Transactional(readOnly = true)
     public List<BookmarkedPlaceResponseDto> findAllBookmarkedPlaceCached(Member member) {
 

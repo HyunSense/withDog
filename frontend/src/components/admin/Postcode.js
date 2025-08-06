@@ -1,5 +1,4 @@
 import { useDaumPostcodePopup } from "react-daum-postcode";
-import { StyledSearchAddressButton } from "../../styles/Postcode.Styled";
 
 const Postcode = ({ children, addressChange }) => {
   const scriptUrl =
@@ -30,11 +29,11 @@ const Postcode = ({ children, addressChange }) => {
     //   sido = sido.replace(special, "").trim();
     //   fullAddress = fullAddress.replace(special, "").trim();
     // }
-    
+
     const addressPart1 = `${sido} ${sigungu}`;
     const addressPart2 = fullAddress.replace(addressPart1, "").trim();
 
-    const address = {addressPart1, addressPart2};
+    const address = { addressPart1, addressPart2 };
     addressChange(address);
   };
 
@@ -43,9 +42,13 @@ const Postcode = ({ children, addressChange }) => {
   };
 
   return (
-    <StyledSearchAddressButton type="button" onClick={handleClick}>
+    <button
+      className="flex justify-center items-center w-14 h-6 text-sm border rounded-lg bg-white"
+      type="button"
+      onClick={handleClick}
+    >
       {children}
-    </StyledSearchAddressButton>
+    </button>
   );
 };
 

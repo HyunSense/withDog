@@ -2,13 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import DetailHeader from "../place/DetailHeader";
 import DetailMain from "../place/DetailMain";
-import styled from "styled-components";
 import Loading from "../common/Loading";
 import { getPlace } from "../../apis/place";
-
-const StyledDetailPageContainer = styled.div`
-  padding-bottom: 40px;
-`;
 
 function DetailPage() {
   const { id } = useParams();
@@ -29,10 +24,10 @@ function DetailPage() {
   }, [id]);
 
   return place ? (
-    <StyledDetailPageContainer>
+    <div className="pb-10">
       <DetailHeader name={place.name} id={place.id} />
       <DetailMain place={place} />
-    </StyledDetailPageContainer>
+    </div>
   ) : (
     <Loading />
   );

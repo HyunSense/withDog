@@ -1,15 +1,9 @@
-import {
-  StyledSearchFilterBox,
-  StyledSearchFilterTypeTitle,
-  StyledSearchFilterList,
-} from "../../styles/SearchFilter.Styled";
-
 const FilterSection = ({ title, children }) => {
   return (
-    <StyledSearchFilterBox>
-      <StyledSearchFilterTypeTitle>{title}</StyledSearchFilterTypeTitle>
-      <StyledSearchFilterList>{children}</StyledSearchFilterList>
-    </StyledSearchFilterBox>
+    <div className="mt-6">
+      <p className="flex text-sm font-medium text-neutral-950">{title}</p>
+      <div className="flex flex-wrap gap-2 mt-2">{children}</div>
+    </div>
   );
 };
 

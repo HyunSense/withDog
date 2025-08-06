@@ -1,9 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import prevIcon from "../../assets/images/prev-icon.png";
-import * as S from "../../styles/PrevButton.Styled";
 
-const PrevButton = ({to}) => {
+const PrevButton = ({ to }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -12,14 +11,15 @@ const PrevButton = ({to}) => {
     } else {
       navigate(-1);
     }
-  }
+  };
 
   return (
-    <S.StyledPrevButton onClick={() => handleClick()}>
-      <S.StyledPrevButtonBox>
-        <S.StyledPrevIcon src={prevIcon} />
-      </S.StyledPrevButtonBox>
-    </S.StyledPrevButton>
+    <button
+      className="flex justify-center items-center w-6 h-auto border-none outline-none background-none cursor-pointer"
+      onClick={handleClick}
+    >
+      <img className="w-full h-full" src={prevIcon} alt="이전 아이콘" />
+    </button>
   );
 };
 

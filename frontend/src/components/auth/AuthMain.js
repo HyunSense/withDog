@@ -1,8 +1,11 @@
 import React from "react";
-import { StyledAuthMain } from "../../styles/AuthMain.Styled";
 
 const AuthMain = ({ children }) => {
-  return <StyledAuthMain>{children}</StyledAuthMain>;
+  return (
+    <main className="flex flex-col justify-center items-center px-4">
+      {children}
+    </main>
+  );
 };
 
 export default AuthMain;

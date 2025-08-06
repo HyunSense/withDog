@@ -1,5 +1,5 @@
 import React from "react";
-import * as S from "../../styles/DetailSlider.Styled";
+import Slider from "react-slick";
 
 const DetailSlider = ({ imgs }) => {
   const settings = {
@@ -22,13 +22,20 @@ const DetailSlider = ({ imgs }) => {
   };
 
   return (
-    <S.StyledDetailSlider {...settings}>
-      {imgs.map((i) => (
-        <S.StyledDetailImgBox key={i.imagePosition}>
-          <S.StyledDetailImg src={i.imageUrl} alt="이미지"/>
-        </S.StyledDetailImgBox>
+    <Slider {...settings}>
+      {imgs.map((img) => (
+        <div
+          className="w-full h-[43vh] outline-none border-none overflow-hidden"
+          key={img.imagePosition}
+        >
+          <img
+            className="w-full h-full object-cover"
+            src={img.imageUrl}
+            alt="장소 상세 이미지"
+          />
+        </div>
       ))}
-    </S.StyledDetailSlider>
+    </Slider>
   );
 };
 

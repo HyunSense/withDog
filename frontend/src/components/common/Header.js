@@ -1,48 +1,48 @@
-import React, { useContext } from "react";
+import { React, useContext } from "react";
 import withDogLogoUpdate from "../../assets/images/withdog-logo-300x80.png";
 import { AuthContext } from "../auth/AuthContextProvider";
-import * as S from "../../styles/Header.Styled";
-// import Loading from "./Loading";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const { isLogin, memberInfo, logout } = useContext(AuthContext); // loading 제거
 
-
   return (
-    <S.StyledHeader>
-      <S.StyledLink to={"/"}>
-        <S.StyeldLogo src={withDogLogoUpdate} />
-      </S.StyledLink>
+    <header className="flex items-center justify-between w-full mb-4 px-5 py-4">
+      <Link to="/" className="w-36 h-auto">
+        <img src={withDogLogoUpdate} alt="메인 로고" />
+      </Link>
       {isLogin ? (
-          <S.StyledAuthBox>
-            <S.StyledAuthButtonBox>
-              {memberInfo.role === "ROLE_ADMIN" && (
-                <S.StyledButton>
-                  <S.StyledLink to={"/admin"}>
-                    <S.StyledButtonText>관리자</S.StyledButtonText>
-                  </S.StyledLink>
-                </S.StyledButton>
-              )}
-              <S.StyledButton>
-                <S.StyledLink to={"/mypage/bookmark"}>
-                  <S.StyledButtonText>북마크</S.StyledButtonText>
-                </S.StyledLink>
-              </S.StyledButton>
-              <S.StyledButton onClick={logout}>
-                <S.StyledLink to={"/"}>
-                  <S.StyledButtonText>로그아웃</S.StyledButtonText>
-                </S.StyledLink>
-              </S.StyledButton>
-            </S.StyledAuthButtonBox>
-          </S.StyledAuthBox>
+        <div className="flex items-center gap-x-1">
+          {memberInfo.role === "ROLE_ADMIN" && (
+            <Link
+              to="/admin"
+              className="flex justify-center items-center border border-solid border-gray-300 rounded-md cursor-pointer bg-white px-2 py-1"
+            >
+              <span className="text-xs font-medium text-black">관리자</span>
+            </Link>
+          )}
+          <Link
+            to="/mypage/bookmark"
+            className="flex justify-center items-center border border-solid border-gray-300 rounded-md cursor-pointer bg-white px-2 py-1"
+          >
+            <span className="text-xs font-medium text-black">북마크</span>
+          </Link>
+          <Link
+            onClick={logout}
+            className="flex justify-center items-center border border-solid border-gray-300 rounded-md cursor-pointer bg-white px-2 py-1"
+          >
+            <span className="text-xs font-medium text-black">로그아웃</span>
+          </Link>
+        </div>
       ) : (
-        <S.StyledButton>
-          <S.StyledLink to={"/login"}>
-            <S.StyledButtonText>로그인</S.StyledButtonText>
-          </S.StyledLink>
-        </S.StyledButton>
+        <Link
+          to="/login"
+          className="flex justify-center items-center border border-solid border-gray-300 rounded-md cursor-pointer bg-white px-2 py-1"
+        >
+          <span className="text-xs font-medium text-black">로그인</span>
+        </Link>
       )}
-    </S.StyledHeader>
+    </header>
   );
 };
 

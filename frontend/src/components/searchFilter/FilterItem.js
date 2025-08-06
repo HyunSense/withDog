@@ -1,16 +1,16 @@
-import {
-  StyledSearchFilterItem,
-  StyledSearchFilterItemText,
-} from "../../styles/SearchFilter.Styled";
-
 const FilterItem = ({ label, value, isSelected, onSelect }) => {
   return (
-    <StyledSearchFilterItem
-      $isSelected={isSelected}
+    <div
+      className={
+        "flex justify-center items-center px-4 py-2 rounded-full border border-solid border-gray-200 cursor-pointer " +
+        (isSelected
+          ? "bg-neutral-950 text-gray-100"
+          : "bg-gray-100 text-neutral-950")
+      }
       onClick={() => onSelect(value)}
     >
-      <StyledSearchFilterItemText>{label}</StyledSearchFilterItemText>
-    </StyledSearchFilterItem>
+      <span className="text-sm font-normal">{label}</span>
+    </div>
   );
 };
 

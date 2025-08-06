@@ -1,11 +1,14 @@
 import { useState } from "react";
-import * as S from "../../styles/SearchFilter.Styled";
 import { FILTER_OPTIONS } from "../../constants/filters";
 import FilterSection from "./FilterSection";
 import FilterItem from "./FilterItem";
 
-const FilterContainer = ({ mode = "search", selectedFilters, setSelectedFilters}) => {
-//   const [selectedFilters, setSelectedFilters] = useState({});
+const FilterContainer = ({
+  mode = "search",
+  selectedFilters,
+  setSelectedFilters,
+}) => {
+  //   const [selectedFilters, setSelectedFilters] = useState({});
 
   const handleFilterSelect = (filterId, value, multiSelect) => {
     setSelectedFilters((prev) => {
@@ -32,17 +35,24 @@ const FilterContainer = ({ mode = "search", selectedFilters, setSelectedFilters}
   };
 
   return (
-    <S.StyledSearchFilterContainer mode={mode}>
-      <S.StyledSearchFilterTextBox>
-        <S.StyledSearchFilterTitle>
+    <div
+      className={`rounded-lg bg-white ${
+        mode === "admin" ? "py-5 px-0 m-0" : "p-4 mt-1 mx-4 mb-1"
+      }`}
+    >
+      <div className="flex justify-between items-center w-full">
+        <span className="font-medium">
           {mode === "search"
             ? "필터를 선택해 주세요."
             : "등록 필터를 설정하세요."}
-        </S.StyledSearchFilterTitle>
-        <S.StyledSearchFilterReset onClick={handleFilterReset}>
+        </span>
+        <span
+          className="text-sm font-medium text-zinc-700 cursor-pointer underline"
+          onClick={handleFilterReset}
+        >
           초기화
-        </S.StyledSearchFilterReset>
-      </S.StyledSearchFilterTextBox>
+        </span>
+      </div>
       {FILTER_OPTIONS.map((filter) => (
         <FilterSection key={filter.id} title={filter.title}>
           {filter.options.map((option) => (
@@ -64,7 +74,7 @@ const FilterContainer = ({ mode = "search", selectedFilters, setSelectedFilters}
           ))}
         </FilterSection>
       ))}
-    </S.StyledSearchFilterContainer>
+    </div>
   );
 };
 
